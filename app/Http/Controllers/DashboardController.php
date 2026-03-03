@@ -28,10 +28,14 @@ class DashboardController extends Controller
                 continue;
             }
 
+            if (! $block->clickUpConnection) {
+                continue;
+            }
+
             $hasLists = ! empty($block->clickUpConnection->default_list_ids)
                 || $block->clickUpConnection->default_list_id;
 
-            if (! $block->clickUpConnection || ! $hasLists) {
+            if (! $hasLists) {
                 continue;
             }
 
