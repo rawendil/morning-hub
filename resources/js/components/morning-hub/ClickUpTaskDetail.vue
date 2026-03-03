@@ -9,60 +9,137 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { task as taskRoute } from '@/routes/morning-hub/clickup';
-import type { ClickUpTaskDetail } from '@/types';
+import { Textarea } from '@/components/ui/textarea';
+import { useClickUpApi } from '@/composables/useClickUpApi';
+import {
+    comments as commentsRoute,
+    createComment as createCommentRoute,
+    task as taskRoute,
+    updateTask as updateTaskRoute,
+} from '@/routes/morning-hub/clickup';
+import type { ClickUpComment, ClickUpTaskDetail, UpdateTaskPayload } from '@/types';
 
 const props = defineProps<{
     connectionId: number | null;
     taskId: string | null;
 }>();
 
+const emit = defineEmits<{
+    taskUpdated: [];
+}>();
+
 const isOpen = defineModel<boolean>('open', { default: false });
 
+const { fetchJson, postJson, putJson } = useClickUpApi();
+
 const loading = ref(false);
+const saving = ref(false);
 const error = ref<string | null>(null);
 const taskDetail = ref<ClickUpTaskDetail | null>(null);
+const taskComments = ref<ClickUpComment[]>([]);
+const newComment = ref('');
+const addingComment = ref(false);
 
-function getCsrfToken(): string {
-    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
-}
-
-watch(isOpen, async (open) => {
-    if (!open || !props.connectionId || !props.taskId) return;
+async function loadTaskDetail() {
+    if (!props.connectionId || !props.taskId) return;
 
     loading.value = true;
     error.value = null;
     taskDetail.value = null;
+    taskComments.value = [];
 
     try {
-        const url = taskRoute.url({ connection: props.connectionId, taskId: props.taskId });
-        const response = await fetch(url, {
-            headers: {
-                Accept: 'application/json',
-                'X-XSRF-TOKEN': getCsrfToken(),
-            },
-        });
-        if (!response.ok) throw new Error('Failed to load task details');
-        const json = await response.json();
-        taskDetail.value = json.data;
+        const [detail, comments] = await Promise.all([
+            fetchJson<ClickUpTaskDetail>(
+                taskRoute.url({ connection: props.connectionId, taskId: props.taskId }),
+            ),
+            fetchJson<ClickUpComment[]>(
+                commentsRoute.url({ connection: props.connectionId, taskId: props.taskId }),
+            ),
+        ]);
+        taskDetail.value = detail;
+        taskComments.value = comments;
     } catch (e) {
         error.value = e instanceof Error ? e.message : 'Unknown error';
     } finally {
         loading.value = false;
     }
+}
+
+watch(isOpen, (open) => {
+    if (open) loadTaskDetail();
 });
+
+async function saveTaskField(payload: UpdateTaskPayload) {
+    if (!props.connectionId || !props.taskId) return;
+    saving.value = true;
+    try {
+        await putJson(
+            updateTaskRoute.url({ connection: props.connectionId, taskId: props.taskId }),
+            payload as Record<string, unknown>,
+        );
+        await loadTaskDetail();
+        emit('taskUpdated');
+    } catch (e) {
+        error.value = e instanceof Error ? e.message : 'Update failed';
+    } finally {
+        saving.value = false;
+    }
+}
+
+function handlePriorityChange(value: string) {
+    const priority = value === 'none' ? null : parseInt(value);
+    saveTaskField({ priority });
+}
+
+function handleDueDateChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const dueDate = input.value ? new Date(input.value).getTime() : null;
+    saveTaskField({ due_date: dueDate });
+}
 
 function formatDate(ms: string | null): string {
     if (!ms) return 'None';
     return new Date(Number(ms)).toLocaleDateString();
 }
+
+function formatDateForInput(ms: string | null): string {
+    if (!ms) return '';
+    return new Date(Number(ms)).toISOString().split('T')[0];
+}
+
+async function handleAddComment() {
+    if (!newComment.value.trim() || !props.connectionId || !props.taskId) return;
+    addingComment.value = true;
+    try {
+        await postJson(
+            createCommentRoute.url({ connection: props.connectionId, taskId: props.taskId }),
+            { comment_text: newComment.value.trim() },
+        );
+        newComment.value = '';
+        taskComments.value = await fetchJson<ClickUpComment[]>(
+            commentsRoute.url({ connection: props.connectionId, taskId: props.taskId }),
+        );
+    } catch (e) {
+        error.value = e instanceof Error ? e.message : 'Failed to add comment';
+    } finally {
+        addingComment.value = false;
+    }
+}
 </script>
 
 <template>
     <Dialog v-model:open="isOpen">
-        <DialogContent class="max-w-2xl">
+        <DialogContent class="max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>
                     <template v-if="loading">
@@ -84,30 +161,49 @@ function formatDate(ms: string | null): string {
             </div>
 
             <div v-else-if="taskDetail" class="space-y-4">
+                <!-- Status + editable fields -->
                 <div class="flex flex-wrap items-center gap-2">
                     <Badge :style="{ backgroundColor: taskDetail.status.color, color: '#fff' }">
                         {{ taskDetail.status.status }}
                     </Badge>
-                    <Badge
-                        v-if="taskDetail.priority"
-                        variant="outline"
-                        :style="{ borderColor: taskDetail.priority.color, color: taskDetail.priority.color }"
+
+                    <Select
+                        :model-value="taskDetail.priority?.id?.toString() ?? 'none'"
+                        :disabled="saving"
+                        @update:model-value="handlePriorityChange"
                     >
-                        {{ taskDetail.priority.priority }}
-                    </Badge>
-                    <Badge v-if="taskDetail.due_date" variant="outline">
-                        Due: {{ formatDate(taskDetail.due_date) }}
-                    </Badge>
+                        <SelectTrigger class="h-7 w-32">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="1">Urgent</SelectItem>
+                            <SelectItem value="2">High</SelectItem>
+                            <SelectItem value="3">Normal</SelectItem>
+                            <SelectItem value="4">Low</SelectItem>
+                            <SelectItem value="none">None</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    <Input
+                        type="date"
+                        :model-value="formatDateForInput(taskDetail.due_date)"
+                        :disabled="saving"
+                        class="h-7 w-40"
+                        @change="handleDueDateChange"
+                    />
+
                     <Badge v-for="tag in taskDetail.tags" :key="tag.name" :style="{ backgroundColor: tag.tag_bg, color: '#fff' }">
                         {{ tag.name }}
                     </Badge>
                 </div>
 
+                <!-- Description -->
                 <div v-if="taskDetail.description" class="rounded-md border p-3 text-sm whitespace-pre-wrap">
                     {{ taskDetail.description }}
                 </div>
                 <p v-else class="text-sm text-muted-foreground">No description.</p>
 
+                <!-- Subtasks -->
                 <div v-if="taskDetail.subtasks?.length" class="space-y-2">
                     <h4 class="text-sm font-medium">Subtasks ({{ taskDetail.subtasks.length }})</h4>
                     <div v-for="sub in taskDetail.subtasks" :key="sub.id" class="flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm">
@@ -119,6 +215,44 @@ function formatDate(ms: string | null): string {
                     </div>
                 </div>
 
+                <!-- Comments -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-medium">
+                        Comments{{ taskComments.length ? ` (${taskComments.length})` : '' }}
+                    </h4>
+                    <div
+                        v-for="comment in taskComments"
+                        :key="comment.id"
+                        class="space-y-1 rounded-md border p-3 text-sm"
+                    >
+                        <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span class="font-medium text-foreground">{{ comment.user.username }}</span>
+                            <span>{{ new Date(Number(comment.date)).toLocaleString() }}</span>
+                        </div>
+                        <p class="whitespace-pre-wrap">{{ comment.comment_text }}</p>
+                    </div>
+                </div>
+
+                <!-- Add Comment -->
+                <div class="space-y-2 border-t pt-4">
+                    <Textarea
+                        v-model="newComment"
+                        placeholder="Write a comment..."
+                        :disabled="addingComment"
+                        class="min-h-20"
+                    />
+                    <div class="flex justify-end">
+                        <Button
+                            size="sm"
+                            :disabled="!newComment.trim() || addingComment"
+                            @click="handleAddComment"
+                        >
+                            {{ addingComment ? 'Posting...' : 'Post Comment' }}
+                        </Button>
+                    </div>
+                </div>
+
+                <!-- Open in ClickUp -->
                 <div class="pt-2">
                     <Button variant="outline" size="sm" as-child>
                         <a :href="taskDetail.url" target="_blank" rel="noopener noreferrer" class="gap-2">

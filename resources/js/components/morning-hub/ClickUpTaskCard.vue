@@ -2,14 +2,22 @@
 import { ExternalLink } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
-import type { ClickUpTask } from '@/types';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import type { ClickUpStatus, ClickUpTask, UpdateTaskPayload } from '@/types';
 
 const props = defineProps<{
     task: ClickUpTask;
+    statuses: ClickUpStatus[];
 }>();
 
 const emit = defineEmits<{
     select: [taskId: string];
+    updateTask: [taskId: string, payload: UpdateTaskPayload];
 }>();
 
 const dueLabel = computed(() => {
@@ -33,7 +41,31 @@ const dueLabel = computed(() => {
 
 <template>
     <div class="flex items-center gap-3 rounded-md border px-3 py-2 text-sm">
+        <DropdownMenu v-if="statuses.length">
+            <DropdownMenuTrigger as-child>
+                <button
+                    class="h-2.5 w-2.5 shrink-0 cursor-pointer rounded-full ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+                    :style="{ backgroundColor: task.status.color }"
+                    :title="task.status.status"
+                />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" class="w-44">
+                <DropdownMenuItem
+                    v-for="status in statuses"
+                    :key="status.status"
+                    class="gap-2"
+                    @click="emit('updateTask', task.id, { status: status.status })"
+                >
+                    <span
+                        class="h-2 w-2 shrink-0 rounded-full"
+                        :style="{ backgroundColor: status.color }"
+                    />
+                    {{ status.status }}
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
         <span
+            v-else
             class="h-2.5 w-2.5 shrink-0 rounded-full"
             :style="{ backgroundColor: task.status.color }"
             :title="task.status.status"
