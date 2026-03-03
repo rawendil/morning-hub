@@ -47,3 +47,24 @@ export type ClickUpList = {
     id: string;
     name: string;
 };
+
+export type ClickUpTask = {
+    id: string;
+    name: string;
+    status: { status: string; color: string };
+    priority: { id: string; priority: string; color: string } | null;
+    due_date: string | null;
+    date_created: string;
+    url: string;
+};
+
+export type ClickUpTaskDetail = ClickUpTask & {
+    description: string;
+    subtasks?: ClickUpTask[];
+    tags: { name: string; tag_bg: string }[];
+};
+
+export type BlockTasksData = {
+    tasks: ClickUpTask[];
+    error: string | null;
+};
