@@ -14,6 +14,7 @@ export type ClickUpConnection = {
     default_space_id: string | null;
     default_folder_id: string | null;
     default_list_id: string | null;
+    default_list_ids: string[] | null;
     default_filters: Record<string, unknown> | null;
     created_at: string;
     updated_at: string;
@@ -48,6 +49,17 @@ export type ClickUpFolder = {
 export type ClickUpList = {
     id: string;
     name: string;
+};
+
+export type ClickUpFolderWithLists = {
+    id: string;
+    name: string;
+    lists: ClickUpList[];
+};
+
+export type ClickUpAllListsResponse = {
+    folders: ClickUpFolderWithLists[];
+    folderless: ClickUpList[];
 };
 
 export type ClickUpTask = {
