@@ -29,6 +29,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('morning-hub.clickup.lists');
     Route::get('morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'task'])
         ->name('morning-hub.clickup.task');
+    Route::put('morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'updateTask'])
+        ->name('morning-hub.clickup.updateTask');
+    Route::post('morning-hub/clickup/{connection}/tasks', [ClickUpApiController::class, 'createTask'])
+        ->name('morning-hub.clickup.createTask');
+    Route::post('morning-hub/clickup/{connection}/tasks/{taskId}/comments', [ClickUpApiController::class, 'createComment'])
+        ->name('morning-hub.clickup.createComment');
+    Route::get('morning-hub/clickup/{connection}/tasks/{taskId}/comments', [ClickUpApiController::class, 'comments'])
+        ->name('morning-hub.clickup.comments');
+    Route::get('morning-hub/clickup/{connection}/statuses', [ClickUpApiController::class, 'statuses'])
+        ->name('morning-hub.clickup.statuses');
 
     // Routine Blocks CRUD
     Route::get('morning-hub/routine', [RoutineBlockController::class, 'index'])

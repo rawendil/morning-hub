@@ -63,4 +63,70 @@ class ClickUpApiController extends Controller
 
         return response()->json(['data' => $service->getTask($taskId)]);
     }
+
+    public function updateTask(Request $request, ClickUpConnection $connection, string $taskId): JsonResponse
+    {
+        Gate::authorize('view', $connection);
+
+        $validated = $request->validate([
+            'status' => ['sometimes', 'string'],
+            'priority' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:4'],
+            'due_date' => ['sometimes', 'nullable', 'integer'],
+            'name' => ['sometimes', 'string', 'max:500'],
+        ]);
+
+        $service = new ClickUpService($connection->api_token);
+
+        return response()->json(['data' => $service->updateTask($taskId, $validated)]);
+    }
+
+    public function createTask(Request $request, ClickUpConnection $connection): JsonResponse
+    {
+        Gate::authorize('view', $connection);
+
+        $validated = $request->validate([
+            'list_id' => ['required', 'string'],
+            'name' => ['required', 'string', 'max:500'],
+            'description' => ['sometimes', 'string', 'max:5000'],
+        ]);
+
+        $listId = $validated['list_id'];
+        unset($validated['list_id']);
+
+        $service = new ClickUpService($connection->api_token);
+
+        return response()->json(['data' => $service->createTask($listId, $validated)], 201);
+    }
+
+    public function createComment(Request $request, ClickUpConnection $connection, string $taskId): JsonResponse
+    {
+        Gate::authorize('view', $connection);
+
+        $validated = $request->validate([
+            'comment_text' => ['required', 'string', 'max:10000'],
+        ]);
+
+        $service = new ClickUpService($connection->api_token);
+
+        return response()->json(['data' => $service->createComment($taskId, $validated['comment_text'])], 201);
+    }
+
+    public function comments(Request $request, ClickUpConnection $connection, string $taskId): JsonResponse
+    {
+        Gate::authorize('view', $connection);
+
+        $service = new ClickUpService($connection->api_token);
+
+        return response()->json(['data' => $service->getComments($taskId)]);
+    }
+
+    public function statuses(Request $request, ClickUpConnection $connection): JsonResponse
+    {
+        Gate::authorize('view', $connection);
+        $request->validate(['list_id' => ['required', 'string']]);
+
+        $service = new ClickUpService($connection->api_token);
+
+        return response()->json(['data' => $service->getListStatuses($request->input('list_id'))]);
+    }
 }
