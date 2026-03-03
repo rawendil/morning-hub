@@ -25,6 +25,7 @@ class ClickUpConnectionFactory extends Factory
             'default_space_id' => null,
             'default_folder_id' => null,
             'default_list_id' => null,
+            'default_list_ids' => null,
             'default_filters' => null,
         ];
     }

@@ -20,6 +20,7 @@ class ClickUpConnection extends Model
         'default_space_id',
         'default_folder_id',
         'default_list_id',
+        'default_list_ids',
         'default_filters',
     ];
 
@@ -32,6 +33,7 @@ class ClickUpConnection extends Model
     {
         return [
             'api_token' => 'encrypted',
+            'default_list_ids' => 'array',
             'default_filters' => 'array',
         ];
     }
