@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
-import { Clock, Plus, RefreshCw } from 'lucide-vue-next';
+import { Plus, RefreshCw, SkipForward } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskCard from '@/components/morning-hub/ClickUpTaskCard.vue';
+import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -21,10 +21,20 @@ import type { BlockTasksData, ClickUpStatus, RoutineBlock, UpdateTaskPayload } f
 const props = defineProps<{
     block: RoutineBlock;
     tasksData: BlockTasksData | undefined;
+    isActiveBlock: boolean;
+    isTimerRunning: boolean;
+    isTimerExpired: boolean;
+    remainingSeconds: number;
+    formattedTime: string;
 }>();
 
 const emit = defineEmits<{
     selectTask: [connectionId: number, taskId: string];
+    timerStart: [];
+    timerPause: [];
+    timerResume: [];
+    timerReset: [];
+    timerSkip: [];
 }>();
 
 const { fetchJson, postJson, putJson } = useClickUpApi();
@@ -109,16 +119,28 @@ async function handleCreateTask() {
 <template>
     <ClickUpTaskBlockSkeleton v-if="!tasksData" />
 
-    <Card v-else>
+    <Card v-else :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
         <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
             <div class="flex items-center gap-2">
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
-                <Badge v-if="block.timer_minutes" variant="outline" class="gap-1">
-                    <Clock class="h-3 w-3" />
-                    {{ block.timer_minutes }}m
-                </Badge>
+                <RoutineTimerBadge
+                    v-if="block.timer_minutes"
+                    :timer-minutes="block.timer_minutes"
+                    :is-active="isActiveBlock"
+                    :is-running="isTimerRunning"
+                    :is-expired="isTimerExpired"
+                    :remaining-seconds="remainingSeconds"
+                    :formatted-time="formattedTime"
+                    @start="emit('timerStart')"
+                    @pause="emit('timerPause')"
+                    @resume="emit('timerResume')"
+                    @reset="emit('timerReset')"
+                />
             </div>
             <div class="flex items-center gap-1">
+                <Button v-if="isActiveBlock" variant="ghost" size="icon" class="h-8 w-8" @click="emit('timerSkip')">
+                    <SkipForward class="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="icon" class="h-8 w-8" @click="showCreateForm = !showCreateForm">
                     <Plus class="h-4 w-4" />
                 </Button>

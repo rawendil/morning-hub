@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Brain, Check, Plus } from 'lucide-vue-next';
+import { Brain, Check, Plus, SkipForward } from 'lucide-vue-next';
 import { ref } from 'vue';
-import { Badge } from '@/components/ui/badge';
+import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -16,6 +16,19 @@ import type { RoutineBlock } from '@/types';
 
 const props = defineProps<{
     block: RoutineBlock;
+    isActiveBlock: boolean;
+    isTimerRunning: boolean;
+    isTimerExpired: boolean;
+    remainingSeconds: number;
+    formattedTime: string;
+}>();
+
+const emit = defineEmits<{
+    timerStart: [];
+    timerPause: [];
+    timerResume: [];
+    timerReset: [];
+    timerSkip: [];
 }>();
 
 const { postJson } = useClickUpApi();
@@ -55,14 +68,29 @@ function handleKeydown(event: KeyboardEvent) {
 </script>
 
 <template>
-    <Card>
+    <Card :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
         <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
             <div class="flex items-center gap-2">
                 <Brain class="h-4 w-4 text-muted-foreground" />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
-                <Badge v-if="block.timer_minutes" variant="outline" class="gap-1">
-                    {{ block.timer_minutes }}m
-                </Badge>
+                <RoutineTimerBadge
+                    v-if="block.timer_minutes"
+                    :timer-minutes="block.timer_minutes"
+                    :is-active="isActiveBlock"
+                    :is-running="isTimerRunning"
+                    :is-expired="isTimerExpired"
+                    :remaining-seconds="remainingSeconds"
+                    :formatted-time="formattedTime"
+                    @start="emit('timerStart')"
+                    @pause="emit('timerPause')"
+                    @resume="emit('timerResume')"
+                    @reset="emit('timerReset')"
+                />
+            </div>
+            <div v-if="isActiveBlock" class="flex items-center gap-1">
+                <Button variant="ghost" size="icon" class="h-8 w-8" @click="emit('timerSkip')">
+                    <SkipForward class="h-4 w-4" />
+                </Button>
             </div>
         </CardHeader>
 

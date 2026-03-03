@@ -7,10 +7,20 @@ import type { BlockTasksData, RoutineBlock } from '@/types';
 defineProps<{
     block: RoutineBlock;
     tasksData: BlockTasksData | undefined;
+    isActiveBlock: boolean;
+    isTimerRunning: boolean;
+    isTimerExpired: boolean;
+    remainingSeconds: number;
+    formattedTime: string;
 }>();
 
 const emit = defineEmits<{
     selectTask: [connectionId: number, taskId: string];
+    timerStart: [];
+    timerPause: [];
+    timerResume: [];
+    timerReset: [];
+    timerSkip: [];
 }>();
 </script>
 
@@ -19,8 +29,44 @@ const emit = defineEmits<{
         v-if="block.type === 'clickup'"
         :block="block"
         :tasks-data="tasksData"
+        :is-active-block="isActiveBlock"
+        :is-timer-running="isTimerRunning"
+        :is-timer-expired="isTimerExpired"
+        :remaining-seconds="remainingSeconds"
+        :formatted-time="formattedTime"
         @select-task="(connId, taskId) => emit('selectTask', connId, taskId)"
+        @timer-start="emit('timerStart')"
+        @timer-pause="emit('timerPause')"
+        @timer-resume="emit('timerResume')"
+        @timer-reset="emit('timerReset')"
+        @timer-skip="emit('timerSkip')"
     />
-    <BrainDumpBlock v-else-if="block.type === 'braindump'" :block="block" />
-    <PlaceholderBlock v-else :block="block" />
+    <BrainDumpBlock
+        v-else-if="block.type === 'braindump'"
+        :block="block"
+        :is-active-block="isActiveBlock"
+        :is-timer-running="isTimerRunning"
+        :is-timer-expired="isTimerExpired"
+        :remaining-seconds="remainingSeconds"
+        :formatted-time="formattedTime"
+        @timer-start="emit('timerStart')"
+        @timer-pause="emit('timerPause')"
+        @timer-resume="emit('timerResume')"
+        @timer-reset="emit('timerReset')"
+        @timer-skip="emit('timerSkip')"
+    />
+    <PlaceholderBlock
+        v-else
+        :block="block"
+        :is-active-block="isActiveBlock"
+        :is-timer-running="isTimerRunning"
+        :is-timer-expired="isTimerExpired"
+        :remaining-seconds="remainingSeconds"
+        :formatted-time="formattedTime"
+        @timer-start="emit('timerStart')"
+        @timer-pause="emit('timerPause')"
+        @timer-resume="emit('timerResume')"
+        @timer-reset="emit('timerReset')"
+        @timer-skip="emit('timerSkip')"
+    />
 </template>

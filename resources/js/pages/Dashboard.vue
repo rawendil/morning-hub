@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { Deferred, Head, Link, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
 import DashboardBlockRenderer from '@/components/morning-hub/DashboardBlockRenderer.vue';
 import Heading from '@/components/Heading.vue';
+import RoutineProgress from '@/components/morning-hub/RoutineProgress.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useRoutineTimer } from '@/composables/useRoutineTimer';
 import { dashboard } from '@/routes';
 import { index as routineIndex } from '@/routes/morning-hub/routine';
 import type { BreadcrumbItem, BlockTasksData, RoutineBlock } from '@/types';
@@ -33,6 +35,22 @@ function openTaskDetail(connectionId: number, taskId: string) {
     detailTaskId.value = taskId;
     detailOpen.value = true;
 }
+
+const {
+    activeBlockId,
+    remainingSeconds,
+    isRunning,
+    isExpired,
+    blockStates,
+    start,
+    pause,
+    resume,
+    reset,
+    skip,
+    formatTime,
+} = useRoutineTimer(props.blocks);
+
+const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
 </script>
 
 <template>
@@ -50,28 +68,58 @@ function openTaskDetail(connectionId: number, taskId: string) {
                 </p>
             </div>
 
-            <div v-else class="grid gap-4">
-                <template v-for="block in blocks" :key="block.id">
-                    <Deferred
-                        v-if="block.type === 'clickup' && block.clickup_connection_id"
-                        :data="`tasks_${block.id}`"
-                    >
-                        <template #fallback>
-                            <ClickUpTaskBlockSkeleton />
-                        </template>
+            <template v-else>
+                <RoutineProgress
+                    v-if="hasTimers"
+                    :blocks="blocks"
+                    :block-states="blockStates"
+                    :active-block-id="activeBlockId"
+                    @select-block="(id) => start(id)"
+                />
+
+                <div class="grid gap-4">
+                    <template v-for="block in blocks" :key="block.id">
+                        <Deferred
+                            v-if="block.type === 'clickup' && block.clickup_connection_id"
+                            :data="`tasks_${block.id}`"
+                        >
+                            <template #fallback>
+                                <ClickUpTaskBlockSkeleton />
+                            </template>
+                            <DashboardBlockRenderer
+                                :block="block"
+                                :tasks-data="getTasksData(block.id)"
+                                :is-active-block="activeBlockId === block.id"
+                                :is-timer-running="activeBlockId === block.id && isRunning"
+                                :is-timer-expired="activeBlockId === block.id && isExpired"
+                                :remaining-seconds="activeBlockId === block.id ? remainingSeconds : 0"
+                                :formatted-time="activeBlockId === block.id ? formatTime(remainingSeconds) : ''"
+                                @select-task="openTaskDetail"
+                                @timer-start="start(block.id)"
+                                @timer-pause="pause()"
+                                @timer-resume="resume()"
+                                @timer-reset="reset()"
+                                @timer-skip="skip()"
+                            />
+                        </Deferred>
                         <DashboardBlockRenderer
+                            v-else
                             :block="block"
-                            :tasks-data="getTasksData(block.id)"
+                            :is-active-block="activeBlockId === block.id"
+                            :is-timer-running="activeBlockId === block.id && isRunning"
+                            :is-timer-expired="activeBlockId === block.id && isExpired"
+                            :remaining-seconds="activeBlockId === block.id ? remainingSeconds : 0"
+                            :formatted-time="activeBlockId === block.id ? formatTime(remainingSeconds) : ''"
                             @select-task="openTaskDetail"
+                            @timer-start="start(block.id)"
+                            @timer-pause="pause()"
+                            @timer-resume="resume()"
+                            @timer-reset="reset()"
+                            @timer-skip="skip()"
                         />
-                    </Deferred>
-                    <DashboardBlockRenderer
-                        v-else
-                        :block="block"
-                        @select-task="openTaskDetail"
-                    />
-                </template>
-            </div>
+                    </template>
+                </div>
+            </template>
         </div>
 
         <ClickUpTaskDetail
