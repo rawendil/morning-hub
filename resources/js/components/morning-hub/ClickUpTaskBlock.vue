@@ -153,14 +153,14 @@ async function handleCreateTask() {
         <div v-if="showCreateForm" class="space-y-2 border-t px-4 py-3">
             <Input
                 v-model="newTaskName"
-                placeholder="Task name..."
+                placeholder="Nazwa zadania..."
                 :disabled="creating"
                 @keyup.enter="handleCreateTask"
             />
             <div class="flex justify-end gap-2">
-                <Button variant="ghost" size="sm" @click="showCreateForm = false">Cancel</Button>
+                <Button variant="ghost" size="sm" @click="showCreateForm = false">Anuluj</Button>
                 <Button size="sm" :disabled="!newTaskName.trim() || creating" @click="handleCreateTask">
-                    {{ creating ? 'Creating...' : 'Create' }}
+                    {{ creating ? 'Tworzenie...' : 'Utwórz' }}
                 </Button>
             </div>
         </div>
@@ -169,12 +169,12 @@ async function handleCreateTask() {
             <Alert v-if="tasksData.error" variant="destructive">
                 <AlertDescription class="flex items-center justify-between">
                     <span>{{ tasksData.error }}</span>
-                    <Button variant="outline" size="sm" @click="refresh">Retry</Button>
+                    <Button variant="outline" size="sm" @click="refresh">Ponów</Button>
                 </AlertDescription>
             </Alert>
 
             <p v-else-if="tasksData.tasks.length === 0" class="text-sm text-muted-foreground">
-                No tasks due today.
+                Brak zadań na dziś.
             </p>
 
             <ClickUpTaskCard

@@ -59,7 +59,7 @@ async function testConnection() {
         });
         testResult.value = await response.json();
     } catch {
-        testResult.value = { success: false, message: 'Network error.' };
+        testResult.value = { success: false, message: 'Błąd sieci.' };
     }
     testing.value = false;
 }
@@ -78,10 +78,10 @@ function deleteConnection() {
             <div>
                 <CardTitle class="text-base">{{ connection.name }}</CardTitle>
                 <CardDescription v-if="connection.workspace_id">
-                    Workspace configured
+                    Workspace skonfigurowany
                 </CardDescription>
                 <CardDescription v-else>
-                    Not configured yet
+                    Jeszcze nie skonfigurowany
                 </CardDescription>
             </div>
             <div class="flex items-center gap-1">
@@ -110,7 +110,7 @@ function deleteConnection() {
                 <CollapsibleTrigger as-child>
                     <Button variant="outline" size="sm" class="w-full gap-2">
                         <Settings class="h-4 w-4" />
-                        {{ configOpen ? 'Hide' : 'Configure' }} workspace defaults
+                        {{ configOpen ? 'Ukryj' : 'Konfiguruj' }} domyślne workspace
                     </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent class="pt-4">
@@ -125,17 +125,17 @@ function deleteConnection() {
     <Dialog v-model:open="deleteOpen">
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>Delete connection</DialogTitle>
+                <DialogTitle>Usuń połączenie</DialogTitle>
                 <DialogDescription>
-                    Are you sure you want to delete "{{ connection.name }}"? Any routine blocks using this connection will be unlinked.
+                    Czy na pewno chcesz usunąć "{{ connection.name }}"? Bloki rutyny korzystające z tego połączenia zostaną odłączone.
                 </DialogDescription>
             </DialogHeader>
             <DialogFooter class="gap-2">
                 <DialogClose as-child>
-                    <Button variant="secondary">Cancel</Button>
+                    <Button variant="secondary">Anuluj</Button>
                 </DialogClose>
                 <Button variant="destructive" @click="deleteConnection">
-                    Delete
+                    Usuń
                 </Button>
             </DialogFooter>
         </DialogContent>

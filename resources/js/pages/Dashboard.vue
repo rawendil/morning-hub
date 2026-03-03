@@ -21,7 +21,7 @@ const props = defineProps<{
 const page = usePage();
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: dashboard() },
+    { title: 'Panel', href: dashboard() },
 ];
 
 function getTasksData(blockId: number): BlockTasksData | undefined {
@@ -65,16 +65,16 @@ const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Dashboard" />
+        <Head title="Panel" />
 
         <div class="space-y-6 p-6">
-            <Heading title="Morning Hub" description="Your daily routine dashboard." />
+            <Heading title="Morning Hub" description="Twój codzienny panel rutyny." />
 
             <div v-if="blocks.length === 0" class="rounded-lg border border-dashed p-8 text-center">
                 <p class="text-muted-foreground">
-                    No routine blocks configured.
-                    <Link :href="routineIndex.url()" class="underline">Go to Morning Routine</Link>
-                    to set up your blocks.
+                    Brak skonfigurowanych bloków rutyny.
+                    <Link :href="routineIndex.url()" class="underline">Przejdź do Porannej Rutyny</Link>,
+                    aby skonfigurować bloki.
                 </p>
             </div>
 

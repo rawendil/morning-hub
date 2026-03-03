@@ -108,7 +108,7 @@ function handleDueDateChange(event: Event) {
 }
 
 function formatDate(ms: string | null): string {
-    if (!ms) return 'None';
+    if (!ms) return 'Brak';
     return new Date(Number(ms)).toLocaleDateString();
 }
 
@@ -146,7 +146,7 @@ async function handleAddComment() {
                         <Skeleton class="h-6 w-64" />
                     </template>
                     <template v-else-if="taskDetail">{{ taskDetail.name }}</template>
-                    <template v-else>Task Detail</template>
+                    <template v-else>Szczegóły zadania</template>
                 </DialogTitle>
             </DialogHeader>
 
@@ -176,11 +176,11 @@ async function handleAddComment() {
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="1">Urgent</SelectItem>
-                            <SelectItem value="2">High</SelectItem>
-                            <SelectItem value="3">Normal</SelectItem>
-                            <SelectItem value="4">Low</SelectItem>
-                            <SelectItem value="none">None</SelectItem>
+                            <SelectItem value="1">Pilny</SelectItem>
+                            <SelectItem value="2">Wysoki</SelectItem>
+                            <SelectItem value="3">Normalny</SelectItem>
+                            <SelectItem value="4">Niski</SelectItem>
+                            <SelectItem value="none">Brak</SelectItem>
                         </SelectContent>
                     </Select>
 
@@ -201,11 +201,11 @@ async function handleAddComment() {
                 <div v-if="taskDetail.description" class="rounded-md border p-3 text-sm whitespace-pre-wrap">
                     {{ taskDetail.description }}
                 </div>
-                <p v-else class="text-sm text-muted-foreground">No description.</p>
+                <p v-else class="text-sm text-muted-foreground">Brak opisu.</p>
 
                 <!-- Subtasks -->
                 <div v-if="taskDetail.subtasks?.length" class="space-y-2">
-                    <h4 class="text-sm font-medium">Subtasks ({{ taskDetail.subtasks.length }})</h4>
+                    <h4 class="text-sm font-medium">Podzadania ({{ taskDetail.subtasks.length }})</h4>
                     <div v-for="sub in taskDetail.subtasks" :key="sub.id" class="flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm">
                         <span
                             class="h-2 w-2 shrink-0 rounded-full"
@@ -218,7 +218,7 @@ async function handleAddComment() {
                 <!-- Comments -->
                 <div class="space-y-3">
                     <h4 class="text-sm font-medium">
-                        Comments{{ taskComments.length ? ` (${taskComments.length})` : '' }}
+                        Komentarze{{ taskComments.length ? ` (${taskComments.length})` : '' }}
                     </h4>
                     <div
                         v-for="comment in taskComments"
@@ -237,7 +237,7 @@ async function handleAddComment() {
                 <div class="space-y-2 border-t pt-4">
                     <Textarea
                         v-model="newComment"
-                        placeholder="Write a comment..."
+                        placeholder="Napisz komentarz..."
                         :disabled="addingComment"
                         class="min-h-20"
                     />
@@ -247,7 +247,7 @@ async function handleAddComment() {
                             :disabled="!newComment.trim() || addingComment"
                             @click="handleAddComment"
                         >
-                            {{ addingComment ? 'Posting...' : 'Post Comment' }}
+                            {{ addingComment ? 'Wysyłanie...' : 'Dodaj komentarz' }}
                         </Button>
                     </div>
                 </div>
@@ -257,7 +257,7 @@ async function handleAddComment() {
                     <Button variant="outline" size="sm" as-child>
                         <a :href="taskDetail.url" target="_blank" rel="noopener noreferrer" class="gap-2">
                             <ExternalLink class="h-4 w-4" />
-                            Open in ClickUp
+                            Otwórz w ClickUp
                         </a>
                     </Button>
                 </div>

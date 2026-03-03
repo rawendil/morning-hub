@@ -34,12 +34,12 @@ const isOpen = defineModel<boolean>('open', { default: false });
 
 const blockTypes: { value: BlockType; label: string }[] = [
     { value: 'clickup', label: 'ClickUp' },
-    { value: 'braindump', label: 'Brain Dump' },
-    { value: 'habits', label: 'Daily Habits' },
-    { value: 'feed', label: 'RSS Feed' },
-    { value: 'notes', label: 'Notes' },
+    { value: 'braindump', label: 'Zrzut myśli' },
+    { value: 'habits', label: 'Codzienne nawyki' },
+    { value: 'feed', label: 'Kanał RSS' },
+    { value: 'notes', label: 'Notatki' },
     { value: 'plan', label: 'Plan' },
-    { value: 'custom', label: 'Custom' },
+    { value: 'custom', label: 'Własny' },
 ];
 
 const selectedType = ref<string>(props.block?.type ?? '');
@@ -69,19 +69,19 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                 @success="isOpen = false"
             >
                 <DialogHeader>
-                    <DialogTitle>{{ block ? 'Edit Block' : 'Add Block' }}</DialogTitle>
+                    <DialogTitle>{{ block ? 'Edytuj blok' : 'Dodaj blok' }}</DialogTitle>
                     <DialogDescription>
-                        {{ block ? 'Update this routine block.' : 'Add a new block to your morning routine.' }}
+                        {{ block ? 'Zaktualizuj ten blok rutyny.' : 'Dodaj nowy blok do porannej rutyny.' }}
                     </DialogDescription>
                 </DialogHeader>
 
                 <div class="grid gap-4">
                     <div class="grid gap-2">
-                        <Label>Type</Label>
+                        <Label>Typ</Label>
                         <input type="hidden" name="type" :value="selectedType" />
                         <Select v-model="selectedType">
                             <SelectTrigger>
-                                <SelectValue placeholder="Select block type..." />
+                                <SelectValue placeholder="Wybierz typ bloku..." />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem v-for="bt in blockTypes" :key="bt.value" :value="bt.value">
@@ -93,19 +93,19 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="block-name">Name</Label>
+                        <Label for="block-name">Nazwa</Label>
                         <Input
                             id="block-name"
                             name="name"
                             :default-value="block?.name"
                             required
-                            placeholder="e.g. Review tasks, Quick notes"
+                            placeholder="np. Przegląd zadań, Szybkie notatki"
                         />
                         <InputError :message="errors.name" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="block-timer">Timer (minutes)</Label>
+                        <Label for="block-timer">Timer (minuty)</Label>
                         <Input
                             id="block-timer"
                             name="timer_minutes"
@@ -113,13 +113,13 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                             min="1"
                             max="120"
                             :default-value="block?.timer_minutes?.toString()"
-                            placeholder="Optional"
+                            placeholder="Opcjonalnie"
                         />
                         <InputError :message="errors.timer_minutes" />
                     </div>
 
                     <div v-if="needsConnection" class="grid gap-2">
-                        <Label>ClickUp Connection</Label>
+                        <Label>Połączenie ClickUp</Label>
                         <input
                             v-if="!connections.length"
                             type="hidden"
@@ -128,7 +128,7 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                         />
                         <Select v-else name="clickup_connection_id" :default-value="block?.clickup_connection_id?.toString()">
                             <SelectTrigger>
-                                <SelectValue placeholder="Select connection..." />
+                                <SelectValue placeholder="Wybierz połączenie..." />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem v-for="conn in connections" :key="conn.id" :value="conn.id.toString()">
@@ -137,18 +137,18 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                             </SelectContent>
                         </Select>
                         <p v-if="!connections.length" class="text-sm text-muted-foreground">
-                            No ClickUp connections available. Add one first.
+                            Brak dostępnych połączeń ClickUp. Najpierw dodaj połączenie.
                         </p>
                         <InputError :message="errors.clickup_connection_id" />
                     </div>
 
                     <div v-if="selectedType === 'habits'" class="grid gap-2">
-                        <Label>Daily Habits</Label>
+                        <Label>Codzienne nawyki</Label>
                         <div v-for="(_, index) in habits" :key="index" class="flex items-center gap-2">
                             <input type="hidden" :name="`config[habits][${index}]`" :value="habits[index]" />
                             <Input
                                 v-model="habits[index]"
-                                placeholder="e.g. Watch Laracasts video"
+                                placeholder="np. Obejrzeć film na Laracasts"
                             />
                             <Button
                                 v-if="habits.length > 1"
@@ -168,14 +168,14 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                             @click="habits.push('')"
                         >
                             <Plus class="h-4 w-4" />
-                            Add Habit
+                            Dodaj nawyk
                         </Button>
                         <InputError :message="errors['config.habits']" />
                     </div>
 
                     <div v-if="selectedType === 'feed'" class="grid gap-4">
                         <div class="grid gap-2">
-                            <Label for="feed-days">Days to fetch</Label>
+                            <Label for="feed-days">Liczba dni</Label>
                             <input type="hidden" name="config[days]" :value="feedDays" />
                             <Input
                                 id="feed-days"
@@ -189,14 +189,14 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                         </div>
 
                         <div class="grid gap-2">
-                            <Label>RSS/Atom Sources</Label>
+                            <Label>Źródła RSS/Atom</Label>
                             <div v-for="(_, index) in feedSources" :key="index" class="flex items-start gap-2">
                                 <input type="hidden" :name="`config[sources][${index}][name]`" :value="feedSources[index].name" />
                                 <input type="hidden" :name="`config[sources][${index}][url]`" :value="feedSources[index].url" />
                                 <div class="grid flex-1 gap-1">
                                     <Input
                                         v-model="feedSources[index].name"
-                                        placeholder="Source name"
+                                        placeholder="Nazwa źródła"
                                     />
                                     <Input
                                         v-model="feedSources[index].url"
@@ -221,7 +221,7 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                                 @click="feedSources.push({ name: '', url: '' })"
                             >
                                 <Plus class="h-4 w-4" />
-                                Add Source
+                                Dodaj źródło
                             </Button>
                             <InputError :message="errors['config.sources']" />
                         </div>
@@ -230,10 +230,10 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
 
                 <DialogFooter class="gap-2">
                     <DialogClose as-child>
-                        <Button variant="secondary">Cancel</Button>
+                        <Button variant="secondary">Anuluj</Button>
                     </DialogClose>
                     <Button type="submit" :disabled="processing">
-                        {{ block ? 'Save' : 'Add Block' }}
+                        {{ block ? 'Zapisz' : 'Dodaj blok' }}
                     </Button>
                 </DialogFooter>
             </Form>

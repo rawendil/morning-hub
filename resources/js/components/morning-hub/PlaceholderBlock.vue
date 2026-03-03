@@ -30,10 +30,10 @@ const emit = defineEmits<{
 }>();
 
 const typeConfig: Record<Exclude<BlockType, 'clickup'>, { icon: typeof Brain; label: string }> = {
-    braindump: { icon: Brain, label: 'Brain Dump' },
-    notes: { icon: NotebookPen, label: 'Notes' },
+    braindump: { icon: Brain, label: 'Zrzut myśli' },
+    notes: { icon: NotebookPen, label: 'Notatki' },
     plan: { icon: CalendarCheck, label: 'Plan' },
-    custom: { icon: Wrench, label: 'Custom' },
+    custom: { icon: Wrench, label: 'Własny' },
 };
 
 const config = computed(() => typeConfig[props.block.type as Exclude<BlockType, 'clickup'>] ?? typeConfig.custom);
@@ -67,7 +67,7 @@ const config = computed(() => typeConfig[props.block.type as Exclude<BlockType, 
             </div>
         </CardHeader>
         <CardContent class="pt-0">
-            <p class="text-sm text-muted-foreground">Coming soon</p>
+            <p class="text-sm text-muted-foreground">Wkrótce</p>
         </CardContent>
     </Card>
 </template>

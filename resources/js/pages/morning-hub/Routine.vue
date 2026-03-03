@@ -25,7 +25,7 @@ const props = defineProps<{
 }>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
-    { title: 'Morning Routine', href: index() },
+    { title: 'Poranna rutyna', href: index() },
 ];
 
 const addOpen = ref(false);
@@ -67,19 +67,19 @@ function moveBlock(blockIndex: number, direction: -1 | 1) {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Morning Routine" />
+        <Head title="Poranna rutyna" />
 
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
-                <Heading title="Morning Routine" description="Configure the blocks for your morning routine." />
+                <Heading title="Poranna rutyna" description="Konfiguruj bloki swojej porannej rutyny." />
                 <Button class="gap-2" @click="addOpen = true">
                     <Plus class="h-4 w-4" />
-                    Add Block
+                    Dodaj blok
                 </Button>
             </div>
 
             <div v-if="blocks.length === 0" class="rounded-lg border border-dashed p-8 text-center">
-                <p class="text-muted-foreground">No blocks yet. Add your first routine block to get started.</p>
+                <p class="text-muted-foreground">Brak bloków. Dodaj pierwszy blok rutyny, aby rozpocząć.</p>
             </div>
 
             <div v-else class="grid gap-3">
@@ -103,17 +103,17 @@ function moveBlock(blockIndex: number, direction: -1 | 1) {
         <Dialog v-model:open="deleteOpen">
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Delete block</DialogTitle>
+                    <DialogTitle>Usuń blok</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete "{{ deleteBlock?.name }}"?
+                        Czy na pewno chcesz usunąć "{{ deleteBlock?.name }}"?
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter class="gap-2">
                     <DialogClose as-child>
-                        <Button variant="secondary">Cancel</Button>
+                        <Button variant="secondary">Anuluj</Button>
                     </DialogClose>
                     <Button variant="destructive" @click="confirmDelete">
-                        Delete
+                        Usuń
                     </Button>
                 </DialogFooter>
             </DialogContent>

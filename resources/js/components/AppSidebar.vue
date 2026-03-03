@@ -20,7 +20,7 @@ import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Panel',
         href: dashboard(),
         icon: LayoutGrid,
     },
@@ -28,7 +28,7 @@ const mainNavItems: NavItem[] = [
 
 const morningHubNavItems: NavItem[] = [
     {
-        title: 'Routine',
+        title: 'Rutyna',
         href: routineIndex(),
         icon: ListChecks,
     },

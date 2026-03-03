@@ -155,7 +155,7 @@ onMounted(async () => {
             <Skeleton v-if="loadingWorkspaces" class="h-9 w-full" />
             <Select v-else v-model="selectedWorkspace">
                 <SelectTrigger>
-                    <SelectValue placeholder="Select workspace..." />
+                    <SelectValue placeholder="Wybierz workspace..." />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem v-for="ws in workspaceList" :key="ws.id" :value="ws.id">
@@ -170,7 +170,7 @@ onMounted(async () => {
             <Skeleton v-if="loadingSpaces" class="h-9 w-full" />
             <Select v-else v-model="selectedSpace">
                 <SelectTrigger>
-                    <SelectValue placeholder="Select space..." />
+                    <SelectValue placeholder="Wybierz space..." />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem v-for="s in spaceList" :key="s.id" :value="s.id">
@@ -185,10 +185,10 @@ onMounted(async () => {
             <Skeleton v-if="loadingFolders" class="h-9 w-full" />
             <Select v-else v-model="selectedFolder">
                 <SelectTrigger>
-                    <SelectValue placeholder="Select folder..." />
+                    <SelectValue placeholder="Wybierz folder..." />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="__none__">No folder (folderless lists)</SelectItem>
+                    <SelectItem value="__none__">Bez folderu (listy bez folderu)</SelectItem>
                     <SelectItem v-for="f in folderList" :key="f.id" :value="f.id">
                         {{ f.name }}
                     </SelectItem>
@@ -197,11 +197,11 @@ onMounted(async () => {
         </div>
 
         <div v-if="selectedFolder" class="grid gap-2">
-            <Label>List</Label>
+            <Label>Lista</Label>
             <Skeleton v-if="loadingLists" class="h-9 w-full" />
             <Select v-else v-model="selectedList">
                 <SelectTrigger>
-                    <SelectValue placeholder="Select list..." />
+                    <SelectValue placeholder="Wybierz listę..." />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem v-for="l in listList" :key="l.id" :value="l.id">

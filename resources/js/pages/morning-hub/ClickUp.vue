@@ -15,7 +15,7 @@ defineProps<{
 }>();
 
 const breadcrumbItems: BreadcrumbItem[] = [
-    { title: 'ClickUp Connections', href: index() },
+    { title: 'Połączenia ClickUp', href: index() },
 ];
 
 const addOpen = ref(false);
@@ -23,19 +23,19 @@ const addOpen = ref(false);
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="ClickUp Connections" />
+        <Head title="Połączenia ClickUp" />
 
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
-                <Heading title="ClickUp Connections" description="Manage your ClickUp API connections and workspace defaults." />
+                <Heading title="Połączenia ClickUp" description="Zarządzaj połączeniami API ClickUp i domyślnymi ustawieniami." />
                 <Button class="gap-2" @click="addOpen = true">
                     <Plus class="h-4 w-4" />
-                    Add Connection
+                    Dodaj połączenie
                 </Button>
             </div>
 
             <div v-if="connections.length === 0" class="rounded-lg border border-dashed p-8 text-center">
-                <p class="text-muted-foreground">No connections yet. Add your first ClickUp connection to get started.</p>
+                <p class="text-muted-foreground">Brak połączeń. Dodaj pierwsze połączenie ClickUp, aby rozpocząć.</p>
             </div>
 
             <div v-else class="grid gap-4 md:grid-cols-2">

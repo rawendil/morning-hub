@@ -27,23 +27,23 @@ onMounted(() => {
 const steps = [
     {
         icon: Sparkles,
-        title: 'Welcome to Morning Hub',
+        title: 'Witaj w Morning Hub',
         description:
-            'Your personal morning routine dashboard. Organize tasks, track habits, and stay focused — all before you start your day.',
+            'Twój osobisty panel porannej rutyny. Organizuj zadania, śledź nawyki i zachowaj skupienie — zanim zaczniesz dzień.',
     },
     {
         icon: LayoutGrid,
-        title: 'How it works',
+        title: 'Jak to działa',
         items: [
-            'Configure blocks in Routine settings — timers, tasks, habits, notes.',
-            'Connect ClickUp to pull your priority tasks automatically.',
-            'Start your timer and work through each block.',
+            'Skonfiguruj bloki w ustawieniach Rutyny — timery, zadania, nawyki, notatki.',
+            'Połącz ClickUp, aby automatycznie pobierać priorytetowe zadania.',
+            'Uruchom timer i pracuj przez kolejne bloki.',
         ],
     },
     {
         icon: Rocket,
-        title: 'Ready to start',
-        description: 'Set up your first routine or jump straight into the dashboard.',
+        title: 'Gotowy do startu',
+        description: 'Skonfiguruj pierwszą rutynę lub przejdź od razu do panelu.',
     },
 ];
 
@@ -103,17 +103,17 @@ function complete() {
 
             <DialogFooter class="flex-row justify-between gap-2 sm:justify-between">
                 <Button v-if="!isLastStep" variant="ghost" size="sm" @click="complete">
-                    Skip
+                    Pomiń
                 </Button>
                 <span v-else />
 
                 <div v-if="isLastStep" class="flex gap-2">
                     <Link :href="routineIndex.url()" @click="complete">
-                        <Button variant="outline" size="sm">Routine Settings</Button>
+                        <Button variant="outline" size="sm">Ustawienia rutyny</Button>
                     </Link>
-                    <Button size="sm" @click="complete">Start Using Dashboard</Button>
+                    <Button size="sm" @click="complete">Przejdź do panelu</Button>
                 </div>
-                <Button v-else size="sm" @click="next">Next</Button>
+                <Button v-else size="sm" @click="next">Dalej</Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>

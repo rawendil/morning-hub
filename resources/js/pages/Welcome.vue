@@ -18,18 +18,18 @@ withDefaults(
 const features = [
     {
         icon: Timer,
-        title: 'Focused Timer',
-        description: 'Time-box each routine block to stay on track and build consistent habits.',
+        title: 'Skupiony timer',
+        description: 'Odmierzaj czas każdego bloku rutyny, aby utrzymać tempo i budować nawyki.',
     },
     {
         icon: ListChecks,
-        title: 'ClickUp Tasks',
-        description: 'Pull your priority tasks directly from ClickUp so nothing slips through.',
+        title: 'Zadania ClickUp',
+        description: 'Pobieraj priorytetowe zadania bezpośrednio z ClickUp, żeby nic nie umknęło.',
     },
     {
         icon: CheckCircle2,
-        title: 'Daily Habits',
-        description: 'Track recurring habits with a simple checklist that resets each morning.',
+        title: 'Codzienne nawyki',
+        description: 'Śledź powtarzające się nawyki prostą checklistą, która resetuje się co rano.',
     },
 ];
 </script>
@@ -47,15 +47,15 @@ const features = [
             <nav class="flex items-center gap-3">
                 <template v-if="$page.props.auth.user">
                     <Link :href="dashboard()">
-                        <Button size="sm">Dashboard</Button>
+                        <Button size="sm">Panel</Button>
                     </Link>
                 </template>
                 <template v-else>
                     <Link :href="login.url()">
-                        <Button variant="ghost" size="sm">Log in</Button>
+                        <Button variant="ghost" size="sm">Zaloguj się</Button>
                     </Link>
                     <Link v-if="canRegister" :href="register.url()">
-                        <Button size="sm">Register</Button>
+                        <Button size="sm">Rejestracja</Button>
                     </Link>
                 </template>
             </nav>
@@ -65,22 +65,22 @@ const features = [
         <main class="flex flex-1 flex-col items-center justify-center px-6 text-center">
             <div class="max-w-2xl space-y-6">
                 <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
-                    Your morning routine,<br />
-                    <span class="text-primary">streamlined.</span>
+                    Twoja poranna rutyna,<br />
+                    <span class="text-primary">uporządkowana.</span>
                 </h1>
                 <p class="mx-auto max-w-lg text-lg text-muted-foreground">
-                    Organize tasks, track habits, and stay focused — all in one calm,
-                    distraction-free dashboard.
+                    Organizuj zadania, śledź nawyki i zachowaj skupienie — wszystko w jednym
+                    spokojnym panelu bez rozpraszaczy.
                 </p>
                 <div>
                     <Link v-if="$page.props.auth.user" :href="dashboard()">
-                        <Button size="lg">Go to Dashboard</Button>
+                        <Button size="lg">Przejdź do panelu</Button>
                     </Link>
                     <Link v-else-if="canRegister" :href="register.url()">
-                        <Button size="lg">Get Started</Button>
+                        <Button size="lg">Rozpocznij</Button>
                     </Link>
                     <Link v-else :href="login.url()">
-                        <Button size="lg">Log In</Button>
+                        <Button size="lg">Zaloguj się</Button>
                     </Link>
                 </div>
             </div>

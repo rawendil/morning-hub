@@ -34,33 +34,33 @@ const isOpen = defineModel<boolean>('open', { default: false });
                 @success="isOpen = false"
             >
                 <DialogHeader>
-                    <DialogTitle>{{ connection ? 'Edit Connection' : 'Add Connection' }}</DialogTitle>
+                    <DialogTitle>{{ connection ? 'Edytuj połączenie' : 'Dodaj połączenie' }}</DialogTitle>
                     <DialogDescription>
-                        {{ connection ? 'Update your ClickUp connection.' : 'Connect a ClickUp workspace using a personal API token.' }}
+                        {{ connection ? 'Zaktualizuj połączenie ClickUp.' : 'Połącz workspace ClickUp za pomocą osobistego tokena API.' }}
                     </DialogDescription>
                 </DialogHeader>
 
                 <div class="grid gap-4">
                     <div class="grid gap-2">
-                        <Label for="conn-name">Name</Label>
+                        <Label for="conn-name">Nazwa</Label>
                         <Input
                             id="conn-name"
                             name="name"
                             :default-value="connection?.name"
                             required
-                            placeholder="e.g. Work, Personal"
+                            placeholder="np. Praca, Osobiste"
                         />
                         <InputError :message="errors.name" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="conn-api-token">API Token</Label>
+                        <Label for="conn-api-token">Token API</Label>
                         <Input
                             id="conn-api-token"
                             name="api_token"
                             type="password"
                             :required="!connection"
-                            :placeholder="connection ? 'Leave empty to keep current' : 'pk_...'"
+                            :placeholder="connection ? 'Pozostaw puste, aby zachować obecny' : 'pk_...'"
                         />
                         <InputError :message="errors.api_token" />
                     </div>
@@ -68,10 +68,10 @@ const isOpen = defineModel<boolean>('open', { default: false });
 
                 <DialogFooter class="gap-2">
                     <DialogClose as-child>
-                        <Button variant="secondary">Cancel</Button>
+                        <Button variant="secondary">Anuluj</Button>
                     </DialogClose>
                     <Button type="submit" :disabled="processing">
-                        {{ connection ? 'Save' : 'Add Connection' }}
+                        {{ connection ? 'Zapisz' : 'Dodaj połączenie' }}
                     </Button>
                 </DialogFooter>
             </Form>

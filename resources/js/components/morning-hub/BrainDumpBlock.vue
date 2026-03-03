@@ -98,7 +98,7 @@ function handleKeydown(event: KeyboardEvent) {
             <template v-if="connectionId && listId">
                 <Textarea
                     v-model="input"
-                    placeholder="Quick thought → ClickUp task..."
+                    placeholder="Szybka myśl → zadanie ClickUp..."
                     :disabled="submitting"
                     class="min-h-20"
                     @keydown="handleKeydown"
@@ -110,12 +110,12 @@ function handleKeydown(event: KeyboardEvent) {
                         @click="handleSubmit"
                     >
                         <Plus class="h-4 w-4" />
-                        {{ submitting ? 'Creating...' : 'Create Task' }}
+                        {{ submitting ? 'Tworzenie...' : 'Utwórz zadanie' }}
                     </Button>
                 </div>
 
                 <div v-if="recentTasks.length" class="space-y-1">
-                    <p class="text-xs text-muted-foreground">Recently created</p>
+                    <p class="text-xs text-muted-foreground">Ostatnio utworzone</p>
                     <div
                         v-for="(task, i) in recentTasks"
                         :key="i"
@@ -128,7 +128,7 @@ function handleKeydown(event: KeyboardEvent) {
             </template>
 
             <p v-else class="text-sm text-muted-foreground">
-                Configure a ClickUp connection to start dumping thoughts as tasks.
+                Skonfiguruj połączenie ClickUp, aby zacząć zapisywać myśli jako zadania.
             </p>
         </CardContent>
     </Card>

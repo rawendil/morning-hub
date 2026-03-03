@@ -136,7 +136,7 @@ async function toggle(index: number) {
             </div>
 
             <p v-if="habits.length === 0" class="text-sm text-muted-foreground">
-                No habits configured. Edit this block to add daily habits.
+                Brak skonfigurowanych nawyków. Edytuj ten blok, aby dodać codzienne nawyki.
             </p>
         </CardContent>
     </Card>

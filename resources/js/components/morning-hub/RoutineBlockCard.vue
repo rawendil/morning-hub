@@ -25,10 +25,12 @@ const emit = defineEmits<{
 
 const typeLabels: Record<string, string> = {
     clickup: 'ClickUp',
-    braindump: 'Brain Dump',
-    notes: 'Notes',
+    braindump: 'Zrzut myśli',
+    habits: 'Codzienne nawyki',
+    feed: 'Kanał RSS',
+    notes: 'Notatki',
     plan: 'Plan',
-    custom: 'Custom',
+    custom: 'Własny',
 };
 </script>
 

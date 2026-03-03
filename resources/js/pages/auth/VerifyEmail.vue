@@ -14,17 +14,17 @@ defineProps<{
 
 <template>
     <AuthLayout
-        title="Verify email"
-        description="Please verify your email address by clicking on the link we just emailed to you."
+        title="Weryfikacja e-mail"
+        description="Zweryfikuj swój adres e-mail, klikając w link, który wysłaliśmy na Twój adres."
     >
-        <Head title="Email verification" />
+        <Head title="Weryfikacja e-mail" />
 
         <div
             v-if="status === 'verification-link-sent'"
             class="mb-4 text-center text-sm font-medium text-green-600"
         >
-            A new verification link has been sent to the email address you
-            provided during registration.
+            Nowy link weryfikacyjny został wysłany na adres e-mail podany
+            podczas rejestracji.
         </div>
 
         <Form
@@ -34,7 +34,7 @@ defineProps<{
         >
             <Button :disabled="processing" variant="secondary">
                 <Spinner v-if="processing" />
-                Resend verification email
+                Wyślij ponownie e-mail weryfikacyjny
             </Button>
 
             <TextLink
@@ -42,7 +42,7 @@ defineProps<{
                 as="button"
                 class="mx-auto block text-sm"
             >
-                Log out
+                Wyloguj się
             </TextLink>
         </Form>
     </AuthLayout>

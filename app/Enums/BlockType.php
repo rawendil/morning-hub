@@ -16,12 +16,12 @@ enum BlockType: string
     {
         return match ($this) {
             self::Clickup => 'ClickUp',
-            self::Braindump => 'Brain Dump',
-            self::Habits => 'Daily Habits',
-            self::Feed => 'RSS Feed',
-            self::Notes => 'Notes',
+            self::Braindump => 'Zrzut myśli',
+            self::Habits => 'Codzienne nawyki',
+            self::Feed => 'Kanał RSS',
+            self::Notes => 'Notatki',
             self::Plan => 'Plan',
-            self::Custom => 'Custom',
+            self::Custom => 'Własny',
         };
     }
 }

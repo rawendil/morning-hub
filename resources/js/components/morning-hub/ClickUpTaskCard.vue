@@ -31,9 +31,9 @@ const dueLabel = computed(() => {
     const dayAfter = new Date(tomorrow);
     dayAfter.setDate(dayAfter.getDate() + 1);
 
-    if (due < today) return { text: 'Overdue', class: 'text-destructive border-destructive' };
-    if (due < tomorrow) return { text: 'Today', class: 'text-orange-600 border-orange-400' };
-    if (due < dayAfter) return { text: 'Tomorrow', class: '' };
+    if (due < today) return { text: 'Po terminie', class: 'text-destructive border-destructive' };
+    if (due < tomorrow) return { text: 'Dziś', class: 'text-orange-600 border-orange-400' };
+    if (due < dayAfter) return { text: 'Jutro', class: '' };
 
     return { text: due.toLocaleDateString(), class: '' };
 });

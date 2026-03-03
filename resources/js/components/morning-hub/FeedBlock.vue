@@ -38,15 +38,15 @@ function timeAgo(isoDate: string): string {
     const diffMs = now - then;
 
     const minutes = Math.floor(diffMs / 60000);
-    if (minutes < 60) return `${minutes}m ago`;
+    if (minutes < 60) return `${minutes} min temu`;
 
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
+    if (hours < 24) return `${hours} godz. temu`;
 
     const days = Math.floor(hours / 24);
-    if (days === 1) return 'yesterday';
+    if (days === 1) return 'wczoraj';
 
-    return `${days}d ago`;
+    return `${days} dni temu`;
 }
 </script>
 
@@ -71,7 +71,7 @@ function timeAgo(isoDate: string): string {
                 />
             </div>
             <div class="flex items-center gap-2">
-                <span v-if="items.length" class="text-xs text-muted-foreground">{{ items.length }} articles</span>
+                <span v-if="items.length" class="text-xs text-muted-foreground">{{ items.length }} artykułów</span>
                 <Button v-if="isActiveBlock" variant="ghost" size="icon" class="h-8 w-8" @click="emit('timerSkip')">
                     <SkipForward class="h-4 w-4" />
                 </Button>
@@ -84,7 +84,7 @@ function timeAgo(isoDate: string): string {
             </p>
 
             <p v-else-if="items.length === 0" class="text-sm text-muted-foreground">
-                No articles found. Check your feed sources or increase the days range.
+                Brak artykułów. Sprawdź źródła RSS lub zwiększ zakres dni.
             </p>
 
             <a
