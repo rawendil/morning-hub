@@ -333,3 +333,54 @@ test('statuses endpoint requires list_id', function () {
         ->assertUnprocessable()
         ->assertJsonValidationErrors('list_id');
 });
+
+// --- Phase: Multi-list ---
+
+test('user can fetch all lists for a space', function () {
+    Http::fake([
+        'https://api.clickup.com/api/v2/space/s1/folder*' => Http::response([
+            'folders' => [
+                ['id' => 'f1', 'name' => 'Sprint 1', 'lists' => [
+                    ['id' => 'l1', 'name' => 'Todo'],
+                    ['id' => 'l2', 'name' => 'In Progress'],
+                ]],
+            ],
+        ], 200),
+        'https://api.clickup.com/api/v2/space/s1/list*' => Http::response([
+            'lists' => [
+                ['id' => 'l3', 'name' => 'Backlog'],
+            ],
+        ], 200),
+    ]);
+
+    $user = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($user)->create();
+
+    $this->actingAs($user)
+        ->getJson(route('morning-hub.clickup.allLists', ['connection' => $connection, 'space_id' => 's1']))
+        ->assertOk()
+        ->assertJsonPath('data.folders.0.id', 'f1')
+        ->assertJsonPath('data.folders.0.name', 'Sprint 1')
+        ->assertJsonCount(2, 'data.folders.0.lists')
+        ->assertJsonCount(1, 'data.folderless');
+});
+
+test('allLists endpoint requires space_id', function () {
+    $user = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($user)->create();
+
+    $this->actingAs($user)
+        ->getJson(route('morning-hub.clickup.allLists', $connection))
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('space_id');
+});
+
+test('user cannot fetch all lists from another users connection', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($otherUser)->create();
+
+    $this->actingAs($user)
+        ->getJson(route('morning-hub.clickup.allLists', ['connection' => $connection, 'space_id' => 's1']))
+        ->assertForbidden();
+});

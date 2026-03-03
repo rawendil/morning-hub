@@ -141,6 +141,41 @@ test('user can test connection that fails', function () {
         ->assertJson(['success' => false]);
 });
 
+test('user can update connection with default_list_ids', function () {
+    $user = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($user)->create();
+
+    $this->actingAs($user)
+        ->put(route('morning-hub.clickup.update', $connection), [
+            'name' => $connection->name,
+            'default_list_ids' => ['l1', 'l2', 'l3'],
+        ])
+        ->assertRedirect(route('morning-hub.clickup.index'));
+
+    $connection->refresh();
+    expect($connection->default_list_ids)->toBe(['l1', 'l2', 'l3']);
+    expect($connection->default_list_id)->toBe('l1');
+});
+
+test('updating default_list_ids to null clears default_list_id', function () {
+    $user = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($user)->create([
+        'default_list_ids' => ['l1', 'l2'],
+        'default_list_id' => 'l1',
+    ]);
+
+    $this->actingAs($user)
+        ->put(route('morning-hub.clickup.update', $connection), [
+            'name' => $connection->name,
+            'default_list_ids' => null,
+        ])
+        ->assertRedirect(route('morning-hub.clickup.index'));
+
+    $connection->refresh();
+    expect($connection->default_list_ids)->toBeNull();
+    expect($connection->default_list_id)->toBeNull();
+});
+
 test('deleting connection nullifies related blocks', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
