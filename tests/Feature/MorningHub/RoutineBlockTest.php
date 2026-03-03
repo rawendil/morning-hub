@@ -139,6 +139,55 @@ test('reorder validates all blocks belong to user', function () {
         ->assertSessionHasErrors('blocks');
 });
 
+test('user can create feed block with valid config', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'feed',
+            'name' => 'Tech Feed',
+            'config' => [
+                'sources' => [
+                    ['name' => 'Spatie', 'url' => 'https://spatie.be/feed'],
+                ],
+                'days' => 7,
+            ],
+        ])
+        ->assertRedirect(route('morning-hub.routine.index'));
+
+    $block = $user->routineBlocks()->where('name', 'Tech Feed')->first();
+    expect($block)->not->toBeNull();
+    expect($block->config['sources'])->toHaveCount(1);
+    expect($block->config['days'])->toBe(7);
+});
+
+test('feed block requires sources and days', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'feed',
+            'name' => 'Empty Feed',
+            'config' => [],
+        ])
+        ->assertSessionHasErrors(['config.sources', 'config.days']);
+});
+
+test('feed block source requires name and valid url', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'feed',
+            'name' => 'Bad Feed',
+            'config' => [
+                'sources' => [['name' => '', 'url' => 'not-a-url']],
+                'days' => 5,
+            ],
+        ])
+        ->assertSessionHasErrors(['config.sources.0.name', 'config.sources.0.url']);
+});
+
 test('routine page includes user connections for form', function () {
     $user = User::factory()->create();
     ClickUpConnection::factory()->for($user)->create(['name' => 'Work']);

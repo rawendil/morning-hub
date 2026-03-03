@@ -107,6 +107,58 @@ test('deferred prop catches clickup api error and returns error message', functi
         );
 });
 
+test('dashboard has deferred props for feed blocks with configured sources', function () {
+    Http::fake([
+        'https://example.com/feed' => Http::response(
+            '<?xml version="1.0"?><rss version="2.0"><channel><title>Test</title>'
+            .'<item><title>Test Article</title><link>https://example.com/1</link><pubDate>'.now()->subHour()->toRfc2822String().'</pubDate></item>'
+            .'</channel></rss>'
+        ),
+    ]);
+
+    $user = User::factory()->create();
+    $block = RoutineBlock::factory()->for($user)->create([
+        'type' => BlockType::Feed,
+        'sort_order' => 0,
+        'config' => [
+            'sources' => [['name' => 'Test', 'url' => 'https://example.com/feed']],
+            'days' => 5,
+        ],
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('dashboard'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('Dashboard')
+            ->has('blocks', 1)
+            ->missing("feed_{$block->id}")
+            ->loadDeferredProps(fn ($reload) => $reload
+                ->has("feed_{$block->id}")
+                ->where("feed_{$block->id}.error", null)
+                ->has("feed_{$block->id}.items", 1)
+                ->where("feed_{$block->id}.items.0.title", 'Test Article')
+                ->where("feed_{$block->id}.items.0.source", 'Test')
+            )
+        );
+});
+
+test('feed block without sources has no deferred prop', function () {
+    $user = User::factory()->create();
+    $block = RoutineBlock::factory()->for($user)->create([
+        'type' => BlockType::Feed,
+        'sort_order' => 0,
+        'config' => ['sources' => [], 'days' => 5],
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('dashboard'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->missing("feed_{$block->id}")
+        );
+});
+
 test('clickup block without default_list_id has no deferred prop', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create([
