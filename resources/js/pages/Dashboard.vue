@@ -26,6 +26,10 @@ function getTasksData(blockId: number): BlockTasksData | undefined {
     return (page.props as Record<string, unknown>)[`tasks_${blockId}`] as BlockTasksData | undefined;
 }
 
+function getHabitsData(blockId: number): number[] {
+    return ((page.props as Record<string, unknown>)[`habits_${blockId}`] as number[]) ?? [];
+}
+
 const detailOpen = ref(false);
 const detailConnectionId = ref<number | null>(null);
 const detailTaskId = ref<string | null>(null);
@@ -89,6 +93,7 @@ const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
                             <DashboardBlockRenderer
                                 :block="block"
                                 :tasks-data="getTasksData(block.id)"
+                                :completed-indices="getHabitsData(block.id)"
                                 :is-active-block="activeBlockId === block.id"
                                 :is-timer-running="activeBlockId === block.id && isRunning"
                                 :is-timer-expired="activeBlockId === block.id && isExpired"
@@ -105,6 +110,7 @@ const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
                         <DashboardBlockRenderer
                             v-else
                             :block="block"
+                            :completed-indices="getHabitsData(block.id)"
                             :is-active-block="activeBlockId === block.id"
                             :is-timer-running="activeBlockId === block.id && isRunning"
                             :is-timer-expired="activeBlockId === block.id && isExpired"
