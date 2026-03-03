@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, FolderGit2, LayoutGrid, ListChecks, Plug } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -15,6 +15,8 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as clickupIndex } from '@/routes/morning-hub/clickup';
+import { index as routineIndex } from '@/routes/morning-hub/routine';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -22,6 +24,19 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+];
+
+const morningHubNavItems: NavItem[] = [
+    {
+        title: 'Routine',
+        href: routineIndex(),
+        icon: ListChecks,
+    },
+    {
+        title: 'ClickUp',
+        href: clickupIndex(),
+        icon: Plug,
     },
 ];
 
@@ -55,6 +70,7 @@ const footerNavItems: NavItem[] = [
 
         <SidebarContent>
             <NavMain :items="mainNavItems" />
+            <NavMain :items="morningHubNavItems" label="Morning Hub" />
         </SidebarContent>
 
         <SidebarFooter>
