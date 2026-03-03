@@ -36,6 +36,7 @@ const blockTypes: { value: BlockType; label: string }[] = [
     { value: 'clickup', label: 'ClickUp' },
     { value: 'braindump', label: 'Brain Dump' },
     { value: 'habits', label: 'Daily Habits' },
+    { value: 'feed', label: 'RSS Feed' },
     { value: 'notes', label: 'Notes' },
     { value: 'plan', label: 'Plan' },
     { value: 'custom', label: 'Custom' },
@@ -43,10 +44,16 @@ const blockTypes: { value: BlockType; label: string }[] = [
 
 const selectedType = ref<string>(props.block?.type ?? '');
 const habits = ref<string[]>((props.block?.config?.habits as string[]) ?? ['']);
+const feedSources = ref<{ name: string; url: string }[]>(
+    (props.block?.config?.sources as { name: string; url: string }[]) ?? [{ name: '', url: '' }],
+);
+const feedDays = ref<number>((props.block?.config?.days as number) ?? 5);
 
 watch(() => props.block, (newBlock) => {
     selectedType.value = newBlock?.type ?? '';
     habits.value = (newBlock?.config?.habits as string[]) ?? [''];
+    feedSources.value = (newBlock?.config?.sources as { name: string; url: string }[]) ?? [{ name: '', url: '' }];
+    feedDays.value = (newBlock?.config?.days as number) ?? 5;
 });
 
 const needsConnection = computed(() => selectedType.value === 'clickup' || selectedType.value === 'braindump');
@@ -164,6 +171,60 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                             Add Habit
                         </Button>
                         <InputError :message="errors['config.habits']" />
+                    </div>
+
+                    <div v-if="selectedType === 'feed'" class="grid gap-4">
+                        <div class="grid gap-2">
+                            <Label for="feed-days">Days to fetch</Label>
+                            <input type="hidden" name="config[days]" :value="feedDays" />
+                            <Input
+                                id="feed-days"
+                                v-model.number="feedDays"
+                                type="number"
+                                min="1"
+                                max="30"
+                                placeholder="5"
+                            />
+                            <InputError :message="errors['config.days']" />
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label>RSS/Atom Sources</Label>
+                            <div v-for="(_, index) in feedSources" :key="index" class="flex items-start gap-2">
+                                <input type="hidden" :name="`config[sources][${index}][name]`" :value="feedSources[index].name" />
+                                <input type="hidden" :name="`config[sources][${index}][url]`" :value="feedSources[index].url" />
+                                <div class="grid flex-1 gap-1">
+                                    <Input
+                                        v-model="feedSources[index].name"
+                                        placeholder="Source name"
+                                    />
+                                    <Input
+                                        v-model="feedSources[index].url"
+                                        placeholder="https://example.com/feed"
+                                    />
+                                </div>
+                                <Button
+                                    v-if="feedSources.length > 1"
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    class="mt-1 h-8 w-8 shrink-0"
+                                    @click="feedSources.splice(index, 1)"
+                                >
+                                    <X class="h-4 w-4" />
+                                </Button>
+                            </div>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                @click="feedSources.push({ name: '', url: '' })"
+                            >
+                                <Plus class="h-4 w-4" />
+                                Add Source
+                            </Button>
+                            <InputError :message="errors['config.sources']" />
+                        </div>
                     </div>
                 </div>
 

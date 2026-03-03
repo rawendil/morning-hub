@@ -2,6 +2,7 @@ export type BlockType =
     | 'clickup'
     | 'braindump'
     | 'habits'
+    | 'feed'
     | 'notes'
     | 'plan'
     | 'custom';
@@ -101,4 +102,16 @@ export type CreateTaskPayload = {
     list_id: string;
     name: string;
     description?: string;
+};
+
+export type FeedItem = {
+    title: string;
+    link: string;
+    source: string;
+    published_at: string;
+};
+
+export type BlockFeedData = {
+    items: FeedItem[];
+    error: string | null;
 };

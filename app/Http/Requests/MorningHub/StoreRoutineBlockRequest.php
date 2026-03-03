@@ -31,6 +31,10 @@ class StoreRoutineBlockRequest extends FormRequest
             'config' => ['nullable', 'array'],
             'config.habits' => ['required_if:type,habits', 'array', 'min:1'],
             'config.habits.*' => ['required', 'string', 'max:255'],
+            'config.sources' => ['required_if:type,feed', 'array', 'min:1'],
+            'config.sources.*.name' => ['required', 'string', 'max:255'],
+            'config.sources.*.url' => ['required', 'url', 'max:500'],
+            'config.days' => ['required_if:type,feed', 'integer', 'min:1', 'max:30'],
         ];
     }
 
