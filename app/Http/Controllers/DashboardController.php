@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\BlockType;
 use App\Models\RoutineBlock;
 use App\Services\ClickUpService;
+use App\Services\FeedService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -52,6 +53,24 @@ class DashboardController extends Controller
                 : [];
         }
 
+        foreach ($blocks as $block) {
+            if ($block->type !== BlockType::Feed) {
+                continue;
+            }
+
+            $sources = $block->config['sources'] ?? [];
+            $days = (int) ($block->config['days'] ?? 5);
+
+            if (empty($sources)) {
+                continue;
+            }
+
+            $props["feed_{$block->id}"] = Inertia::defer(
+                fn () => $this->fetchFeed($sources, $days),
+                "feed_{$block->id}",
+            );
+        }
+
         return Inertia::render('Dashboard', $props);
     }
 
@@ -70,6 +89,21 @@ class DashboardController extends Controller
             return ['tasks' => $tasks, 'error' => null];
         } catch (\Throwable $e) {
             return ['tasks' => [], 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * @param  array<int, array{name: string, url: string}>  $sources
+     * @return array{items: array<int, array{title: string, link: string, source: string, published_at: string}>, error: string|null}
+     */
+    private function fetchFeed(array $sources, int $days): array
+    {
+        try {
+            $service = new FeedService;
+
+            return ['items' => $service->fetchArticles($sources, $days), 'error' => null];
+        } catch (\Throwable $e) {
+            return ['items' => [], 'error' => $e->getMessage()];
         }
     }
 }
