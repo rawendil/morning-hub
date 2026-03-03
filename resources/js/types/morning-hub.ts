@@ -1,6 +1,7 @@
 export type BlockType =
     | 'clickup'
     | 'braindump'
+    | 'habits'
     | 'notes'
     | 'plan'
     | 'custom';
