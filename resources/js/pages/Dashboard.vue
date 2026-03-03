@@ -1,47 +1,87 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
-import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
+import { Deferred, Head, Link, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
+import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
+import DashboardBlockRenderer from '@/components/morning-hub/DashboardBlockRenderer.vue';
+import Heading from '@/components/Heading.vue';
+import PlaceholderBlock from '@/components/morning-hub/PlaceholderBlock.vue';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
-import type { BreadcrumbItem } from '@/types';
+import { index as routineIndex } from '@/routes/morning-hub/routine';
+import type { BreadcrumbItem, BlockTasksData, RoutineBlock } from '@/types';
+
+const props = defineProps<{
+    blocks: RoutineBlock[];
+}>();
+
+const page = usePage();
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-    },
+    { title: 'Dashboard', href: dashboard() },
 ];
+
+function getTasksData(blockId: number): BlockTasksData | undefined {
+    return (page.props as Record<string, unknown>)[`tasks_${blockId}`] as BlockTasksData | undefined;
+}
+
+const clickupBlockIds = computed(() =>
+    props.blocks
+        .filter((b) => b.type === 'clickup' && b.clickup_connection_id)
+        .map((b) => b.id),
+);
+
+const detailOpen = ref(false);
+const detailConnectionId = ref<number | null>(null);
+const detailTaskId = ref<string | null>(null);
+
+function openTaskDetail(connectionId: number, taskId: string) {
+    detailConnectionId.value = connectionId;
+    detailTaskId.value = taskId;
+    detailOpen.value = true;
+}
 </script>
 
 <template>
-    <Head title="Dashboard" />
-
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
-        >
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
-                </div>
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
-                </div>
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
-                </div>
+        <Head title="Dashboard" />
+
+        <div class="space-y-6 p-6">
+            <Heading title="Morning Hub" description="Your daily routine dashboard." />
+
+            <div v-if="blocks.length === 0" class="rounded-lg border border-dashed p-8 text-center">
+                <p class="text-muted-foreground">
+                    No routine blocks configured.
+                    <Link :href="routineIndex.url()" class="underline">Go to Morning Routine</Link>
+                    to set up your blocks.
+                </p>
             </div>
-            <div
-                class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
-            >
-                <PlaceholderPattern />
+
+            <div v-else class="grid gap-4">
+                <template v-for="block in blocks" :key="block.id">
+                    <Deferred
+                        v-if="block.type === 'clickup' && block.clickup_connection_id"
+                        :data="`tasks_${block.id}`"
+                    >
+                        <template #fallback>
+                            <ClickUpTaskBlockSkeleton />
+                        </template>
+                        <DashboardBlockRenderer
+                            :block="block"
+                            :tasks-data="getTasksData(block.id)"
+                            @select-task="openTaskDetail"
+                        />
+                    </Deferred>
+                    <PlaceholderBlock v-else :block="block" />
+                </template>
             </div>
         </div>
+
+        <ClickUpTaskDetail
+            v-model:open="detailOpen"
+            :connection-id="detailConnectionId"
+            :task-id="detailTaskId"
+        />
     </AppLayout>
 </template>
