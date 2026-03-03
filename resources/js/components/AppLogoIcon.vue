@@ -19,11 +19,23 @@ defineProps<Props>();
         :class="className"
         v-bind="$attrs"
     >
+        <!-- Leaf outline (clock face) — teardrop: narrow top, wide bottom -->
         <path
-            fill="currentColor"
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M17.2 5.633 8.6.855 0 5.633v26.51l16.2 9 16.2-9v-8.442l7.6-4.223V9.856l-8.6-4.777-8.6 4.777V18.3l-5.6 3.111V5.633ZM38 18.301l-5.6 3.11v-6.157l5.6-3.11V18.3Zm-1.06-7.856-5.54 3.078-5.54-3.079 5.54-3.078 5.54 3.079ZM24.8 18.3v-6.157l5.6 3.111v6.158L24.8 18.3Zm-1 1.732 5.54 3.078-13.14 7.302-5.54-3.078 13.14-7.3v-.002Zm-16.2 7.89 7.6 4.222V38.3L2 30.966V7.92l5.6 3.111v16.892ZM8.6 9.3 3.06 6.222 8.6 3.143l5.54 3.08L8.6 9.3Zm21.8 15.51-13.2 7.334V38.3l13.2-7.334v-6.156ZM9.6 11.034l5.6-3.11v14.6l-5.6 3.11v-14.6Z"
+            d="M20 2 C16 7 -3 30 20 40 C43 30 24 7 20 2Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
         />
+        <!-- Hour markers: 12, 3, 6, 9 -->
+        <circle cx="20" cy="8" r="1.3" fill="currentColor" />
+        <circle cx="31" cy="24" r="1" fill="currentColor" />
+        <circle cx="20" cy="36" r="1" fill="currentColor" />
+        <circle cx="9" cy="24" r="1" fill="currentColor" />
+        <!-- Minute hand (pointing to 12) -->
+        <line x1="20" y1="23" x2="20" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        <!-- Hour hand (pointing to ~7 o'clock — morning) -->
+        <line x1="20" y1="23" x2="15" y2="30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+        <!-- Center dot -->
+        <circle cx="20" cy="23" r="2" fill="currentColor" />
     </svg>
 </template>
