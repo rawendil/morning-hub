@@ -46,6 +46,30 @@ class ClickUpService
         return $this->client()->get(self::BASE_URL."/space/{$spaceId}/list")->json('lists', []);
     }
 
+    /**
+     * @param  array<string, mixed>  $filters
+     * @return array<int, array<string, mixed>>
+     */
+    public function getTasks(string $listId, array $filters = []): array
+    {
+        $query = array_merge([
+            'include_closed' => 'false',
+            'subtasks' => 'true',
+        ], $filters);
+
+        return $this->client()
+            ->get(self::BASE_URL."/list/{$listId}/task", $query)
+            ->json('tasks', []);
+    }
+
+    /** @return array<string, mixed> */
+    public function getTask(string $taskId): array
+    {
+        return $this->client()
+            ->get(self::BASE_URL."/task/{$taskId}", ['include_subtasks' => 'true'])
+            ->json();
+    }
+
     private function client(): PendingRequest
     {
         return Http::withHeaders([
