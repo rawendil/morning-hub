@@ -143,7 +143,7 @@ onMounted(async () => {
     if (selectedSpace.value) {
         await loadFolders(selectedSpace.value);
     }
-    if (selectedFolder.value) {
+    if (selectedFolder.value && selectedFolder.value !== '__none__') {
         await loadLists(selectedFolder.value, null);
     } else if (selectedSpace.value) {
         await loadLists(null, selectedSpace.value);
