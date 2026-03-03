@@ -27,6 +27,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('morning-hub.clickup.folders');
     Route::get('morning-hub/clickup/{connection}/lists', [ClickUpApiController::class, 'lists'])
         ->name('morning-hub.clickup.lists');
+    Route::get('morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'task'])
+        ->name('morning-hub.clickup.task');
 
     // Routine Blocks CRUD
     Route::get('morning-hub/routine', [RoutineBlockController::class, 'index'])

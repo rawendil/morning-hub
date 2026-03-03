@@ -111,3 +111,32 @@ test('user can fetch folderless lists for a space', function () {
         ->assertOk()
         ->assertJsonCount(1, 'data');
 });
+
+test('user can fetch task detail', function () {
+    Http::fake(['https://api.clickup.com/api/v2/task/t1*' => Http::response([
+        'id' => 't1',
+        'name' => 'Fix bug',
+        'description' => 'Need to fix the login bug',
+        'status' => ['status' => 'open', 'color' => '#d3d3d3'],
+    ], 200)]);
+
+    $user = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($user)->create();
+
+    $this->actingAs($user)
+        ->get(route('morning-hub.clickup.task', ['connection' => $connection, 'taskId' => 't1']))
+        ->assertOk()
+        ->assertJsonPath('data.id', 't1')
+        ->assertJsonPath('data.name', 'Fix bug')
+        ->assertJsonPath('data.description', 'Need to fix the login bug');
+});
+
+test('user cannot fetch task detail from another users connection', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($otherUser)->create();
+
+    $this->actingAs($user)
+        ->get(route('morning-hub.clickup.task', ['connection' => $connection, 'taskId' => 't1']))
+        ->assertForbidden();
+});
