@@ -27,6 +27,8 @@ class UpdateClickUpConnectionRequest extends FormRequest
             'default_space_id' => ['nullable', 'string'],
             'default_folder_id' => ['nullable', 'string'],
             'default_list_id' => ['nullable', 'string'],
+            'default_list_ids' => ['nullable', 'array'],
+            'default_list_ids.*' => ['string'],
         ];
     }
 }

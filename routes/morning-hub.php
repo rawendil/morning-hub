@@ -28,6 +28,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('morning-hub.clickup.folders');
     Route::get('morning-hub/clickup/{connection}/lists', [ClickUpApiController::class, 'lists'])
         ->name('morning-hub.clickup.lists');
+    Route::get('morning-hub/clickup/{connection}/all-lists', [ClickUpApiController::class, 'allLists'])
+        ->name('morning-hub.clickup.allLists');
     Route::get('morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'task'])
         ->name('morning-hub.clickup.task');
     Route::put('morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'updateTask'])

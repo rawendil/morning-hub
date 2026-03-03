@@ -55,6 +55,16 @@ class ClickUpApiController extends Controller
         return response()->json(['data' => $service->getFolderlessLists($request->input('space_id'))]);
     }
 
+    public function allLists(Request $request, ClickUpConnection $connection): JsonResponse
+    {
+        Gate::authorize('view', $connection);
+        $request->validate(['space_id' => 'required|string']);
+
+        $service = new ClickUpService($connection->api_token);
+
+        return response()->json(['data' => $service->getAllListsInSpace($request->input('space_id'))]);
+    }
+
     public function task(Request $request, ClickUpConnection $connection, string $taskId): JsonResponse
     {
         Gate::authorize('view', $connection);

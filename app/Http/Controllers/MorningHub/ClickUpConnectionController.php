@@ -47,6 +47,10 @@ class ClickUpConnectionController extends Controller
             }
         }
 
+        if (array_key_exists('default_list_ids', $data)) {
+            $data['default_list_id'] = $data['default_list_ids'][0] ?? null;
+        }
+
         $connection->update($data);
 
         return to_route('morning-hub.clickup.index');
