@@ -3,6 +3,7 @@ import { Deferred, Head, Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
+import OnboardingModal from '@/components/morning-hub/OnboardingModal.vue';
 import DashboardBlockRenderer from '@/components/morning-hub/DashboardBlockRenderer.vue';
 import Heading from '@/components/Heading.vue';
 import RoutineProgress from '@/components/morning-hub/RoutineProgress.vue';
@@ -133,5 +134,7 @@ const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
             :connection-id="detailConnectionId"
             :task-id="detailTaskId"
         />
+
+        <OnboardingModal />
     </AppLayout>
 </template>
