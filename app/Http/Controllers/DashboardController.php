@@ -28,7 +28,10 @@ class DashboardController extends Controller
                 continue;
             }
 
-            if (! $block->clickUpConnection || ! $block->clickUpConnection->default_list_id) {
+            $hasLists = ! empty($block->clickUpConnection->default_list_ids)
+                || $block->clickUpConnection->default_list_id;
+
+            if (! $block->clickUpConnection || ! $hasLists) {
                 continue;
             }
 
@@ -81,10 +84,15 @@ class DashboardController extends Controller
             $service = new ClickUpService($block->clickUpConnection->api_token);
 
             $endOfToday = Carbon::now()->endOfDay()->getTimestampMs();
+            $filters = ['due_date_lt' => (string) $endOfToday];
 
-            $tasks = $service->getTasks($block->clickUpConnection->default_list_id, [
-                'due_date_lt' => (string) $endOfToday,
-            ]);
+            $listIds = $block->clickUpConnection->default_list_ids;
+
+            if (! empty($listIds)) {
+                $tasks = $service->getTasksFromLists($listIds, $filters);
+            } else {
+                $tasks = $service->getTasks($block->clickUpConnection->default_list_id, $filters);
+            }
 
             return ['tasks' => $tasks, 'error' => null];
         } catch (\Throwable $e) {
