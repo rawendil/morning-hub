@@ -56,4 +56,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(ClickUpConnection::class);
     }
+
+    /** @return HasMany<RoutineBlock, $this> */
+    public function routineBlocks(): HasMany
+    {
+        return $this->hasMany(RoutineBlock::class);
+    }
 }
