@@ -45,7 +45,7 @@ watch(() => props.block, (newBlock) => {
     selectedType.value = newBlock?.type ?? '';
 });
 
-const isClickupType = computed(() => selectedType.value === 'clickup');
+const needsConnection = computed(() => selectedType.value === 'clickup' || selectedType.value === 'braindump');
 </script>
 
 <template>
@@ -107,7 +107,7 @@ const isClickupType = computed(() => selectedType.value === 'clickup');
                         <InputError :message="errors.timer_minutes" />
                     </div>
 
-                    <div v-if="isClickupType" class="grid gap-2">
+                    <div v-if="needsConnection" class="grid gap-2">
                         <Label>ClickUp Connection</Label>
                         <input
                             v-if="!connections.length"

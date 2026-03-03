@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { Deferred, Head, Link, usePage } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
 import DashboardBlockRenderer from '@/components/morning-hub/DashboardBlockRenderer.vue';
 import Heading from '@/components/Heading.vue';
-import PlaceholderBlock from '@/components/morning-hub/PlaceholderBlock.vue';
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { index as routineIndex } from '@/routes/morning-hub/routine';
@@ -25,12 +23,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 function getTasksData(blockId: number): BlockTasksData | undefined {
     return (page.props as Record<string, unknown>)[`tasks_${blockId}`] as BlockTasksData | undefined;
 }
-
-const clickupBlockIds = computed(() =>
-    props.blocks
-        .filter((b) => b.type === 'clickup' && b.clickup_connection_id)
-        .map((b) => b.id),
-);
 
 const detailOpen = ref(false);
 const detailConnectionId = ref<number | null>(null);
@@ -73,7 +65,11 @@ function openTaskDetail(connectionId: number, taskId: string) {
                             @select-task="openTaskDetail"
                         />
                     </Deferred>
-                    <PlaceholderBlock v-else :block="block" />
+                    <DashboardBlockRenderer
+                        v-else
+                        :block="block"
+                        @select-task="openTaskDetail"
+                    />
                 </template>
             </div>
         </div>

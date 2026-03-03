@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BrainDumpBlock from '@/components/morning-hub/BrainDumpBlock.vue';
 import ClickUpTaskBlock from '@/components/morning-hub/ClickUpTaskBlock.vue';
 import PlaceholderBlock from '@/components/morning-hub/PlaceholderBlock.vue';
 import type { BlockTasksData, RoutineBlock } from '@/types';
@@ -20,5 +21,6 @@ const emit = defineEmits<{
         :tasks-data="tasksData"
         @select-task="(connId, taskId) => emit('selectTask', connId, taskId)"
     />
+    <BrainDumpBlock v-else-if="block.type === 'braindump'" :block="block" />
     <PlaceholderBlock v-else :block="block" />
 </template>
