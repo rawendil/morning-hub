@@ -24,7 +24,10 @@ const listList = ref<ClickUpList[]>([]);
 
 const selectedWorkspace = ref<string>(props.connection.workspace_id ?? '');
 const selectedSpace = ref<string>(props.connection.default_space_id ?? '');
-const selectedFolder = ref<string>(props.connection.default_folder_id ?? '');
+const selectedFolder = ref<string>(
+    props.connection.default_folder_id
+        ?? (props.connection.default_list_id && props.connection.default_space_id ? '__none__' : ''),
+);
 const selectedList = ref<string>(props.connection.default_list_id ?? '');
 
 const loadingWorkspaces = ref(false);
@@ -90,7 +93,7 @@ async function loadLists(folderId: string | null, spaceId: string | null) {
     loadingLists.value = false;
 }
 
-watch(selectedWorkspace, (val) => {
+watch(selectedWorkspace, async (val) => {
     selectedSpace.value = '';
     selectedFolder.value = '';
     selectedList.value = '';
@@ -98,30 +101,30 @@ watch(selectedWorkspace, (val) => {
     folderList.value = [];
     listList.value = [];
     if (val) {
-        loadSpaces(val);
+        await loadSpaces(val);
         saveDefaults({ workspace_id: val, default_space_id: null, default_folder_id: null, default_list_id: null });
     }
 });
 
-watch(selectedSpace, (val) => {
+watch(selectedSpace, async (val) => {
     selectedFolder.value = '';
     selectedList.value = '';
     folderList.value = [];
     listList.value = [];
     if (val) {
-        loadFolders(val);
+        await loadFolders(val);
         saveDefaults({ default_space_id: val, default_folder_id: null, default_list_id: null });
     }
 });
 
-watch(selectedFolder, (val) => {
+watch(selectedFolder, async (val) => {
     selectedList.value = '';
     listList.value = [];
     if (val === '__none__') {
-        loadLists(null, selectedSpace.value);
+        await loadLists(null, selectedSpace.value);
         saveDefaults({ default_folder_id: null, default_list_id: null });
     } else if (val) {
-        loadLists(val, null);
+        await loadLists(val, null);
         saveDefaults({ default_folder_id: val, default_list_id: null });
     }
 });
