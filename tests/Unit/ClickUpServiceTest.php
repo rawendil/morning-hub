@@ -142,3 +142,78 @@ test('getTask includes subtasks query param', function () {
         return str_contains($request->url(), 'include_subtasks=true');
     });
 });
+
+test('updateTask sends PUT request with data', function () {
+    Http::fake(['https://api.clickup.com/api/v2/task/t1' => Http::response([
+        'id' => 't1',
+        'name' => 'Task One',
+        'status' => ['status' => 'in progress', 'color' => '#4194f6'],
+    ], 200)]);
+    $service = new ClickUpService('test-token');
+    $result = $service->updateTask('t1', ['status' => 'in progress']);
+    expect($result)->toMatchArray(['id' => 't1']);
+    Http::assertSent(function ($request) {
+        return $request->method() === 'PUT'
+            && str_contains($request->url(), '/task/t1')
+            && $request['status'] === 'in progress';
+    });
+});
+
+test('createTask sends POST to list endpoint', function () {
+    Http::fake(['https://api.clickup.com/api/v2/list/l1/task' => Http::response([
+        'id' => 't-new',
+        'name' => 'New task',
+    ], 200)]);
+    $service = new ClickUpService('test-token');
+    $result = $service->createTask('l1', ['name' => 'New task']);
+    expect($result)->toMatchArray(['id' => 't-new', 'name' => 'New task']);
+    Http::assertSent(function ($request) {
+        return $request->method() === 'POST'
+            && str_contains($request->url(), '/list/l1/task')
+            && $request['name'] === 'New task';
+    });
+});
+
+test('createComment sends POST with comment text', function () {
+    Http::fake(['https://api.clickup.com/api/v2/task/t1/comment' => Http::response([
+        'id' => 'c-new',
+        'comment_text' => 'Great work',
+    ], 200)]);
+    $service = new ClickUpService('test-token');
+    $result = $service->createComment('t1', 'Great work');
+    expect($result)->toMatchArray(['id' => 'c-new']);
+    Http::assertSent(function ($request) {
+        return $request->method() === 'POST'
+            && str_contains($request->url(), '/task/t1/comment')
+            && $request['comment_text'] === 'Great work'
+            && $request['notify_all'] === false;
+    });
+});
+
+test('getComments returns comments array', function () {
+    Http::fake(['https://api.clickup.com/api/v2/task/t1/comment*' => Http::response([
+        'comments' => [
+            ['id' => 'c1', 'comment_text' => 'Hello'],
+            ['id' => 'c2', 'comment_text' => 'World'],
+        ],
+    ], 200)]);
+    $service = new ClickUpService('test-token');
+    $comments = $service->getComments('t1');
+    expect($comments)->toHaveCount(2);
+    expect($comments[0])->toMatchArray(['id' => 'c1', 'comment_text' => 'Hello']);
+});
+
+test('getListStatuses returns statuses from list endpoint', function () {
+    Http::fake(['https://api.clickup.com/api/v2/list/l1' => Http::response([
+        'id' => 'l1',
+        'name' => 'My List',
+        'statuses' => [
+            ['status' => 'open', 'color' => '#d3d3d3', 'orderindex' => 0, 'type' => 'open'],
+            ['status' => 'in progress', 'color' => '#4194f6', 'orderindex' => 1, 'type' => 'custom'],
+        ],
+    ], 200)]);
+    $service = new ClickUpService('test-token');
+    $statuses = $service->getListStatuses('l1');
+    expect($statuses)->toHaveCount(2);
+    expect($statuses[0])->toMatchArray(['status' => 'open', 'color' => '#d3d3d3']);
+});

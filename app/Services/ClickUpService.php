@@ -70,6 +70,55 @@ class ClickUpService
             ->json();
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function updateTask(string $taskId, array $data): array
+    {
+        return $this->client()
+            ->put(self::BASE_URL."/task/{$taskId}", $data)
+            ->json();
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function createTask(string $listId, array $data): array
+    {
+        return $this->client()
+            ->post(self::BASE_URL."/list/{$listId}/task", $data)
+            ->json();
+    }
+
+    /** @return array<string, mixed> */
+    public function createComment(string $taskId, string $commentText): array
+    {
+        return $this->client()
+            ->post(self::BASE_URL."/task/{$taskId}/comment", [
+                'comment_text' => $commentText,
+                'notify_all' => false,
+            ])
+            ->json();
+    }
+
+    /** @return array<int, array<string, mixed>> */
+    public function getComments(string $taskId): array
+    {
+        return $this->client()
+            ->get(self::BASE_URL."/task/{$taskId}/comment")
+            ->json('comments', []);
+    }
+
+    /** @return array<int, array<string, mixed>> */
+    public function getListStatuses(string $listId): array
+    {
+        return $this->client()
+            ->get(self::BASE_URL."/list/{$listId}")
+            ->json('statuses', []);
+    }
+
     private function client(): PendingRequest
     {
         return Http::withHeaders([
