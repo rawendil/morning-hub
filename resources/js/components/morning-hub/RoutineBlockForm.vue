@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
+import { Plus, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -34,15 +35,18 @@ const isOpen = defineModel<boolean>('open', { default: false });
 const blockTypes: { value: BlockType; label: string }[] = [
     { value: 'clickup', label: 'ClickUp' },
     { value: 'braindump', label: 'Brain Dump' },
+    { value: 'habits', label: 'Daily Habits' },
     { value: 'notes', label: 'Notes' },
     { value: 'plan', label: 'Plan' },
     { value: 'custom', label: 'Custom' },
 ];
 
 const selectedType = ref<string>(props.block?.type ?? '');
+const habits = ref<string[]>((props.block?.config?.habits as string[]) ?? ['']);
 
 watch(() => props.block, (newBlock) => {
     selectedType.value = newBlock?.type ?? '';
+    habits.value = (newBlock?.config?.habits as string[]) ?? [''];
 });
 
 const needsConnection = computed(() => selectedType.value === 'clickup' || selectedType.value === 'braindump');
@@ -129,6 +133,37 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                             No ClickUp connections available. Add one first.
                         </p>
                         <InputError :message="errors.clickup_connection_id" />
+                    </div>
+
+                    <div v-if="selectedType === 'habits'" class="grid gap-2">
+                        <Label>Daily Habits</Label>
+                        <div v-for="(_, index) in habits" :key="index" class="flex items-center gap-2">
+                            <input type="hidden" :name="`config[habits][${index}]`" :value="habits[index]" />
+                            <Input
+                                v-model="habits[index]"
+                                placeholder="e.g. Watch Laracasts video"
+                            />
+                            <Button
+                                v-if="habits.length > 1"
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                class="h-8 w-8 shrink-0"
+                                @click="habits.splice(index, 1)"
+                            >
+                                <X class="h-4 w-4" />
+                            </Button>
+                        </div>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            @click="habits.push('')"
+                        >
+                            <Plus class="h-4 w-4" />
+                            Add Habit
+                        </Button>
+                        <InputError :message="errors['config.habits']" />
                     </div>
                 </div>
 
