@@ -62,9 +62,42 @@ export type ClickUpTaskDetail = ClickUpTask & {
     description: string;
     subtasks?: ClickUpTask[];
     tags: { name: string; tag_bg: string }[];
+    list: { id: string; name: string };
 };
 
 export type BlockTasksData = {
     tasks: ClickUpTask[];
     error: string | null;
+};
+
+export type ClickUpStatus = {
+    status: string;
+    color: string;
+    orderindex: number;
+    type: string;
+};
+
+export type ClickUpComment = {
+    id: string;
+    comment_text: string;
+    user: {
+        id: number;
+        username: string;
+        initials: string;
+        profilePicture: string | null;
+    };
+    date: string;
+};
+
+export type UpdateTaskPayload = {
+    status?: string;
+    priority?: number | null;
+    due_date?: number | null;
+    name?: string;
+};
+
+export type CreateTaskPayload = {
+    list_id: string;
+    name: string;
+    description?: string;
 };
