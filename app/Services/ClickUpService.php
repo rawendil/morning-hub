@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Facades\Http;
 
 class ClickUpService
@@ -44,6 +45,72 @@ class ClickUpService
     public function getFolderlessLists(string $spaceId): array
     {
         return $this->client()->get(self::BASE_URL."/space/{$spaceId}/list")->json('lists', []);
+    }
+
+    /** @return array{folders: array<int, array{id: string, name: string, lists: array<int, array<string, mixed>>}>, folderless: array<int, array<string, mixed>>} */
+    public function getAllListsInSpace(string $spaceId): array
+    {
+        $folders = $this->getFolders($spaceId);
+        $folderlessLists = $this->getFolderlessLists($spaceId);
+
+        $groupedFolders = array_map(fn (array $folder) => [
+            'id' => $folder['id'],
+            'name' => $folder['name'],
+            'lists' => $folder['lists'] ?? [],
+        ], $folders);
+
+        return [
+            'folders' => $groupedFolders,
+            'folderless' => $folderlessLists,
+        ];
+    }
+
+    /**
+     * @param  array<int, string>  $listIds
+     * @param  array<string, mixed>  $filters
+     * @return array<int, array<string, mixed>>
+     */
+    public function getTasksFromLists(array $listIds, array $filters = []): array
+    {
+        if (empty($listIds)) {
+            return [];
+        }
+
+        if (count($listIds) === 1) {
+            return $this->getTasks($listIds[0], $filters);
+        }
+
+        $query = array_merge([
+            'include_closed' => 'false',
+            'subtasks' => 'true',
+        ], $filters);
+
+        $responses = Http::pool(fn (Pool $pool) => array_map(
+            fn (string $listId) => $pool
+                ->as($listId)
+                ->withHeaders([
+                    'Authorization' => $this->apiToken,
+                    'Content-Type' => 'application/json',
+                ])
+                ->get(self::BASE_URL."/list/{$listId}/task", $query),
+            $listIds
+        ));
+
+        $allTasks = [];
+        foreach ($listIds as $listId) {
+            if (isset($responses[$listId]) && $responses[$listId]->ok()) {
+                $allTasks = array_merge($allTasks, $responses[$listId]->json('tasks', []));
+            }
+        }
+
+        usort($allTasks, function ($a, $b) {
+            $aDue = $a['due_date'] ?? PHP_INT_MAX;
+            $bDue = $b['due_date'] ?? PHP_INT_MAX;
+
+            return $aDue <=> $bDue;
+        });
+
+        return $allTasks;
     }
 
     /**
