@@ -29,6 +29,8 @@ class StoreRoutineBlockRequest extends FormRequest
             'timer_minutes' => ['nullable', 'integer', 'min:1', 'max:120'],
             'clickup_connection_id' => ['nullable', 'integer', 'exists:clickup_connections,id'],
             'config' => ['nullable', 'array'],
+            'config.habits' => ['required_if:type,habits', 'array', 'min:1'],
+            'config.habits.*' => ['required', 'string', 'max:255'],
         ];
     }
 
