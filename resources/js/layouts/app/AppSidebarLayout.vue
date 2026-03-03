@@ -20,6 +20,16 @@ withDefaults(defineProps<Props>(), {
         <AppContent variant="sidebar" class="overflow-x-hidden">
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
             <slot />
+
+            <!-- Forest footer -->
+            <footer class="relative mt-auto h-48 sm:h-64 lg:h-80">
+                <img
+                    src="/images/forest.jpg"
+                    alt=""
+                    loading="lazy"
+                    class="absolute inset-0 h-full w-full object-cover mask-[radial-gradient(ellipse_at_bottom_right,black_20%,transparent_70%)]"
+                />
+            </footer>
         </AppContent>
     </AppShell>
 </template>
