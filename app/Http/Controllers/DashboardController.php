@@ -37,6 +37,21 @@ class DashboardController extends Controller
             );
         }
 
+        $today = now()->toDateString();
+
+        foreach ($blocks as $block) {
+            if ($block->type !== BlockType::Habits) {
+                continue;
+            }
+
+            $sessionKey = "habits_block_{$block->id}";
+            $state = $request->session()->get($sessionKey, []);
+
+            $props["habits_{$block->id}"] = ($state['date'] ?? null) === $today
+                ? ($state['completed'] ?? [])
+                : [];
+        }
+
         return Inertia::render('Dashboard', $props);
     }
 
