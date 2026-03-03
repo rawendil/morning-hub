@@ -217,3 +217,99 @@ test('getListStatuses returns statuses from list endpoint', function () {
     expect($statuses)->toHaveCount(2);
     expect($statuses[0])->toMatchArray(['status' => 'open', 'color' => '#d3d3d3']);
 });
+
+test('getAllListsInSpace returns folders with lists and folderless lists', function () {
+    Http::fake([
+        'https://api.clickup.com/api/v2/space/s1/folder*' => Http::response([
+            'folders' => [
+                [
+                    'id' => 'f1',
+                    'name' => 'Sprint',
+                    'lists' => [
+                        ['id' => 'l1', 'name' => 'Backlog'],
+                        ['id' => 'l2', 'name' => 'In Progress'],
+                    ],
+                ],
+            ],
+        ], 200),
+        'https://api.clickup.com/api/v2/space/s1/list*' => Http::response([
+            'lists' => [
+                ['id' => 'l3', 'name' => 'Folderless Tasks'],
+            ],
+        ], 200),
+    ]);
+
+    $service = new ClickUpService('test-token');
+    $result = $service->getAllListsInSpace('s1');
+
+    expect($result)->toHaveKeys(['folders', 'folderless']);
+    expect($result['folders'])->toHaveCount(1);
+    expect($result['folders'][0])->toMatchArray(['id' => 'f1', 'name' => 'Sprint']);
+    expect($result['folders'][0]['lists'])->toHaveCount(2);
+    expect($result['folderless'])->toHaveCount(1);
+    expect($result['folderless'][0])->toMatchArray(['id' => 'l3', 'name' => 'Folderless Tasks']);
+});
+
+test('getTasksFromLists fetches from multiple lists in parallel', function () {
+    Http::fake([
+        'https://api.clickup.com/api/v2/list/l1/task*' => Http::response([
+            'tasks' => [
+                ['id' => 't1', 'name' => 'Task A', 'due_date' => '1709510400000'],
+            ],
+        ], 200),
+        'https://api.clickup.com/api/v2/list/l2/task*' => Http::response([
+            'tasks' => [
+                ['id' => 't2', 'name' => 'Task B', 'due_date' => '1709424000000'],
+            ],
+        ], 200),
+    ]);
+
+    $service = new ClickUpService('test-token');
+    $tasks = $service->getTasksFromLists(['l1', 'l2']);
+
+    expect($tasks)->toHaveCount(2);
+    // Sorted by due_date ascending — t2 (earlier) before t1
+    expect($tasks[0]['id'])->toBe('t2');
+    expect($tasks[1]['id'])->toBe('t1');
+});
+
+test('getTasksFromLists with single list delegates to getTasks', function () {
+    Http::fake([
+        'https://api.clickup.com/api/v2/list/l1/task*' => Http::response([
+            'tasks' => [
+                ['id' => 't1', 'name' => 'Task A'],
+            ],
+        ], 200),
+    ]);
+
+    $service = new ClickUpService('test-token');
+    $tasks = $service->getTasksFromLists(['l1']);
+
+    expect($tasks)->toHaveCount(1);
+    expect($tasks[0]['id'])->toBe('t1');
+});
+
+test('getTasksFromLists with empty array returns empty', function () {
+    Http::fake();
+    $service = new ClickUpService('test-token');
+    $tasks = $service->getTasksFromLists([]);
+    expect($tasks)->toBe([]);
+    Http::assertNothingSent();
+});
+
+test('getTasksFromLists handles partial failures', function () {
+    Http::fake([
+        'https://api.clickup.com/api/v2/list/l1/task*' => Http::response([
+            'tasks' => [
+                ['id' => 't1', 'name' => 'Task A', 'due_date' => null],
+            ],
+        ], 200),
+        'https://api.clickup.com/api/v2/list/l2/task*' => Http::response(['err' => 'Not found'], 500),
+    ]);
+
+    $service = new ClickUpService('test-token');
+    $tasks = $service->getTasksFromLists(['l1', 'l2']);
+
+    expect($tasks)->toHaveCount(1);
+    expect($tasks[0]['id'])->toBe('t1');
+});
