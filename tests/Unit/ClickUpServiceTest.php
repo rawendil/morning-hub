@@ -297,6 +297,15 @@ test('getTasksFromLists with empty array returns empty', function () {
     Http::assertNothingSent();
 });
 
+test('getAuthenticatedUser returns user data', function () {
+    Http::fake(['https://api.clickup.com/api/v2/user' => Http::response([
+        'user' => ['id' => 123, 'username' => 'Test User', 'email' => 'test@example.com'],
+    ], 200)]);
+    $service = new ClickUpService('test-token');
+    $user = $service->getAuthenticatedUser();
+    expect($user)->toMatchArray(['id' => 123, 'username' => 'Test User', 'email' => 'test@example.com']);
+});
+
 test('getTasksFromLists handles partial failures', function () {
     Http::fake([
         'https://api.clickup.com/api/v2/list/l1/task*' => Http::response([

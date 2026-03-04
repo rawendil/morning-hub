@@ -190,6 +190,38 @@ test('dashboard has deferred props for clickup blocks with multiple lists', func
         );
 });
 
+test('dashboard passes assignee filters from connection to clickup api', function () {
+    Http::fake(['https://api.clickup.com/api/v2/*' => Http::response(['tasks' => [
+        ['id' => 't1', 'name' => 'My Task'],
+    ]], 200)]);
+
+    $user = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($user)->create([
+        'default_list_id' => 'list-1',
+        'default_filters' => ['assignees' => [123]],
+    ]);
+    $block = RoutineBlock::factory()->for($user)->create([
+        'type' => BlockType::Clickup,
+        'clickup_connection_id' => $connection->id,
+        'sort_order' => 0,
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('dashboard'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->loadDeferredProps(fn ($reload) => $reload
+                ->has("tasks_{$block->id}")
+                ->has("tasks_{$block->id}.tasks", 1)
+            )
+        );
+
+    Http::assertSent(function ($request) {
+        return str_contains($request->url(), '/list/list-1/task')
+            && str_contains($request->url(), 'assignees');
+    });
+});
+
 test('clickup block without default_list_id has no deferred prop', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create([

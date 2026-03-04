@@ -384,3 +384,30 @@ test('user cannot fetch all lists from another users connection', function () {
         ->getJson(route('morning-hub.clickup.allLists', ['connection' => $connection, 'space_id' => 's1']))
         ->assertForbidden();
 });
+
+// --- Phase: Assignee filter ---
+
+test('user can fetch authenticated clickup user', function () {
+    Http::fake(['https://api.clickup.com/api/v2/user' => Http::response([
+        'user' => ['id' => 456, 'username' => 'Me', 'email' => 'me@example.com'],
+    ], 200)]);
+
+    $user = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($user)->create();
+
+    $this->actingAs($user)
+        ->getJson(route('morning-hub.clickup.me', $connection))
+        ->assertOk()
+        ->assertJsonPath('data.id', 456)
+        ->assertJsonPath('data.username', 'Me');
+});
+
+test('user cannot fetch clickup user from another users connection', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($otherUser)->create();
+
+    $this->actingAs($user)
+        ->getJson(route('morning-hub.clickup.me', $connection))
+        ->assertForbidden();
+});
