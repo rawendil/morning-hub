@@ -186,6 +186,12 @@ class ClickUpService
             ->json('statuses', []);
     }
 
+    /** @return array{id: int, username: string, email: string} */
+    public function getAuthenticatedUser(): array
+    {
+        return $this->client()->get(self::BASE_URL.'/user')->json('user', []);
+    }
+
     private function client(): PendingRequest
     {
         return Http::withHeaders([

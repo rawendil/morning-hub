@@ -87,11 +87,12 @@ class DashboardController extends Controller
             $service = new ClickUpService($block->clickUpConnection->api_token);
 
             $listIds = $block->clickUpConnection->default_list_ids;
+            $filters = $block->clickUpConnection->default_filters ?? [];
 
             if (! empty($listIds)) {
-                $tasks = $service->getTasksFromLists($listIds);
+                $tasks = $service->getTasksFromLists($listIds, $filters);
             } else {
-                $tasks = $service->getTasks($block->clickUpConnection->default_list_id);
+                $tasks = $service->getTasks($block->clickUpConnection->default_list_id, $filters);
             }
 
             return ['tasks' => $tasks, 'error' => null];
