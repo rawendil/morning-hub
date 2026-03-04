@@ -29,6 +29,9 @@ class UpdateClickUpConnectionRequest extends FormRequest
             'default_list_id' => ['nullable', 'string'],
             'default_list_ids' => ['nullable', 'array'],
             'default_list_ids.*' => ['string'],
+            'default_filters' => ['nullable', 'array'],
+            'default_filters.assignees' => ['nullable', 'array'],
+            'default_filters.assignees.*' => ['integer'],
         ];
     }
 }
