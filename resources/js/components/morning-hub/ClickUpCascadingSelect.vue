@@ -3,6 +3,7 @@ import { router } from '@inertiajs/vue3';
 import { ref, watch, onMounted } from 'vue';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import {
     Select,
     SelectContent,
@@ -11,7 +12,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { update, workspaces, spaces, allLists } from '@/routes/morning-hub/clickup';
+import { update, workspaces, spaces, allLists, me } from '@/routes/morning-hub/clickup';
 import type {
     ClickUpConnection,
     ClickUpWorkspace,
@@ -30,6 +31,10 @@ const selectedListIds = ref<string[]>(props.connection.default_list_ids ?? []);
 
 const selectedWorkspace = ref<string>(props.connection.workspace_id ?? '');
 const selectedSpace = ref<string>(props.connection.default_space_id ?? '');
+
+const filters = props.connection.default_filters;
+const onlyMyTasks = ref(Array.isArray(filters?.assignees) && (filters.assignees as number[]).length > 0);
+const loadingMe = ref(false);
 
 const loadingWorkspaces = ref(false);
 const loadingSpaces = ref(false);
@@ -69,7 +74,7 @@ async function fetchAllLists(spaceId: string): Promise<ClickUpAllListsResponse |
     return json.data ?? null;
 }
 
-function saveDefaults(data: Partial<Record<string, string | string[] | null>>) {
+function saveDefaults(data: Record<string, unknown>) {
     router.put(update.url(props.connection), {
         name: props.connection.name,
         workspace_id: selectedWorkspace.value || null,
@@ -104,6 +109,34 @@ function toggleList(listId: string) {
         selectedListIds.value = [...selectedListIds.value, listId];
     }
     saveDefaults({ default_list_ids: selectedListIds.value.length > 0 ? selectedListIds.value : null });
+}
+
+async function toggleOnlyMyTasks(value: boolean) {
+    onlyMyTasks.value = value;
+    if (value) {
+        loadingMe.value = true;
+        try {
+            const response = await fetch(me.url(props.connection), {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-XSRF-TOKEN': getCsrfToken(),
+                },
+                credentials: 'same-origin',
+            });
+            if (response.ok) {
+                const json = await response.json();
+                const userId = json.data?.id;
+                if (userId) {
+                    saveDefaults({ default_filters: { assignees: [userId] } });
+                }
+            }
+        } finally {
+            loadingMe.value = false;
+        }
+    } else {
+        saveDefaults({ default_filters: null });
+    }
 }
 
 watch(selectedWorkspace, async (val) => {
@@ -167,6 +200,11 @@ onMounted(async () => {
                     </SelectItem>
                 </SelectContent>
             </Select>
+        </div>
+
+        <div v-if="selectedWorkspace" class="flex items-center justify-between">
+            <Label>Tylko moje zadania</Label>
+            <Switch :model-value="onlyMyTasks" :disabled="loadingMe" @update:model-value="toggleOnlyMyTasks" />
         </div>
 
         <div v-if="selectedSpace" class="grid gap-2">
