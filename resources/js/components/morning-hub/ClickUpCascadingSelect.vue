@@ -97,11 +97,11 @@ async function loadAllLists(spaceId: string) {
     loadingLists.value = false;
 }
 
-function toggleList(listId: string, checked: boolean) {
-    if (checked) {
-        selectedListIds.value = [...selectedListIds.value, listId];
-    } else {
+function toggleList(listId: string) {
+    if (selectedListIds.value.includes(listId)) {
         selectedListIds.value = selectedListIds.value.filter(id => id !== listId);
+    } else {
+        selectedListIds.value = [...selectedListIds.value, listId];
     }
     saveDefaults({ default_list_ids: selectedListIds.value.length > 0 ? selectedListIds.value : null });
 }
@@ -176,34 +176,34 @@ onMounted(async () => {
                 <div v-for="folder in allListsData.folders" :key="folder.id">
                     <p class="text-sm font-medium text-muted-foreground mb-2">{{ folder.name }}</p>
                     <div class="space-y-2 pl-2">
-                        <label
+                        <div
                             v-for="list in folder.lists"
                             :key="list.id"
                             class="flex items-center gap-2 cursor-pointer"
+                            @click="toggleList(list.id)"
                         >
                             <Checkbox
-                                :checked="selectedListIds.includes(list.id)"
-                                @update:checked="(val: boolean) => toggleList(list.id, val)"
+                                :model-value="selectedListIds.includes(list.id)"
                             />
                             <span class="text-sm">{{ list.name }}</span>
-                        </label>
+                        </div>
                     </div>
                 </div>
 
                 <div v-if="allListsData.folderless.length > 0">
                     <p class="text-sm font-medium text-muted-foreground mb-2">Bez folderu</p>
                     <div class="space-y-2 pl-2">
-                        <label
+                        <div
                             v-for="list in allListsData.folderless"
                             :key="list.id"
                             class="flex items-center gap-2 cursor-pointer"
+                            @click="toggleList(list.id)"
                         >
                             <Checkbox
-                                :checked="selectedListIds.includes(list.id)"
-                                @update:checked="(val: boolean) => toggleList(list.id, val)"
+                                :model-value="selectedListIds.includes(list.id)"
                             />
                             <span class="text-sm">{{ list.name }}</span>
-                        </label>
+                        </div>
                     </div>
                 </div>
 
