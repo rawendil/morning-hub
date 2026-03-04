@@ -61,6 +61,7 @@ const {
 } = useRoutineTimer(props.blocks);
 
 const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
+const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.timer_minutes ?? 0), 0));
 </script>
 
 <template>
@@ -79,13 +80,15 @@ const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
             </div>
 
             <template v-else>
-                <RoutineProgress
-                    v-if="hasTimers"
-                    :blocks="blocks"
-                    :block-states="blockStates"
-                    :active-block-id="activeBlockId"
-                    @select-block="(id) => start(id)"
-                />
+                <div v-if="hasTimers" class="flex items-center justify-between">
+                    <RoutineProgress
+                        :blocks="blocks"
+                        :block-states="blockStates"
+                        :active-block-id="activeBlockId"
+                        @select-block="(id) => start(id)"
+                    />
+                    <span class="text-sm text-muted-foreground">{{ totalMinutes }} min</span>
+                </div>
 
                 <div class="grid gap-4">
                     <template v-for="block in blocks" :key="block.id">

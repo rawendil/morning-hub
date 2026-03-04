@@ -8,7 +8,7 @@ import type { BlockFeedData, BlockTasksData, RoutineBlock } from '@/types';
 
 withDefaults(defineProps<{
     block: RoutineBlock;
-    tasksData: BlockTasksData | undefined;
+    tasksData?: BlockTasksData;
     feedData?: BlockFeedData;
     completedIndices?: number[];
     isActiveBlock: boolean;

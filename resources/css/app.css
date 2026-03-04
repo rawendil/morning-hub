@@ -70,6 +70,7 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+
     *,
     ::after,
     ::before,
@@ -80,6 +81,7 @@
 }
 
 @layer utilities {
+
     body,
     html {
         --font-sans:
@@ -96,7 +98,7 @@
     --card-foreground: hsl(225 27.78% 14.12%);
     --popover: hsl(0 0% 100%);
     --popover-foreground: hsl(225 27.78% 14.12%);
-    --primary: hsl(138 8.26% 52.55%);
+    --primary: hsl(137, 12%, 49%);
     --primary-foreground: hsl(0 0% 100%);
     --secondary: hsl(77.14 19.63% 79.02%);
     --secondary-foreground: hsl(225 27.78% 14.12%);
@@ -166,6 +168,7 @@
     * {
         @apply border-border outline-ring/50;
     }
+
     body {
         @apply bg-background text-foreground;
     }
