@@ -6,7 +6,6 @@ use App\Enums\BlockType;
 use App\Models\RoutineBlock;
 use App\Services\ClickUpService;
 use App\Services\FeedService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -87,15 +86,12 @@ class DashboardController extends Controller
         try {
             $service = new ClickUpService($block->clickUpConnection->api_token);
 
-            $endOfToday = Carbon::now()->endOfDay()->getTimestampMs();
-            $filters = ['due_date_lt' => (string) $endOfToday];
-
             $listIds = $block->clickUpConnection->default_list_ids;
 
             if (! empty($listIds)) {
-                $tasks = $service->getTasksFromLists($listIds, $filters);
+                $tasks = $service->getTasksFromLists($listIds);
             } else {
-                $tasks = $service->getTasks($block->clickUpConnection->default_list_id, $filters);
+                $tasks = $service->getTasks($block->clickUpConnection->default_list_id);
             }
 
             return ['tasks' => $tasks, 'error' => null];

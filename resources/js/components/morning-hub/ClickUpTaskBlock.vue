@@ -117,7 +117,16 @@ async function handleCreateTask() {
 </script>
 
 <template>
-    <ClickUpTaskBlockSkeleton v-if="!tasksData" />
+    <Card v-if="!block.clickup_connection_id" :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
+            <CardTitle class="text-base">{{ block.name }}</CardTitle>
+        </CardHeader>
+        <CardContent class="pt-0">
+            <p class="text-sm text-muted-foreground">Skonfiguruj połączenie ClickUp, aby zobaczyć zadania.</p>
+        </CardContent>
+    </Card>
+
+    <ClickUpTaskBlockSkeleton v-else-if="!tasksData" />
 
     <Card v-else :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
         <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
