@@ -2,6 +2,8 @@
 
 Personal morning routine dashboard that helps you organize tasks, track habits, and stay focused before starting your day. Integrates with ClickUp and RSS feeds to give you a single view of everything that matters.
 
+![Welcome](docs/screenshots/welcome.png)
+
 ![Dashboard](docs/screenshots/dashboard.png)
 
 ## Features
