@@ -171,7 +171,6 @@ const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.tim
                             v-else
                             :block="block"
                             :feed-data="getFeedData(block.id)"
-                            :completed-indices="getHabitsData(block.id)"
                             :is-active-block="activeBlockId === block.id"
                             :is-timer-running="activeBlockId === block.id && isRunning"
                             :is-timer-expired="activeBlockId === block.id && isExpired"
