@@ -188,6 +188,137 @@ test('feed block source requires name and valid url', function () {
         ->assertSessionHasErrors(['config.sources.0.name', 'config.sources.0.url']);
 });
 
+test('user can create todays_tasks block with valid connection ids', function () {
+    $user = User::factory()->create();
+    $conn1 = ClickUpConnection::factory()->for($user)->create();
+    $conn2 = ClickUpConnection::factory()->for($user)->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'todays_tasks',
+            'name' => 'Moje zadania na dziś',
+            'config' => [
+                'connection_ids' => [$conn1->id, $conn2->id],
+            ],
+        ])
+        ->assertRedirect(route('morning-hub.routine.index'));
+
+    $block = $user->routineBlocks()->where('name', 'Moje zadania na dziś')->first();
+    expect($block)->not->toBeNull();
+    expect($block->config['connection_ids'])->toBe([$conn1->id, $conn2->id]);
+});
+
+test('todays_tasks block requires connection_ids', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'todays_tasks',
+            'name' => 'No Connections',
+            'config' => [],
+        ])
+        ->assertSessionHasErrors('config.connection_ids');
+});
+
+test('todays_tasks block rejects other users connections', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $otherConn = ClickUpConnection::factory()->for($otherUser)->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'todays_tasks',
+            'name' => 'Stolen Connections',
+            'config' => [
+                'connection_ids' => [$otherConn->id],
+            ],
+        ])
+        ->assertSessionHasErrors('config.connection_ids');
+});
+
+test('user can create block with custom icon', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'notes',
+            'name' => 'My Notes',
+            'config' => [
+                'icon' => 'Star',
+            ],
+        ])
+        ->assertRedirect(route('morning-hub.routine.index'));
+
+    $block = $user->routineBlocks()->where('name', 'My Notes')->first();
+    expect($block)->not->toBeNull();
+    expect($block->config['icon'])->toBe('Star');
+});
+
+test('user can update block icon', function () {
+    $user = User::factory()->create();
+    $block = RoutineBlock::factory()->for($user)->create([
+        'type' => 'braindump',
+        'config' => ['icon' => 'Brain'],
+    ]);
+
+    $this->actingAs($user)
+        ->put(route('morning-hub.routine.update', $block), [
+            'name' => $block->name,
+            'config' => ['icon' => 'Rocket'],
+        ])
+        ->assertRedirect(route('morning-hub.routine.index'));
+
+    expect($block->fresh()->config['icon'])->toBe('Rocket');
+});
+
+test('block icon validation rejects too long values', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'custom',
+            'name' => 'Test Block',
+            'config' => [
+                'icon' => str_repeat('a', 51),
+            ],
+        ])
+        ->assertSessionHasErrors('config.icon');
+});
+
+test('user can create custom block with placeholder text and url', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'custom',
+            'name' => 'My Domain',
+            'config' => [
+                'placeholder_text' => 'Pracuj nad jezycjadlo.pl',
+                'placeholder_url' => 'https://jezycjadlo.pl',
+            ],
+        ])
+        ->assertRedirect(route('morning-hub.routine.index'));
+
+    $block = $user->routineBlocks()->where('name', 'My Domain')->first();
+    expect($block)->not->toBeNull();
+    expect($block->config['placeholder_text'])->toBe('Pracuj nad jezycjadlo.pl');
+    expect($block->config['placeholder_url'])->toBe('https://jezycjadlo.pl');
+});
+
+test('placeholder url must be a valid url', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'custom',
+            'name' => 'Bad Link',
+            'config' => [
+                'placeholder_url' => 'not-a-url',
+            ],
+        ])
+        ->assertSessionHasErrors('config.placeholder_url');
+});
+
 test('routine page includes user connections for form', function () {
     $user = User::factory()->create();
     ClickUpConnection::factory()->for($user)->create(['name' => 'Work']);

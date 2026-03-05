@@ -2,8 +2,10 @@
 import { Form } from '@inertiajs/vue3';
 import { Plus, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
+import BlockIconPicker from '@/components/morning-hub/BlockIconPicker.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
+import { getDefaultIconName } from '@/lib/block-icons';
 import {
     Dialog,
     DialogClose,
@@ -39,24 +41,51 @@ const blockTypes: { value: BlockType; label: string }[] = [
     { value: 'feed', label: 'Kanał RSS' },
     { value: 'notes', label: 'Notatki' },
     { value: 'plan', label: 'Plan' },
+    { value: 'todays_tasks', label: 'Zadania na dziś' },
     { value: 'custom', label: 'Własny' },
 ];
 
 const selectedType = ref<string>(props.block?.type ?? '');
+const selectedIcon = ref<string>(
+    (props.block?.config?.icon as string) || (props.block?.type ? getDefaultIconName(props.block.type) : ''),
+);
 const habits = ref<string[]>((props.block?.config?.habits as string[]) ?? ['']);
 const feedSources = ref<{ name: string; url: string }[]>(
     (props.block?.config?.sources as { name: string; url: string }[]) ?? [{ name: '', url: '' }],
 );
 const feedDays = ref<number>((props.block?.config?.days as number) ?? 5);
+const selectedConnectionIds = ref<number[]>((props.block?.config?.connection_ids as number[]) ?? []);
+const placeholderText = ref<string>((props.block?.config?.placeholder_text as string) ?? '');
+const placeholderUrl = ref<string>((props.block?.config?.placeholder_url as string) ?? '');
 
 watch(() => props.block, (newBlock) => {
     selectedType.value = newBlock?.type ?? '';
+    selectedIcon.value = (newBlock?.config?.icon as string) || (newBlock?.type ? getDefaultIconName(newBlock.type) : '');
     habits.value = (newBlock?.config?.habits as string[]) ?? [''];
     feedSources.value = (newBlock?.config?.sources as { name: string; url: string }[]) ?? [{ name: '', url: '' }];
     feedDays.value = (newBlock?.config?.days as number) ?? 5;
+    selectedConnectionIds.value = (newBlock?.config?.connection_ids as number[]) ?? [];
+    placeholderText.value = (newBlock?.config?.placeholder_text as string) ?? '';
+    placeholderUrl.value = (newBlock?.config?.placeholder_url as string) ?? '';
 });
 
+watch(selectedType, (newType) => {
+    if (newType) {
+        selectedIcon.value = getDefaultIconName(newType as BlockType);
+    }
+});
+
+function toggleConnectionId(id: number) {
+    const idx = selectedConnectionIds.value.indexOf(id);
+    if (idx >= 0) {
+        selectedConnectionIds.value.splice(idx, 1);
+    } else {
+        selectedConnectionIds.value.push(id);
+    }
+}
+
 const needsConnection = computed(() => selectedType.value === 'clickup' || selectedType.value === 'braindump');
+const usesPlaceholder = computed(() => ['notes', 'plan', 'custom'].includes(selectedType.value));
 </script>
 
 <template>
@@ -102,6 +131,13 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                             placeholder="np. Przegląd zadań, Szybkie notatki"
                         />
                         <InputError :message="errors.name" />
+                    </div>
+
+                    <div v-if="selectedType" class="grid gap-2">
+                        <Label>Ikona</Label>
+                        <input type="hidden" name="config[icon]" :value="selectedIcon" />
+                        <BlockIconPicker v-model="selectedIcon" />
+                        <InputError :message="errors['config.icon']" />
                     </div>
 
                     <div class="grid gap-2">
@@ -225,6 +261,57 @@ const needsConnection = computed(() => selectedType.value === 'clickup' || selec
                             </Button>
                             <InputError :message="errors['config.sources']" />
                         </div>
+                    </div>
+
+                    <div v-if="usesPlaceholder" class="grid gap-4">
+                        <div class="grid gap-2">
+                            <Label for="placeholder-text">Treść bloku</Label>
+                            <input type="hidden" name="config[placeholder_text]" :value="placeholderText" />
+                            <Input
+                                id="placeholder-text"
+                                v-model="placeholderText"
+                                placeholder="np. Pracuj nad ..."
+                            />
+                            <InputError :message="errors['config.placeholder_text']" />
+                        </div>
+                        <div class="grid gap-2">
+                            <Label for="placeholder-url">Link (opcjonalnie)</Label>
+                            <input type="hidden" name="config[placeholder_url]" :value="placeholderUrl" />
+                            <Input
+                                id="placeholder-url"
+                                v-model="placeholderUrl"
+                                type="url"
+                                placeholder="https://example.com"
+                            />
+                            <InputError :message="errors['config.placeholder_url']" />
+                        </div>
+                    </div>
+
+                    <div v-if="selectedType === 'todays_tasks'" class="grid gap-2">
+                        <Label>Połączenia ClickUp</Label>
+                        <p v-if="!connections.length" class="text-sm text-muted-foreground">
+                            Brak dostępnych połączeń ClickUp. Najpierw dodaj połączenie.
+                        </p>
+                        <div v-else class="space-y-2">
+                            <template v-for="id in selectedConnectionIds" :key="`hidden-${id}`">
+                                <input type="hidden" name="config[connection_ids][]" :value="id" />
+                            </template>
+                            <label
+                                v-for="conn in connections"
+                                :key="conn.id"
+                                class="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors hover:bg-accent"
+                                :class="{ 'border-primary bg-accent': selectedConnectionIds.includes(conn.id) }"
+                            >
+                                <input
+                                    type="checkbox"
+                                    class="h-4 w-4 rounded border-input"
+                                    :checked="selectedConnectionIds.includes(conn.id)"
+                                    @change="toggleConnectionId(conn.id)"
+                                />
+                                {{ conn.name }}
+                            </label>
+                        </div>
+                        <InputError :message="errors['config.connection_ids']" />
                     </div>
                 </div>
 
