@@ -19,16 +19,16 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
             <!-- Zadania na dziś -->
             <section class="space-y-3">
-                <h3 class="text-lg font-semibold tracking-tight">Blok "Zadania na dziś"</h3>
+                <h3 class="text-lg font-semibold tracking-tight">Zadania na dziś</h3>
                 <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
                     <p>
-                        Ten blok pobiera z ClickUp zadania przypisane do Ciebie z terminem na dziś.
-                        Żeby działał skutecznie:
+                        Strona "Zadania na dziś" pobiera z ClickUp zadania przypisane do Ciebie z terminem na dziś.
+                        Żeby działała skutecznie:
                     </p>
                     <ul class="list-disc space-y-1 pl-5">
-                        <li>Ustaw <strong>due date</strong> na zadaniach — bez daty zadanie nie pojawi się w bloku.</li>
+                        <li>Ustaw <strong>due date</strong> na zadaniach — bez daty zadanie nie pojawi się na liście.</li>
                         <li>Upewnij się, że jesteś <strong>przypisany</strong> (assignee) do zadań, które chcesz widzieć.</li>
-                        <li>W konfiguracji bloku wybierz połączenia ClickUp, z których chcesz zbierać zadania.</li>
+                        <li>W <strong>Źródłach zadań</strong> (Konfiguracja) wybierz połączenia ClickUp, z których chcesz zbierać zadania.</li>
                     </ul>
                 </div>
             </section>
@@ -57,7 +57,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
                         Blok ClickUp wyświetla zadania z wybranych list. Żeby skonfigurować go optymalnie:
                     </p>
                     <ul class="list-disc space-y-1 pl-5">
-                        <li>Na stronie <strong>ClickUp</strong> dodaj połączenie i skonfiguruj domyślne listy.</li>
+                        <li>W <strong>Połączeniach ClickUp</strong> (Konfiguracja) dodaj połączenie i skonfiguruj domyślne listy.</li>
                         <li>Możesz ustawić <strong>filtry domyślne</strong> w połączeniu — np. wykluczyć zamknięte zadania.</li>
                         <li>Blok umożliwia szybką zmianę statusu i dodawanie nowych zadań bezpośrednio z panelu.</li>
                     </ul>
@@ -69,7 +69,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
                 <h3 class="text-lg font-semibold tracking-tight">Rutyna poranna</h3>
                 <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
                     <p>
-                        Panel (Dashboard) wyświetla bloki w kolejności ustalonej na stronie Rutyna.
+                        Poranna rutyna wyświetla bloki w kolejności ustalonej w <strong>Blokach rutyny</strong> (Konfiguracja).
                     </p>
                     <ul class="list-disc space-y-1 pl-5">
                         <li>Możesz ustawić <strong>timer</strong> dla każdego bloku — pomaga trzymać się ram czasowych.</li>

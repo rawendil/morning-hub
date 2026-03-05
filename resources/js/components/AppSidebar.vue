@@ -20,9 +20,9 @@ import { index as routineIndex } from '@/routes/morning-hub/routine';
 import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tasks';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
+const morningHubNavItems: NavItem[] = [
     {
-        title: 'Panel',
+        title: 'Poranna rutyna',
         href: dashboard(),
         icon: LayoutGrid,
     },
@@ -33,19 +33,19 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const morningHubNavItems: NavItem[] = [
+const configNavItems: NavItem[] = [
     {
-        title: 'Rutyna',
+        title: 'Bloki rutyny',
         href: routineIndex(),
         icon: ListChecks,
     },
     {
-        title: 'Zadania na dziś',
+        title: 'Źródła zadań',
         href: todaysTasksConfigIndex(),
         icon: CalendarCheck,
     },
     {
-        title: 'ClickUp',
+        title: 'Połączenia ClickUp',
         href: clickupIndex(),
         icon: Plug,
     },
@@ -73,8 +73,8 @@ const morningHubNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
             <NavMain :items="morningHubNavItems" label="Morning Hub" />
+            <NavMain :items="configNavItems" label="Konfiguracja" />
         </SidebarContent>
 
         <SidebarFooter>
