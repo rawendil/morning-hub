@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ListChecks, SkipForward } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { SkipForward } from 'lucide-vue-next';
+import { computed } from 'vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
+import { resolveBlockIcon } from '@/lib/block-icons';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -11,12 +12,11 @@ import {
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import HabitToggleController from '@/actions/App/Http/Controllers/MorningHub/HabitToggleController';
+import { useHabitsStorage } from '@/composables/useHabitsStorage';
 import type { RoutineBlock } from '@/types';
 
 const props = defineProps<{
     block: RoutineBlock;
-    completedIndices: number[];
     isActiveBlock: boolean;
     isTimerRunning: boolean;
     isTimerExpired: boolean;
@@ -32,66 +32,18 @@ const emit = defineEmits<{
     timerSkip: [];
 }>();
 
+const { state, toggle: toggleHabit } = useHabitsStorage();
+
 const habits = computed(() => (props.block.config?.habits as string[]) ?? []);
-const completed = ref<number[]>([...props.completedIndices]);
-
+const completed = computed(() => state.value.blocks[props.block.id] ?? []);
 const progress = computed(() => `${completed.value.length}/${habits.value.length}`);
-
-function getCsrfToken(): string {
-    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
-}
-
-async function toggle(index: number) {
-    const was = completed.value.includes(index);
-
-    // Optimistic toggle
-    if (was) {
-        completed.value = completed.value.filter((i) => i !== index);
-    } else {
-        completed.value = [...completed.value, index];
-    }
-
-    try {
-        const response = await fetch(HabitToggleController.url(props.block.id), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-XSRF-TOKEN': getCsrfToken(),
-            },
-            credentials: 'same-origin',
-            body: JSON.stringify({ index }),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            completed.value = data.completed;
-        } else {
-            // Rollback
-            if (was) {
-                completed.value = [...completed.value, index];
-            } else {
-                completed.value = completed.value.filter((i) => i !== index);
-            }
-        }
-    } catch {
-        // Rollback
-        if (was) {
-            completed.value = [...completed.value, index];
-        } else {
-            completed.value = completed.value.filter((i) => i !== index);
-        }
-    }
-}
 </script>
 
 <template>
     <Card :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
         <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
             <div class="flex items-center gap-2">
-                <ListChecks class="h-4 w-4 text-muted-foreground" />
+                <component :is="resolveBlockIcon(block)" class="h-4 w-4 text-muted-foreground" />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
                 <RoutineTimerBadge
                     v-if="block.timer_minutes"
@@ -124,7 +76,7 @@ async function toggle(index: number) {
                 <Checkbox
                     :id="`habit-${block.id}-${index}`"
                     :checked="completed.includes(index)"
-                    @update:checked="toggle(index)"
+                    @update:checked="toggleHabit(block.id, index)"
                 />
                 <Label
                     :for="`habit-${block.id}-${index}`"

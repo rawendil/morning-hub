@@ -28,10 +28,6 @@ function getTasksData(blockId: number): BlockTasksData | undefined {
     return (page.props as Record<string, unknown>)[`tasks_${blockId}`] as BlockTasksData | undefined;
 }
 
-function getHabitsData(blockId: number): number[] {
-    return ((page.props as Record<string, unknown>)[`habits_${blockId}`] as number[]) ?? [];
-}
-
 function getFeedData(blockId: number): BlockFeedData | undefined {
     return (page.props as Record<string, unknown>)[`feed_${blockId}`] as BlockFeedData | undefined;
 }
@@ -109,7 +105,7 @@ const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.tim
                             <DashboardBlockRenderer
                                 :block="block"
                                 :tasks-data="getTasksData(block.id)"
-                                :completed-indices="getHabitsData(block.id)"
+
                                 :is-active-block="activeBlockId === block.id"
                                 :is-timer-running="activeBlockId === block.id && isRunning"
                                 :is-timer-expired="activeBlockId === block.id && isExpired"
@@ -133,7 +129,7 @@ const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.tim
                             <DashboardBlockRenderer
                                 :block="block"
                                 :feed-data="getFeedData(block.id)"
-                                :completed-indices="getHabitsData(block.id)"
+
                                 :is-active-block="activeBlockId === block.id"
                                 :is-timer-running="activeBlockId === block.id && isRunning"
                                 :is-timer-expired="activeBlockId === block.id && isExpired"
@@ -157,7 +153,7 @@ const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.tim
                             <DashboardBlockRenderer
                                 :block="block"
                                 :todays-tasks-data="getTodaysTasksData(block.id)"
-                                :completed-indices="getHabitsData(block.id)"
+
                                 :is-active-block="activeBlockId === block.id"
                                 :is-timer-running="activeBlockId === block.id && isRunning"
                                 :is-timer-expired="activeBlockId === block.id && isExpired"

@@ -4,21 +4,20 @@ import ClickUpTaskBlock from '@/components/morning-hub/ClickUpTaskBlock.vue';
 import FeedBlock from '@/components/morning-hub/FeedBlock.vue';
 import HabitsBlock from '@/components/morning-hub/HabitsBlock.vue';
 import PlaceholderBlock from '@/components/morning-hub/PlaceholderBlock.vue';
-import type { BlockFeedData, BlockTasksData, RoutineBlock } from '@/types';
+import TodaysTasksBlock from '@/components/morning-hub/TodaysTasksBlock.vue';
+import type { BlockFeedData, BlockTasksData, BlockTodaysTasksData, RoutineBlock } from '@/types';
 
-withDefaults(defineProps<{
+defineProps<{
     block: RoutineBlock;
     tasksData?: BlockTasksData;
+    todaysTasksData?: BlockTodaysTasksData;
     feedData?: BlockFeedData;
-    completedIndices?: number[];
     isActiveBlock: boolean;
     isTimerRunning: boolean;
     isTimerExpired: boolean;
     remainingSeconds: number;
     formattedTime: string;
-}>(), {
-    completedIndices: () => [],
-});
+}>();
 
 const emit = defineEmits<{
     selectTask: [connectionId: number, taskId: string];
@@ -64,7 +63,6 @@ const emit = defineEmits<{
     <HabitsBlock
         v-else-if="block.type === 'habits'"
         :block="block"
-        :completed-indices="completedIndices"
         :is-active-block="isActiveBlock"
         :is-timer-running="isTimerRunning"
         :is-timer-expired="isTimerExpired"
@@ -85,6 +83,22 @@ const emit = defineEmits<{
         :is-timer-expired="isTimerExpired"
         :remaining-seconds="remainingSeconds"
         :formatted-time="formattedTime"
+        @timer-start="emit('timerStart')"
+        @timer-pause="emit('timerPause')"
+        @timer-resume="emit('timerResume')"
+        @timer-reset="emit('timerReset')"
+        @timer-skip="emit('timerSkip')"
+    />
+    <TodaysTasksBlock
+        v-else-if="block.type === 'todays_tasks'"
+        :block="block"
+        :todays-tasks-data="todaysTasksData"
+        :is-active-block="isActiveBlock"
+        :is-timer-running="isTimerRunning"
+        :is-timer-expired="isTimerExpired"
+        :remaining-seconds="remainingSeconds"
+        :formatted-time="formattedTime"
+        @select-task="(connId, taskId) => emit('selectTask', connId, taskId)"
         @timer-start="emit('timerStart')"
         @timer-pause="emit('timerPause')"
         @timer-resume="emit('timerResume')"
