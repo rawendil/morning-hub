@@ -8,6 +8,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/profile';
@@ -21,12 +22,14 @@ type Props = {
 
 defineProps<Props>();
 
-const breadcrumbItems: BreadcrumbItem[] = [
+const { t } = useTranslations();
+
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Ustawienia profilu',
+        title: t('Ustawienia profilu'),
         href: edit(),
     },
-];
+]);
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
@@ -34,16 +37,16 @@ const user = computed(() => page.props.auth.user);
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Ustawienia profilu" />
+        <Head :title="t('Ustawienia profilu')" />
 
-        <h1 class="sr-only">Ustawienia profilu</h1>
+        <h1 class="sr-only">{{ t('Ustawienia profilu') }}</h1>
 
         <SettingsLayout>
             <div class="flex flex-col space-y-6">
                 <Heading
                     variant="small"
-                    title="Dane profilu"
-                    description="Zaktualizuj swoje imię i adres e-mail"
+                    :title="t('Dane profilu')"
+                    :description="t('Zaktualizuj swoje imię i adres e-mail')"
                 />
 
                 <Form
@@ -52,7 +55,7 @@ const user = computed(() => page.props.auth.user);
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
                     <div class="grid gap-2">
-                        <Label for="name">Imię</Label>
+                        <Label for="name">{{ t('Imię') }}</Label>
                         <Input
                             id="name"
                             class="mt-1 block w-full"
@@ -60,13 +63,13 @@ const user = computed(() => page.props.auth.user);
                             :default-value="user.name"
                             required
                             autocomplete="name"
-                            placeholder="Imię i nazwisko"
+                            :placeholder="t('Imię i nazwisko')"
                         />
                         <InputError class="mt-2" :message="errors.name" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="email">Adres e-mail</Label>
+                        <Label for="email">{{ t('Adres e-mail') }}</Label>
                         <Input
                             id="email"
                             type="email"
@@ -75,20 +78,20 @@ const user = computed(() => page.props.auth.user);
                             :default-value="user.email"
                             required
                             autocomplete="username"
-                            placeholder="Adres e-mail"
+                            :placeholder="t('Adres e-mail')"
                         />
                         <InputError class="mt-2" :message="errors.email" />
                     </div>
 
                     <div v-if="mustVerifyEmail && !user.email_verified_at">
                         <p class="-mt-4 text-sm text-muted-foreground">
-                            Twój adres e-mail nie jest zweryfikowany.
+                            {{ t('Twój adres e-mail nie jest zweryfikowany.') }}
                             <Link
                                 :href="send()"
                                 as="button"
                                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                             >
-                                Kliknij tutaj, aby ponownie wysłać e-mail weryfikacyjny.
+                                {{ t('Kliknij tutaj, aby ponownie wysłać e-mail weryfikacyjny.') }}
                             </Link>
                         </p>
 
@@ -96,8 +99,7 @@ const user = computed(() => page.props.auth.user);
                             v-if="status === 'verification-link-sent'"
                             class="mt-2 text-sm font-medium text-green-600"
                         >
-                            Nowy link weryfikacyjny został wysłany na Twój adres
-                            e-mail.
+                            {{ t('Nowy link weryfikacyjny został wysłany na Twój adres e-mail.') }}
                         </div>
                     </div>
 
@@ -105,7 +107,7 @@ const user = computed(() => page.props.auth.user);
                         <Button
                             :disabled="processing"
                             data-test="update-profile-button"
-                            >Zapisz</Button
+                            >{{ t('Zapisz') }}</Button
                         >
 
                         <Transition
@@ -118,7 +120,7 @@ const user = computed(() => page.props.auth.user);
                                 v-show="recentlySuccessful"
                                 class="text-sm text-neutral-600"
                             >
-                                Zapisano.
+                                {{ t('Zapisano.') }}
                             </p>
                         </Transition>
                     </div>

@@ -15,7 +15,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { store, update } from '@/actions/App/Http/Controllers/MorningHub/ClickUpConnectionController';
+import { useTranslations } from '@/composables/useTranslations';
 import type { ClickUpConnection } from '@/types';
+
+const { t } = useTranslations();
 
 const props = defineProps<{
     connection?: ClickUpConnection;
@@ -34,33 +37,33 @@ const isOpen = defineModel<boolean>('open', { default: false });
                 @success="isOpen = false"
             >
                 <DialogHeader>
-                    <DialogTitle>{{ connection ? 'Edytuj połączenie' : 'Dodaj połączenie' }}</DialogTitle>
+                    <DialogTitle>{{ connection ? t('Edytuj połączenie') : t('Dodaj połączenie') }}</DialogTitle>
                     <DialogDescription>
-                        {{ connection ? 'Zaktualizuj połączenie ClickUp.' : 'Połącz workspace ClickUp za pomocą osobistego tokena API.' }}
+                        {{ connection ? t('Zaktualizuj połączenie ClickUp.') : t('Połącz workspace ClickUp za pomocą osobistego tokena API.') }}
                     </DialogDescription>
                 </DialogHeader>
 
                 <div class="grid gap-4">
                     <div class="grid gap-2">
-                        <Label for="conn-name">Nazwa</Label>
+                        <Label for="conn-name">{{ t('Nazwa') }}</Label>
                         <Input
                             id="conn-name"
                             name="name"
                             :default-value="connection?.name"
                             required
-                            placeholder="np. Praca, Osobiste"
+                            :placeholder="t('np. Praca, Osobiste')"
                         />
                         <InputError :message="errors.name" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="conn-api-token">Token API</Label>
+                        <Label for="conn-api-token">{{ t('Token API') }}</Label>
                         <Input
                             id="conn-api-token"
                             name="api_token"
                             type="password"
                             :required="!connection"
-                            :placeholder="connection ? 'Pozostaw puste, aby zachować obecny' : 'pk_...'"
+                            :placeholder="connection ? t('Pozostaw puste, aby zachować obecny') : 'pk_...'"
                         />
                         <InputError :message="errors.api_token" />
                     </div>
@@ -68,10 +71,10 @@ const isOpen = defineModel<boolean>('open', { default: false });
 
                 <DialogFooter class="gap-2">
                     <DialogClose as-child>
-                        <Button variant="secondary">Anuluj</Button>
+                        <Button variant="secondary">{{ t('Anuluj') }}</Button>
                     </DialogClose>
                     <Button type="submit" :disabled="processing">
-                        {{ connection ? 'Zapisz' : 'Dodaj połączenie' }}
+                        {{ connection ? t('Zapisz') : t('Dodaj połączenie') }}
                     </Button>
                 </DialogFooter>
             </Form>

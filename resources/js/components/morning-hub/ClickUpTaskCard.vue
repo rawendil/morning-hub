@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ExternalLink } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { useTranslations } from '@/composables/useTranslations';
 import { Badge } from '@/components/ui/badge';
 import {
     DropdownMenu,
@@ -14,6 +15,8 @@ const props = defineProps<{
     task: ClickUpTask;
     statuses: ClickUpStatus[];
 }>();
+
+const { t } = useTranslations();
 
 const emit = defineEmits<{
     select: [taskId: string];
@@ -31,9 +34,9 @@ const dueLabel = computed(() => {
     const dayAfter = new Date(tomorrow);
     dayAfter.setDate(dayAfter.getDate() + 1);
 
-    if (due < today) return { text: 'Po terminie', class: 'text-destructive border-destructive' };
-    if (due < tomorrow) return { text: 'Dziś', class: 'text-orange-600 border-orange-400' };
-    if (due < dayAfter) return { text: 'Jutro', class: '' };
+    if (due < today) return { text: t('Po terminie'), class: 'text-destructive border-destructive' };
+    if (due < tomorrow) return { text: t('Dziś'), class: 'text-orange-600 border-orange-400' };
+    if (due < dayAfter) return { text: t('Jutro'), class: '' };
 
     return { text: due.toLocaleDateString(), class: '' };
 });

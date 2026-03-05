@@ -2,6 +2,7 @@
 import { Check, Plus, SkipForward } from 'lucide-vue-next';
 import { resolveBlockIcon } from '@/lib/block-icons';
 import { ref } from 'vue';
+import { useTranslations } from '@/composables/useTranslations';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +33,7 @@ const emit = defineEmits<{
     timerSkip: [];
 }>();
 
+const { t } = useTranslations();
 const { postJson } = useClickUpApi();
 
 const input = ref('');
@@ -99,7 +101,7 @@ function handleKeydown(event: KeyboardEvent) {
             <template v-if="connectionId && listId">
                 <Textarea
                     v-model="input"
-                    placeholder="Szybka myśl → zadanie ClickUp..."
+                    :placeholder="t('Szybka myśl → zadanie ClickUp...')"
                     :disabled="submitting"
                     class="min-h-20"
                     @keydown="handleKeydown"
@@ -111,12 +113,12 @@ function handleKeydown(event: KeyboardEvent) {
                         @click="handleSubmit"
                     >
                         <Plus class="h-4 w-4" />
-                        {{ submitting ? 'Tworzenie...' : 'Utwórz zadanie' }}
+                        {{ submitting ? t('Tworzenie...') : t('Utwórz zadanie') }}
                     </Button>
                 </div>
 
                 <div v-if="recentTasks.length" class="space-y-1">
-                    <p class="text-xs text-muted-foreground">Ostatnio utworzone</p>
+                    <p class="text-xs text-muted-foreground">{{ t('Ostatnio utworzone') }}</p>
                     <div
                         v-for="(task, i) in recentTasks"
                         :key="i"
@@ -129,7 +131,7 @@ function handleKeydown(event: KeyboardEvent) {
             </template>
 
             <p v-else class="text-sm text-muted-foreground">
-                Skonfiguruj połączenie ClickUp, aby zacząć zapisywać myśli jako zadania.
+                {{ t('Skonfiguruj połączenie ClickUp, aby zacząć zapisywać myśli jako zadania.') }}
             </p>
         </CardContent>
     </Card>

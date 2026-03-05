@@ -6,8 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/composables/useTranslations';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { update } from '@/routes/password';
+
+const { t } = useTranslations();
 
 const props = defineProps<{
     token: string;
@@ -19,10 +22,10 @@ const inputEmail = ref(props.email);
 
 <template>
     <AuthLayout
-        title="Resetowanie hasła"
-        description="Wprowadź nowe hasło poniżej"
+        :title="t('Resetowanie hasła')"
+        :description="t('Wprowadź nowe hasło poniżej')"
     >
-        <Head title="Resetowanie hasła" />
+        <Head :title="t('Resetowanie hasła')" />
 
         <Form
             v-bind="update.form()"
@@ -32,7 +35,7 @@ const inputEmail = ref(props.email);
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email">E-mail</Label>
+                    <Label for="email">{{ t('E-mail') }}</Label>
                     <Input
                         id="email"
                         type="email"
@@ -46,7 +49,7 @@ const inputEmail = ref(props.email);
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password">Hasło</Label>
+                    <Label for="password">{{ t('Hasło') }}</Label>
                     <Input
                         id="password"
                         type="password"
@@ -54,14 +57,14 @@ const inputEmail = ref(props.email);
                         autocomplete="new-password"
                         class="mt-1 block w-full"
                         autofocus
-                        placeholder="Hasło"
+                        :placeholder="t('Hasło')"
                     />
                     <InputError :message="errors.password" />
                 </div>
 
                 <div class="grid gap-2">
                     <Label for="password_confirmation">
-                        Potwierdź hasło
+                        {{ t('Potwierdź hasło') }}
                     </Label>
                     <Input
                         id="password_confirmation"
@@ -69,7 +72,7 @@ const inputEmail = ref(props.email);
                         name="password_confirmation"
                         autocomplete="new-password"
                         class="mt-1 block w-full"
-                        placeholder="Potwierdź hasło"
+                        :placeholder="t('Potwierdź hasło')"
                     />
                     <InputError :message="errors.password_confirmation" />
                 </div>
@@ -81,7 +84,7 @@ const inputEmail = ref(props.email);
                     data-test="reset-password-button"
                 >
                     <Spinner v-if="processing" />
-                    Zresetuj hasło
+                    {{ t('Zresetuj hasło') }}
                 </Button>
             </div>
         </Form>

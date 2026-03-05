@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import RoutineBlockCard from '@/components/morning-hub/RoutineBlockCard.vue';
 import RoutineBlockForm from '@/components/morning-hub/RoutineBlockForm.vue';
@@ -17,16 +17,19 @@ import {
 } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { destroy, index, reorder } from '@/routes/morning-hub/routine';
+import { useTranslations } from '@/composables/useTranslations';
 import type { BreadcrumbItem, ClickUpConnection, RoutineBlock } from '@/types';
+
+const { t } = useTranslations();
 
 const props = defineProps<{
     blocks: RoutineBlock[];
     connections: ClickUpConnection[];
 }>();
 
-const breadcrumbItems: BreadcrumbItem[] = [
-    { title: 'Poranna rutyna', href: index() },
-];
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
+    { title: t('Poranna rutyna'), href: index() },
+]);
 
 const addOpen = ref(false);
 const editingBlock = ref<RoutineBlock | undefined>();
@@ -67,19 +70,19 @@ function moveBlock(blockIndex: number, direction: -1 | 1) {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Poranna rutyna" />
+        <Head :title="t('Poranna rutyna')" />
 
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
-                <Heading title="Poranna rutyna" description="Konfiguruj bloki swojej porannej rutyny." />
+                <Heading :title="t('Poranna rutyna')" :description="t('Konfiguruj bloki swojej porannej rutyny.')" />
                 <Button class="gap-2" @click="addOpen = true">
                     <Plus class="h-4 w-4" />
-                    Dodaj blok
+                    {{ t('Dodaj blok') }}
                 </Button>
             </div>
 
             <div v-if="blocks.length === 0" class="rounded-lg border border-dashed p-8 text-center">
-                <p class="text-muted-foreground">Brak bloków. Dodaj pierwszy blok rutyny, aby rozpocząć.</p>
+                <p class="text-muted-foreground">{{ t('Brak bloków. Dodaj pierwszy blok rutyny, aby rozpocząć.') }}</p>
             </div>
 
             <div v-else class="grid gap-3">
@@ -103,17 +106,17 @@ function moveBlock(blockIndex: number, direction: -1 | 1) {
         <Dialog v-model:open="deleteOpen">
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Usuń blok</DialogTitle>
+                    <DialogTitle>{{ t('Usuń blok') }}</DialogTitle>
                     <DialogDescription>
-                        Czy na pewno chcesz usunąć "{{ deleteBlock?.name }}"?
+                        {{ t('Czy na pewno chcesz usunąć ":name"?', { name: deleteBlock?.name ?? '' }) }}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter class="gap-2">
                     <DialogClose as-child>
-                        <Button variant="secondary">Anuluj</Button>
+                        <Button variant="secondary">{{ t('Anuluj') }}</Button>
                     </DialogClose>
                     <Button variant="destructive" @click="confirmDelete">
-                        Usuń
+                        {{ t('Usuń') }}
                     </Button>
                 </DialogFooter>
             </DialogContent>

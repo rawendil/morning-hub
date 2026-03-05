@@ -1,36 +1,40 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/user-password';
 import type { BreadcrumbItem } from '@/types';
 
-const breadcrumbItems: BreadcrumbItem[] = [
+const { t } = useTranslations();
+
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Ustawienia hasła',
+        title: t('Ustawienia hasła'),
         href: edit(),
     },
-];
+]);
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Ustawienia hasła" />
+        <Head :title="t('Ustawienia hasła')" />
 
-        <h1 class="sr-only">Ustawienia hasła</h1>
+        <h1 class="sr-only">{{ t('Ustawienia hasła') }}</h1>
 
         <SettingsLayout>
             <div class="space-y-6">
                 <Heading
                     variant="small"
-                    title="Zmiana hasła"
-                    description="Upewnij się, że Twoje konto używa długiego, losowego hasła"
+                    :title="t('Zmiana hasła')"
+                    :description="t('Upewnij się, że Twoje konto używa długiego, losowego hasła')"
                 />
 
                 <Form
@@ -48,34 +52,34 @@ const breadcrumbItems: BreadcrumbItem[] = [
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
                     <div class="grid gap-2">
-                        <Label for="current_password">Aktualne hasło</Label>
+                        <Label for="current_password">{{ t('Aktualne hasło') }}</Label>
                         <Input
                             id="current_password"
                             name="current_password"
                             type="password"
                             class="mt-1 block w-full"
                             autocomplete="current-password"
-                            placeholder="Aktualne hasło"
+                            :placeholder="t('Aktualne hasło')"
                         />
                         <InputError :message="errors.current_password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password">Nowe hasło</Label>
+                        <Label for="password">{{ t('Nowe hasło') }}</Label>
                         <Input
                             id="password"
                             name="password"
                             type="password"
                             class="mt-1 block w-full"
                             autocomplete="new-password"
-                            placeholder="Nowe hasło"
+                            :placeholder="t('Nowe hasło')"
                         />
                         <InputError :message="errors.password" />
                     </div>
 
                     <div class="grid gap-2">
                         <Label for="password_confirmation"
-                            >Potwierdź hasło</Label
+                            >{{ t('Potwierdź hasło') }}</Label
                         >
                         <Input
                             id="password_confirmation"
@@ -83,7 +87,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
                             type="password"
                             class="mt-1 block w-full"
                             autocomplete="new-password"
-                            placeholder="Potwierdź hasło"
+                            :placeholder="t('Potwierdź hasło')"
                         />
                         <InputError :message="errors.password_confirmation" />
                     </div>
@@ -92,7 +96,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
                         <Button
                             :disabled="processing"
                             data-test="update-password-button"
-                            >Zapisz hasło</Button
+                            >{{ t('Zapisz hasło') }}</Button
                         >
 
                         <Transition
@@ -105,7 +109,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
                                 v-show="recentlySuccessful"
                                 class="text-sm text-neutral-600"
                             >
-                                Zapisano.
+                                {{ t('Zapisano.') }}
                             </p>
                         </Transition>
                     </div>

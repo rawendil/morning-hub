@@ -74,7 +74,7 @@ class ClickUpConnectionController extends Controller
 
         return response()->json([
             'success' => $success,
-            'message' => $success ? 'Połączenie udane.' : 'Połączenie nieudane. Sprawdź token API.',
+            'message' => $success ? __('Połączenie udane.') : __('Połączenie nieudane. Sprawdź token API.'),
         ]);
     }
 }

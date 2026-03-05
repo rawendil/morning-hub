@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/composables/useTranslations';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import { email } from '@/routes/password';
@@ -13,14 +14,16 @@ import { email } from '@/routes/password';
 defineProps<{
     status?: string;
 }>();
+
+const { t } = useTranslations();
 </script>
 
 <template>
     <AuthLayout
-        title="Zapomniałeś hasła"
-        description="Wprowadź adres e-mail, aby otrzymać link do resetowania hasła"
+        :title="t('Zapomniałeś hasła')"
+        :description="t('Wprowadź adres e-mail, aby otrzymać link do resetowania hasła')"
     >
-        <Head title="Zapomniałeś hasła" />
+        <Head :title="t('Zapomniałeś hasła')" />
 
         <div
             v-if="status"
@@ -32,7 +35,7 @@ defineProps<{
         <div class="space-y-6">
             <Form v-bind="email.form()" v-slot="{ errors, processing }">
                 <div class="grid gap-2">
-                    <Label for="email">Adres e-mail</Label>
+                    <Label for="email">{{ t('Adres e-mail') }}</Label>
                     <Input
                         id="email"
                         type="email"
@@ -51,14 +54,14 @@ defineProps<{
                         data-test="email-password-reset-link-button"
                     >
                         <Spinner v-if="processing" />
-                        Wyślij link do resetowania hasła
+                        {{ t('Wyślij link do resetowania hasła') }}
                     </Button>
                 </div>
             </Form>
 
             <div class="space-x-1 text-center text-sm text-muted-foreground">
-                <span>Lub wróć do</span>
-                <TextLink :href="login()">logowania</TextLink>
+                <span>{{ t('Lub wróć do') }}</span>
+                <TextLink :href="login()">{{ t('logowania') }}</TextLink>
             </div>
         </div>
     </AuthLayout>

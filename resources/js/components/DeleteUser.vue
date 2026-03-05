@@ -17,7 +17,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/composables/useTranslations';
 
+const { t } = useTranslations();
 const passwordInput = useTemplateRef('passwordInput');
 </script>
 
@@ -25,22 +27,22 @@ const passwordInput = useTemplateRef('passwordInput');
     <div class="space-y-6">
         <Heading
             variant="small"
-            title="Usunięcie konta"
-            description="Usuń swoje konto i wszystkie powiązane dane"
+            :title="t('Usunięcie konta')"
+            :description="t('Usuń swoje konto i wszystkie powiązane dane')"
         />
         <div
             class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
         >
             <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
-                <p class="font-medium">Uwaga</p>
+                <p class="font-medium">{{ t('Uwaga') }}</p>
                 <p class="text-sm">
-                    Zachowaj ostrożność, tej operacji nie można cofnąć.
+                    {{ t('Zachowaj ostrożność, tej operacji nie można cofnąć.') }}
                 </p>
             </div>
             <Dialog>
                 <DialogTrigger as-child>
                     <Button variant="destructive" data-test="delete-user-button"
-                        >Usuń konto</Button
+                        >{{ t('Usuń konto') }}</Button
                     >
                 </DialogTrigger>
                 <DialogContent>
@@ -56,26 +58,23 @@ const passwordInput = useTemplateRef('passwordInput');
                     >
                         <DialogHeader class="space-y-3">
                             <DialogTitle
-                                >Czy na pewno chcesz usunąć swoje
-                                konto?</DialogTitle
+                                >{{ t('Czy na pewno chcesz usunąć swoje konto?') }}</DialogTitle
                             >
                             <DialogDescription>
-                                Po usunięciu konta wszystkie powiązane dane
-                                zostaną trwale usunięte. Wprowadź hasło,
-                                aby potwierdzić trwałe usunięcie konta.
+                                {{ t('Po usunięciu konta wszystkie powiązane dane zostaną trwale usunięte. Wprowadź hasło, aby potwierdzić trwałe usunięcie konta.') }}
                             </DialogDescription>
                         </DialogHeader>
 
                         <div class="grid gap-2">
                             <Label for="password" class="sr-only"
-                                >Hasło</Label
+                                >{{ t('Hasło') }}</Label
                             >
                             <Input
                                 id="password"
                                 type="password"
                                 name="password"
                                 ref="passwordInput"
-                                placeholder="Hasło"
+                                :placeholder="t('Hasło')"
                             />
                             <InputError :message="errors.password" />
                         </div>
@@ -91,7 +90,7 @@ const passwordInput = useTemplateRef('passwordInput');
                                         }
                                     "
                                 >
-                                    Anuluj
+                                    {{ t('Anuluj') }}
                                 </Button>
                             </DialogClose>
 
@@ -101,7 +100,7 @@ const passwordInput = useTemplateRef('passwordInput');
                                 :disabled="processing"
                                 data-test="confirm-delete-user-button"
                             >
-                                Usuń konto
+                                {{ t('Usuń konto') }}
                             </Button>
                         </DialogFooter>
                     </Form>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { SkipForward } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { useTranslations } from '@/composables/useTranslations';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { resolveBlockIcon } from '@/lib/block-icons';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ const emit = defineEmits<{
     timerSkip: [];
 }>();
 
+const { t } = useTranslations();
 const { state, toggle: toggleHabit } = useHabitsStorage();
 
 const habits = computed(() => (props.block.config?.habits as string[]) ?? []);
@@ -88,7 +90,7 @@ const progress = computed(() => `${completed.value.length}/${habits.value.length
             </div>
 
             <p v-if="habits.length === 0" class="text-sm text-muted-foreground">
-                Brak skonfigurowanych nawyków. Edytuj ten blok, aby dodać codzienne nawyki.
+                {{ t('Brak skonfigurowanych nawyków. Edytuj ten blok, aby dodać codzienne nawyki.') }}
             </p>
         </CardContent>
     </Card>

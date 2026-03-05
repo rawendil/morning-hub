@@ -9,25 +9,26 @@ import {
     InputOTPGroup,
     InputOTPSlot,
 } from '@/components/ui/input-otp';
+import { useTranslations } from '@/composables/useTranslations';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
 
+const { t } = useTranslations();
+
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
     if (showRecoveryInput.value) {
         return {
-            title: 'Kod odzyskiwania',
-            description:
-                'Potwierdź dostęp do swojego konta, wprowadzając jeden z kodów odzyskiwania.',
-            buttonText: 'zaloguj się kodem uwierzytelniającym',
+            title: t('Kod odzyskiwania'),
+            description: t('Potwierdź dostęp do swojego konta, wprowadzając jeden z kodów odzyskiwania.'),
+            buttonText: t('zaloguj się kodem uwierzytelniającym'),
         };
     }
 
     return {
-        title: 'Kod uwierzytelniający',
-        description:
-            'Wprowadź kod uwierzytelniający z aplikacji authenticator.',
-        buttonText: 'zaloguj się kodem odzyskiwania',
+        title: t('Kod uwierzytelniający'),
+        description: t('Wprowadź kod uwierzytelniający z aplikacji authenticator.'),
+        buttonText: t('zaloguj się kodem odzyskiwania'),
     };
 });
 
@@ -47,7 +48,7 @@ const code = ref<string>('');
         :title="authConfigContent.title"
         :description="authConfigContent.description"
     >
-        <Head title="Uwierzytelnianie dwuskładnikowe" />
+        <Head :title="t('Uwierzytelnianie dwuskładnikowe')" />
 
         <div class="space-y-6">
             <template v-if="!showRecoveryInput">
@@ -82,10 +83,10 @@ const code = ref<string>('');
                         <InputError :message="errors.code" />
                     </div>
                     <Button type="submit" class="w-full" :disabled="processing"
-                        >Kontynuuj</Button
+                        >{{ t('Kontynuuj') }}</Button
                     >
                     <div class="text-center text-sm text-muted-foreground">
-                        <span>lub możesz </span>
+                        <span>{{ t('lub możesz') }} </span>
                         <button
                             type="button"
                             class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
@@ -107,17 +108,17 @@ const code = ref<string>('');
                     <Input
                         name="recovery_code"
                         type="text"
-                        placeholder="Wprowadź kod odzyskiwania"
+                        :placeholder="t('Wprowadź kod odzyskiwania')"
                         :autofocus="showRecoveryInput"
                         required
                     />
                     <InputError :message="errors.recovery_code" />
                     <Button type="submit" class="w-full" :disabled="processing"
-                        >Kontynuuj</Button
+                        >{{ t('Kontynuuj') }}</Button
                     >
 
                     <div class="text-center text-sm text-muted-foreground">
-                        <span>lub możesz </span>
+                        <span>{{ t('lub możesz') }} </span>
                         <button
                             type="button"
                             class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"

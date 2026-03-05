@@ -2,7 +2,10 @@
 import { computed, ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/composables/useTranslations';
 import { AVAILABLE_ICONS, ICON_MAP } from '@/lib/block-icons';
+
+const { t } = useTranslations();
 
 const model = defineModel<string>({ required: true });
 
@@ -33,13 +36,13 @@ function select(name: string) {
             @click="isOpen = !isOpen"
         >
             <component :is="currentIcon" v-if="currentIcon" class="h-4 w-4 text-muted-foreground" />
-            <span class="text-sm">{{ model || 'Wybierz ikonę...' }}</span>
+            <span class="text-sm">{{ model || t('Wybierz ikonę...') }}</span>
         </Button>
 
         <div v-if="isOpen" class="space-y-2 rounded-md border p-3">
             <Input
                 v-model="search"
-                placeholder="Szukaj ikony..."
+                :placeholder="t('Szukaj ikony...')"
                 class="h-8 text-sm"
             />
             <div class="grid max-h-40 grid-cols-8 gap-1 overflow-y-auto">
@@ -56,7 +59,7 @@ function select(name: string) {
                 </button>
             </div>
             <p v-if="filteredIcons.length === 0" class="text-center text-xs text-muted-foreground">
-                Brak wyników
+                {{ t('Brak wyników') }}
             </p>
         </div>
     </div>

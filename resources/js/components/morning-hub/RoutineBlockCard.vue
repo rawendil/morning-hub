@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { ArrowDown, ArrowUp, Clock, Pencil, Plug, Trash2 } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { useTranslations } from '@/composables/useTranslations';
 import type { RoutineBlock } from '@/types';
 
 defineProps<{
@@ -23,15 +25,17 @@ const emit = defineEmits<{
     delete: [];
 }>();
 
-const typeLabels: Record<string, string> = {
+const { t } = useTranslations();
+
+const typeLabels = computed<Record<string, string>>(() => ({
     clickup: 'ClickUp',
-    braindump: 'Zrzut myśli',
-    habits: 'Codzienne nawyki',
-    feed: 'Kanał RSS',
-    notes: 'Notatki',
-    plan: 'Plan',
-    custom: 'Własny',
-};
+    braindump: t('Zrzut myśli'),
+    habits: t('Codzienne nawyki'),
+    feed: t('Kanał RSS'),
+    notes: t('Notatki'),
+    plan: t('Plan'),
+    custom: t('Własny'),
+}));
 </script>
 
 <template>

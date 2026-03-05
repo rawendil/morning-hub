@@ -6,17 +6,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/composables/useTranslations';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
+
+const { t } = useTranslations();
 </script>
 
 <template>
     <AuthBase
-        title="Utwórz konto"
-        description="Wprowadź swoje dane, aby utworzyć konto"
+        :title="t('Utwórz konto')"
+        :description="t('Wprowadź swoje dane, aby utworzyć konto')"
     >
-        <Head title="Rejestracja" />
+        <Head :title="t('Rejestracja')" />
 
         <Form
             v-bind="store.form()"
@@ -26,7 +29,7 @@ import { store } from '@/routes/register';
         >
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="name">Imię</Label>
+                    <Label for="name">{{ t('Imię') }}</Label>
                     <Input
                         id="name"
                         type="text"
@@ -35,13 +38,13 @@ import { store } from '@/routes/register';
                         :tabindex="1"
                         autocomplete="name"
                         name="name"
-                        placeholder="Imię i nazwisko"
+                        :placeholder="t('Imię i nazwisko')"
                     />
                     <InputError :message="errors.name" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="email">Adres e-mail</Label>
+                    <Label for="email">{{ t('Adres e-mail') }}</Label>
                     <Input
                         id="email"
                         type="email"
@@ -55,7 +58,7 @@ import { store } from '@/routes/register';
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password">Hasło</Label>
+                    <Label for="password">{{ t('Hasło') }}</Label>
                     <Input
                         id="password"
                         type="password"
@@ -63,13 +66,13 @@ import { store } from '@/routes/register';
                         :tabindex="3"
                         autocomplete="new-password"
                         name="password"
-                        placeholder="Hasło"
+                        :placeholder="t('Hasło')"
                     />
                     <InputError :message="errors.password" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation">Potwierdź hasło</Label>
+                    <Label for="password_confirmation">{{ t('Potwierdź hasło') }}</Label>
                     <Input
                         id="password_confirmation"
                         type="password"
@@ -77,7 +80,7 @@ import { store } from '@/routes/register';
                         :tabindex="4"
                         autocomplete="new-password"
                         name="password_confirmation"
-                        placeholder="Potwierdź hasło"
+                        :placeholder="t('Potwierdź hasło')"
                     />
                     <InputError :message="errors.password_confirmation" />
                 </div>
@@ -90,17 +93,17 @@ import { store } from '@/routes/register';
                     data-test="register-user-button"
                 >
                     <Spinner v-if="processing" />
-                    Utwórz konto
+                    {{ t('Utwórz konto') }}
                 </Button>
             </div>
 
             <div class="text-center text-sm text-muted-foreground">
-                Masz już konto?
+                {{ t('Masz już konto?') }}
                 <TextLink
                     :href="login()"
                     class="underline underline-offset-4"
                     :tabindex="6"
-                    >Zaloguj się</TextLink
+                    >{{ t('Zaloguj się') }}</TextLink
                 >
             </div>
         </Form>

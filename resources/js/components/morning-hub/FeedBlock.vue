@@ -2,6 +2,7 @@
 import { CheckCircle, ExternalLink, Eye, EyeOff, SkipForward } from 'lucide-vue-next';
 import { resolveBlockIcon } from '@/lib/block-icons';
 import { computed, ref } from 'vue';
+import { useTranslations } from '@/composables/useTranslations';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { useReadArticles } from '@/composables/useReadArticles';
 import { Badge } from '@/components/ui/badge';
@@ -33,6 +34,8 @@ const emit = defineEmits<{
     timerSkip: [];
 }>();
 
+const { t } = useTranslations();
+
 const items = computed(() => props.feedData?.items ?? []);
 
 const { isRead, toggleRead, visibleItems, unreadCount } = useReadArticles();
@@ -46,15 +49,15 @@ function timeAgo(isoDate: string): string {
     const diffMs = now - then;
 
     const minutes = Math.floor(diffMs / 60000);
-    if (minutes < 60) return `${minutes} min temu`;
+    if (minutes < 60) return t(':count min temu', { count: String(minutes) });
 
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} godz. temu`;
+    if (hours < 24) return t(':count godz. temu', { count: String(hours) });
 
     const days = Math.floor(hours / 24);
-    if (days === 1) return 'wczoraj';
+    if (days === 1) return t('wczoraj');
 
-    return `${days} dni temu`;
+    return t(':count dni temu', { count: String(days) });
 }
 </script>
 
@@ -102,11 +105,11 @@ function timeAgo(isoDate: string): string {
             </p>
 
             <p v-else-if="items.length === 0" class="text-sm text-muted-foreground">
-                Brak artykułów. Sprawdź źródła RSS lub zwiększ zakres dni.
+                {{ t('Brak artykułów. Sprawdź źródła RSS lub zwiększ zakres dni.') }}
             </p>
 
             <p v-else-if="displayItems.length === 0" class="text-sm text-muted-foreground">
-                Wszystkie artykuły przeczytane. Użyj przełącznika, aby je zobaczyć.
+                {{ t('Wszystkie artykuły przeczytane. Użyj przełącznika, aby je zobaczyć.') }}
             </p>
 
             <div

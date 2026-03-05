@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
+import { useTranslations } from '@/composables/useTranslations';
 import { toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editProfile } from '@/routes/profile';
@@ -11,24 +13,26 @@ import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import type { NavItem } from '@/types';
 
-const sidebarNavItems: NavItem[] = [
+const { t } = useTranslations();
+
+const sidebarNavItems = computed<NavItem[]>(() => [
     {
-        title: 'Profil',
+        title: t('Profil'),
         href: editProfile(),
     },
     {
-        title: 'Hasło',
+        title: t('Hasło'),
         href: editPassword(),
     },
     {
-        title: 'Dwuskładnikowe',
+        title: t('Dwuskładnikowe'),
         href: show(),
     },
     {
-        title: 'Wygląd',
+        title: t('Wygląd'),
         href: editAppearance(),
     },
-];
+]);
 
 const { isCurrentOrParentUrl } = useCurrentUrl();
 </script>
@@ -36,8 +40,8 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
 <template>
     <div class="px-4 py-6">
         <Heading
-            title="Ustawienia"
-            description="Zarządzaj ustawieniami profilu i konta"
+            :title="t('Ustawienia')"
+            :description="t('Zarządzaj ustawieniami profilu i konta')"
         />
 
         <div class="flex flex-col lg:flex-row lg:space-x-12">

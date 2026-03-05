@@ -11,9 +11,11 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { useTranslations } from '@/composables/useTranslations';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import { regenerateRecoveryCodes } from '@/routes/two-factor';
 
+const { t } = useTranslations();
 const { recoveryCodesList, fetchRecoveryCodes, errors } = useTwoFactorAuth();
 const isRecoveryCodesVisible = ref<boolean>(false);
 const recoveryCodeSectionRef = useTemplateRef('recoveryCodeSectionRef');
@@ -42,11 +44,10 @@ onMounted(async () => {
     <Card class="w-full">
         <CardHeader>
             <CardTitle class="flex gap-3">
-                <LockKeyhole class="size-4" />Kody odzyskiwania 2FA
+                <LockKeyhole class="size-4" />{{ t('Kody odzyskiwania 2FA') }}
             </CardTitle>
             <CardDescription>
-                Kody odzyskiwania pozwalają odzyskać dostęp w przypadku utraty
-                urządzenia 2FA. Przechowuj je w bezpiecznym menedżerze haseł.
+                {{ t('Kody odzyskiwania pozwalają odzyskać dostęp w przypadku utraty urządzenia 2FA. Przechowuj je w bezpiecznym menedżerze haseł.') }}
             </CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,8 +59,7 @@ onMounted(async () => {
                         :is="isRecoveryCodesVisible ? EyeOff : Eye"
                         class="size-4"
                     />
-                    {{ isRecoveryCodesVisible ? 'Ukryj' : 'Pokaż' }} kody
-                    odzyskiwania
+                    {{ isRecoveryCodesVisible ? t('Ukryj kody odzyskiwania') : t('Pokaż kody odzyskiwania') }}
                 </Button>
 
                 <Form
@@ -75,7 +75,7 @@ onMounted(async () => {
                         type="submit"
                         :disabled="processing"
                     >
-                        <RefreshCw /> Wygeneruj nowe kody
+                        <RefreshCw /> {{ t('Wygeneruj nowe kody') }}
                     </Button>
                 </Form>
             </div>
@@ -111,10 +111,8 @@ onMounted(async () => {
                         </div>
                     </div>
                     <p class="text-xs text-muted-foreground select-none">
-                        Każdy kod odzyskiwania może być użyty tylko raz i po
-                        wykorzystaniu zostanie usunięty. Jeśli potrzebujesz
-                        nowych, kliknij
-                        <span class="font-bold">Wygeneruj nowe kody</span> powyżej.
+                        {{ t('Każdy kod odzyskiwania może być użyty tylko raz i po wykorzystaniu zostanie usunięty. Jeśli potrzebujesz nowych, kliknij') }}
+                        <span class="font-bold">{{ t('Wygeneruj nowe kody') }}</span> {{ t('powyżej.') }}
                     </p>
                 </div>
             </div>

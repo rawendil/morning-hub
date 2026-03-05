@@ -26,8 +26,11 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useTranslations } from '@/composables/useTranslations';
 import { destroy, test } from '@/routes/morning-hub/clickup';
 import type { ClickUpConnection } from '@/types';
+
+const { t } = useTranslations();
 
 const props = defineProps<{
     connection: ClickUpConnection;
@@ -59,7 +62,7 @@ async function testConnection() {
         });
         testResult.value = await response.json();
     } catch {
-        testResult.value = { success: false, message: 'Błąd sieci.' };
+        testResult.value = { success: false, message: t('Błąd sieci.') };
     }
     testing.value = false;
 }
@@ -78,10 +81,10 @@ function deleteConnection() {
             <div>
                 <CardTitle class="text-base">{{ connection.name }}</CardTitle>
                 <CardDescription v-if="connection.workspace_id">
-                    Workspace skonfigurowany
+                    {{ t('Workspace skonfigurowany') }}
                 </CardDescription>
                 <CardDescription v-else>
-                    Jeszcze nie skonfigurowany
+                    {{ t('Jeszcze nie skonfigurowany') }}
                 </CardDescription>
             </div>
             <div class="flex items-center gap-1">
@@ -110,7 +113,7 @@ function deleteConnection() {
                 <CollapsibleTrigger as-child>
                     <Button variant="outline" size="sm" class="w-full gap-2">
                         <Settings class="h-4 w-4" />
-                        {{ configOpen ? 'Ukryj' : 'Konfiguruj' }} domyślne workspace
+                        {{ configOpen ? t('Ukryj domyślne workspace') : t('Konfiguruj domyślne workspace') }}
                     </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent class="pt-4">
@@ -125,17 +128,17 @@ function deleteConnection() {
     <Dialog v-model:open="deleteOpen">
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>Usuń połączenie</DialogTitle>
+                <DialogTitle>{{ t('Usuń połączenie') }}</DialogTitle>
                 <DialogDescription>
-                    Czy na pewno chcesz usunąć "{{ connection.name }}"? Bloki rutyny korzystające z tego połączenia zostaną odłączone.
+                    {{ t('Czy na pewno chcesz usunąć ":name"? Bloki rutyny korzystające z tego połączenia zostaną odłączone.', { name: connection.name }) }}
                 </DialogDescription>
             </DialogHeader>
             <DialogFooter class="gap-2">
                 <DialogClose as-child>
-                    <Button variant="secondary">Anuluj</Button>
+                    <Button variant="secondary">{{ t('Anuluj') }}</Button>
                 </DialogClose>
                 <Button variant="destructive" @click="deleteConnection">
-                    Usuń
+                    {{ t('Usuń') }}
                 </Button>
             </DialogFooter>
         </DialogContent>

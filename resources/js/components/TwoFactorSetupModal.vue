@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/input-otp';
 import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
+import { useTranslations } from '@/composables/useTranslations';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
@@ -30,6 +31,7 @@ type Props = {
 };
 
 const { resolvedAppearance } = useAppearance();
+const { t } = useTranslations();
 
 const props = defineProps<Props>();
 const isOpen = defineModel<boolean>('isOpen');
@@ -46,26 +48,24 @@ const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
 const modalConfig = computed<TwoFactorConfigContent>(() => {
     if (props.twoFactorEnabled) {
         return {
-            title: 'Uwierzytelnianie dwuskładnikowe włączone',
-            description:
-                'Uwierzytelnianie dwuskładnikowe jest teraz włączone. Zeskanuj kod QR lub wprowadź klucz konfiguracyjny w aplikacji authenticator.',
-            buttonText: 'Zamknij',
+            title: t('Uwierzytelnianie dwuskładnikowe włączone'),
+            description: t('Uwierzytelnianie dwuskładnikowe jest teraz włączone. Zeskanuj kod QR lub wprowadź klucz konfiguracyjny w aplikacji authenticator.'),
+            buttonText: t('Zamknij'),
         };
     }
 
     if (showVerificationStep.value) {
         return {
-            title: 'Zweryfikuj kod uwierzytelniający',
-            description: 'Wprowadź 6-cyfrowy kod z aplikacji authenticator',
-            buttonText: 'Kontynuuj',
+            title: t('Zweryfikuj kod uwierzytelniający'),
+            description: t('Wprowadź 6-cyfrowy kod z aplikacji authenticator'),
+            buttonText: t('Kontynuuj'),
         };
     }
 
     return {
-        title: 'Włącz uwierzytelnianie dwuskładnikowe',
-        description:
-            'Aby zakończyć włączanie uwierzytelniania dwuskładnikowego, zeskanuj kod QR lub wprowadź klucz konfiguracyjny w aplikacji authenticator',
-        buttonText: 'Kontynuuj',
+        title: t('Włącz uwierzytelnianie dwuskładnikowe'),
+        description: t('Aby zakończyć włączanie uwierzytelniania dwuskładnikowego, zeskanuj kod QR lub wprowadź klucz konfiguracyjny w aplikacji authenticator'),
+        buttonText: t('Kontynuuj'),
     };
 });
 
@@ -196,7 +196,7 @@ watch(
                                 class="absolute inset-0 top-1/2 h-px w-full bg-border"
                             />
                             <span class="relative bg-card px-2 py-1"
-                                >lub wprowadź kod ręcznie</span
+                                >{{ t('lub wprowadź kod ręcznie') }}</span
                             >
                         </div>
 
@@ -277,14 +277,14 @@ watch(
                                     @click="showVerificationStep = false"
                                     :disabled="processing"
                                 >
-                                    Wstecz
+                                    {{ t('Wstecz') }}
                                 </Button>
                                 <Button
                                     type="submit"
                                     class="w-auto flex-1"
                                     :disabled="processing || code.length < 6"
                                 >
-                                    Potwierdź
+                                    {{ t('Potwierdź') }}
                                 </Button>
                             </div>
                         </div>

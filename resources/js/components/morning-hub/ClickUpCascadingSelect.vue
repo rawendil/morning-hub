@@ -12,6 +12,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslations } from '@/composables/useTranslations';
 import { update, workspaces, spaces, allLists, me } from '@/routes/morning-hub/clickup';
 import type {
     ClickUpConnection,
@@ -19,6 +20,8 @@ import type {
     ClickUpSpace,
     ClickUpAllListsResponse,
 } from '@/types';
+
+const { t } = useTranslations();
 
 const props = defineProps<{
     connection: ClickUpConnection;
@@ -177,7 +180,7 @@ onMounted(async () => {
             <Skeleton v-if="loadingWorkspaces" class="h-9 w-full" />
             <Select v-else v-model="selectedWorkspace">
                 <SelectTrigger>
-                    <SelectValue placeholder="Wybierz workspace..." />
+                    <SelectValue :placeholder="t('Wybierz workspace...')" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem v-for="ws in workspaceList" :key="ws.id" :value="ws.id">
@@ -192,7 +195,7 @@ onMounted(async () => {
             <Skeleton v-if="loadingSpaces" class="h-9 w-full" />
             <Select v-else v-model="selectedSpace">
                 <SelectTrigger>
-                    <SelectValue placeholder="Wybierz space..." />
+                    <SelectValue :placeholder="t('Wybierz space...')" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem v-for="s in spaceList" :key="s.id" :value="s.id">
@@ -203,12 +206,12 @@ onMounted(async () => {
         </div>
 
         <div v-if="selectedWorkspace" class="flex items-center justify-between">
-            <Label>Tylko moje zadania</Label>
+            <Label>{{ t('Tylko moje zadania') }}</Label>
             <Switch :model-value="onlyMyTasks" :disabled="loadingMe" @update:model-value="toggleOnlyMyTasks" />
         </div>
 
         <div v-if="selectedSpace" class="grid gap-2">
-            <Label>Listy <span v-if="selectedListIds.length > 0" class="text-muted-foreground text-xs">({{ selectedListIds.length }} wybranych)</span></Label>
+            <Label>{{ t('Listy') }} <span v-if="selectedListIds.length > 0" class="text-muted-foreground text-xs">({{ t(':count wybranych', { count: selectedListIds.length.toString() }) }})</span></Label>
             <Skeleton v-if="loadingLists" class="h-24 w-full" />
             <div v-else-if="allListsData" class="border rounded-md p-3 max-h-64 overflow-y-auto space-y-4">
                 <div v-for="folder in allListsData.folders" :key="folder.id">
@@ -229,7 +232,7 @@ onMounted(async () => {
                 </div>
 
                 <div v-if="allListsData.folderless.length > 0">
-                    <p class="text-sm font-medium text-muted-foreground mb-2">Bez folderu</p>
+                    <p class="text-sm font-medium text-muted-foreground mb-2">{{ t('Bez folderu') }}</p>
                     <div class="space-y-2 pl-2">
                         <div
                             v-for="list in allListsData.folderless"
@@ -249,7 +252,7 @@ onMounted(async () => {
                     v-if="allListsData.folders.length === 0 && allListsData.folderless.length === 0"
                     class="text-sm text-muted-foreground"
                 >
-                    Brak list w tym space.
+                    {{ t('Brak list w tym space.') }}
                 </p>
             </div>
         </div>

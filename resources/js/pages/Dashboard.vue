@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Deferred, Head, Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import { useTranslations } from '@/composables/useTranslations';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
 import FeedBlockSkeleton from '@/components/morning-hub/FeedBlockSkeleton.vue';
@@ -14,15 +15,17 @@ import { dashboard } from '@/routes';
 import { index as routineIndex } from '@/routes/morning-hub/routine';
 import type { BreadcrumbItem, BlockFeedData, BlockTasksData, RoutineBlock } from '@/types';
 
+const { t } = useTranslations();
+
 const props = defineProps<{
     blocks: RoutineBlock[];
 }>();
 
 const page = usePage();
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Panel', href: dashboard() },
-];
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    { title: t('Panel'), href: dashboard() },
+]);
 
 function getTasksData(blockId: number): BlockTasksData | undefined {
     return (page.props as Record<string, unknown>)[`tasks_${blockId}`] as BlockTasksData | undefined;
@@ -65,16 +68,16 @@ const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.tim
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Panel" />
+        <Head :title="t('Panel')" />
 
         <div class="space-y-6 p-6">
-            <Heading title="Morning Hub" description="Twój codzienny panel rutyny." />
+            <Heading title="Morning Hub" :description="t('Twój codzienny panel rutyny.')" />
 
             <div v-if="blocks.length === 0" class="rounded-lg border border-dashed p-8 text-center">
                 <p class="text-muted-foreground">
-                    Brak skonfigurowanych bloków rutyny.
-                    <Link :href="routineIndex.url()" class="underline">Przejdź do Porannej Rutyny</Link>,
-                    aby skonfigurować bloki.
+                    {{ t('Brak skonfigurowanych bloków rutyny.') }}
+                    <Link :href="routineIndex.url()" class="underline">{{ t('Przejdź do Porannej Rutyny') }}</Link>,
+                    {{ t('aby skonfigurować bloki.') }}
                 </p>
             </div>
 

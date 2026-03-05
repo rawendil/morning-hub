@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { ClipboardList, Repeat, Lightbulb } from 'lucide-vue-next';
+import { computed } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslations } from '@/composables/useTranslations';
 import { dashboard, login, register } from '@/routes';
 
 withDefaults(
@@ -15,23 +18,25 @@ withDefaults(
     },
 );
 
-const features = [
+const { t } = useTranslations();
+
+const features = computed(() => [
     {
         icon: ClipboardList,
-        title: 'Organizacja zadań',
-        description: 'Zbieraj zadania z ClickUp, planuj dzień i skup się na priorytetach — bez przeskakiwania między narzędziami.',
+        title: t('Organizacja zadań'),
+        description: t('Zbieraj zadania z ClickUp, planuj dzień i skup się na priorytetach — bez przeskakiwania między narzędziami.'),
     },
     {
         icon: Repeat,
-        title: 'Nawyki i rutyna',
-        description: 'Buduj poranne rytuały z timerem i checklistą nawyków, które resetują się każdego ranka.',
+        title: t('Nawyki i rutyna'),
+        description: t('Buduj poranne rytuały z timerem i checklistą nawyków, które resetują się każdego ranka.'),
     },
     {
         icon: Lightbulb,
-        title: 'Inspiracja i notatki',
-        description: 'Przeglądaj artykuły RSS, zapisuj myśli w zrzucie i zacznij dzień z czystą głową.',
+        title: t('Inspiracja i notatki'),
+        description: t('Przeglądaj artykuły RSS, zapisuj myśli w zrzucie i zacznij dzień z czystą głową.'),
     },
-];
+]);
 </script>
 
 <template>
@@ -45,17 +50,18 @@ const features = [
                 <span class="text-lg font-semibold tracking-tight">Morning Hub</span>
             </div>
             <nav class="flex items-center gap-3">
+                <LanguageSwitcher />
                 <template v-if="$page.props.auth.user">
                     <Link :href="dashboard()">
-                        <Button size="sm">Panel</Button>
+                        <Button size="sm">{{ t('Panel') }}</Button>
                     </Link>
                 </template>
                 <template v-else>
                     <Link :href="login.url()">
-                        <Button variant="ghost" size="sm">Zaloguj się</Button>
+                        <Button variant="ghost" size="sm">{{ t('Zaloguj się') }}</Button>
                     </Link>
                     <Link v-if="canRegister" :href="register.url()">
-                        <Button size="sm">Rejestracja</Button>
+                        <Button size="sm">{{ t('Rejestracja') }}</Button>
                     </Link>
                 </template>
             </nav>
@@ -65,22 +71,21 @@ const features = [
         <main class="flex flex-1 flex-col items-center justify-center px-6 text-center">
             <div class="max-w-2xl space-y-6">
                 <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
-                    Twoja poranna rutyna,<br />
-                    <span class="text-primary">uporządkowana.</span>
+                    {{ t('Twoja poranna rutyna,') }}<br />
+                    <span class="text-primary">{{ t('uporządkowana.') }}</span>
                 </h1>
                 <p class="mx-auto max-w-lg text-lg text-muted-foreground">
-                    Organizuj zadania, śledź nawyki i zachowaj skupienie — wszystko w jednym
-                    spokojnym panelu bez rozpraszaczy.
+                    {{ t('Organizuj zadania, śledź nawyki i zachowaj skupienie — wszystko w jednym spokojnym panelu bez rozpraszaczy.') }}
                 </p>
                 <div>
                     <Link v-if="$page.props.auth.user" :href="dashboard()">
-                        <Button size="lg">Przejdź do panelu</Button>
+                        <Button size="lg">{{ t('Przejdź do panelu') }}</Button>
                     </Link>
                     <Link v-else-if="canRegister" :href="register.url()">
-                        <Button size="lg">Rozpocznij</Button>
+                        <Button size="lg">{{ t('Rozpocznij') }}</Button>
                     </Link>
                     <Link v-else :href="login.url()">
-                        <Button size="lg">Zaloguj się</Button>
+                        <Button size="lg">{{ t('Zaloguj się') }}</Button>
                     </Link>
                 </div>
             </div>

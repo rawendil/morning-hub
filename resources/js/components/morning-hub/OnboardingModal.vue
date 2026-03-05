@@ -2,6 +2,7 @@
 import { Link } from '@inertiajs/vue3';
 import { LayoutGrid, Rocket, Sparkles } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
+import { useTranslations } from '@/composables/useTranslations';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -12,6 +13,8 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { index as routineIndex } from '@/routes/morning-hub/routine';
+
+const { t } = useTranslations();
 
 const STORAGE_KEY = 'morning-hub-onboarded';
 
@@ -24,30 +27,29 @@ onMounted(() => {
     }
 });
 
-const steps = [
+const steps = computed(() => [
     {
         icon: Sparkles,
-        title: 'Witaj w Morning Hub',
-        description:
-            'Twój osobisty panel porannej rutyny. Organizuj zadania, śledź nawyki i zachowaj skupienie — zanim zaczniesz dzień.',
+        title: t('Witaj w Morning Hub'),
+        description: t('Twój osobisty panel porannej rutyny. Organizuj zadania, śledź nawyki i zachowaj skupienie — zanim zaczniesz dzień.'),
     },
     {
         icon: LayoutGrid,
-        title: 'Jak to działa',
+        title: t('Jak to działa'),
         items: [
-            'Skonfiguruj bloki w ustawieniach Rutyny — timery, zadania, nawyki, notatki.',
-            'Połącz ClickUp, aby automatycznie pobierać priorytetowe zadania.',
-            'Uruchom timer i pracuj przez kolejne bloki.',
+            t('Skonfiguruj bloki w ustawieniach Rutyny — timery, zadania, nawyki, notatki.'),
+            t('Połącz ClickUp, aby automatycznie pobierać priorytetowe zadania.'),
+            t('Uruchom timer i pracuj przez kolejne bloki.'),
         ],
     },
     {
         icon: Rocket,
-        title: 'Gotowy do startu',
-        description: 'Skonfiguruj pierwszą rutynę lub przejdź od razu do panelu.',
+        title: t('Gotowy do startu'),
+        description: t('Skonfiguruj pierwszą rutynę lub przejdź od razu do panelu.'),
     },
-];
+]);
 
-const isLastStep = computed(() => currentStep.value === steps.length - 1);
+const isLastStep = computed(() => currentStep.value === steps.value.length - 1);
 
 function next() {
     if (isLastStep.value) {
@@ -89,8 +91,9 @@ function complete() {
 
             <!-- Step 2: list items -->
             <ul v-if="steps[currentStep].items" class="space-y-3 px-4">
+
                 <li
-                    v-for="(item, i) in steps[currentStep].items"
+                    v-for="(item, i) in steps[currentStep].items ?? []"
                     :key="i"
                     class="flex items-start gap-3 text-sm text-muted-foreground"
                 >
@@ -103,17 +106,17 @@ function complete() {
 
             <DialogFooter class="flex-row justify-between gap-2 sm:justify-between">
                 <Button v-if="!isLastStep" variant="ghost" size="sm" @click="complete">
-                    Pomiń
+                    {{ t('Pomiń') }}
                 </Button>
                 <span v-else />
 
                 <div v-if="isLastStep" class="flex gap-2">
                     <Link :href="routineIndex.url()" @click="complete">
-                        <Button variant="outline" size="sm">Ustawienia rutyny</Button>
+                        <Button variant="outline" size="sm">{{ t('Ustawienia rutyny') }}</Button>
                     </Link>
-                    <Button size="sm" @click="complete">Przejdź do panelu</Button>
+                    <Button size="sm" @click="complete">{{ t('Przejdź do panelu') }}</Button>
                 </div>
-                <Button v-else size="sm" @click="next">Dalej</Button>
+                <Button v-else size="sm" @click="next">{{ t('Dalej') }}</Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>

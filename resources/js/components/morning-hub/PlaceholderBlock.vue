@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { resolveBlockIcon } from '@/lib/block-icons';
+import { useTranslations } from '@/composables/useTranslations';
 import type { RoutineBlock } from '@/types';
 
 const props = defineProps<{
@@ -19,6 +20,8 @@ const props = defineProps<{
     remainingSeconds: number;
     formattedTime: string;
 }>();
+
+const { t } = useTranslations();
 
 const emit = defineEmits<{
     timerStart: [];
@@ -68,7 +71,7 @@ const emit = defineEmits<{
             <p v-else-if="block.config?.placeholder_text" class="text-sm text-muted-foreground">
                 {{ block.config.placeholder_text }}
             </p>
-            <p v-else class="text-sm text-muted-foreground">Wkrótce</p>
+            <p v-else class="text-sm text-muted-foreground">{{ t('Wkrótce') }}</p>
         </CardContent>
     </Card>
 </template>

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import { ShieldBan, ShieldCheck } from 'lucide-vue-next';
-import { onUnmounted, ref } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
 import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from '@/composables/useTranslations';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
@@ -23,12 +24,14 @@ withDefaults(defineProps<Props>(), {
     twoFactorEnabled: false,
 });
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useTranslations();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Uwierzytelnianie dwuskładnikowe',
+        title: t('Uwierzytelnianie dwuskładnikowe'),
         href: show(),
     },
-];
+]);
 
 const { hasSetupData, clearTwoFactorAuthData } = useTwoFactorAuth();
 const showSetupModal = ref<boolean>(false);
@@ -40,28 +43,26 @@ onUnmounted(() => {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Uwierzytelnianie dwuskładnikowe" />
+        <Head :title="t('Uwierzytelnianie dwuskładnikowe')" />
 
-        <h1 class="sr-only">Ustawienia uwierzytelniania dwuskładnikowego</h1>
+        <h1 class="sr-only">{{ t('Ustawienia uwierzytelniania dwuskładnikowego') }}</h1>
 
         <SettingsLayout>
             <div class="space-y-6">
                 <Heading
                     variant="small"
-                    title="Uwierzytelnianie dwuskładnikowe"
-                    description="Zarządzaj ustawieniami uwierzytelniania dwuskładnikowego"
+                    :title="t('Uwierzytelnianie dwuskładnikowe')"
+                    :description="t('Zarządzaj ustawieniami uwierzytelniania dwuskładnikowego')"
                 />
 
                 <div
                     v-if="!twoFactorEnabled"
                     class="flex flex-col items-start justify-start space-y-4"
                 >
-                    <Badge variant="destructive">Wyłączone</Badge>
+                    <Badge variant="destructive">{{ t('Wyłączone') }}</Badge>
 
                     <p class="text-muted-foreground">
-                        Po włączeniu uwierzytelniania dwuskładnikowego podczas
-                        logowania będzie wymagany bezpieczny kod PIN. Kod można
-                        uzyskać z aplikacji obsługującej TOTP na Twoim telefonie.
+                        {{ t('Po włączeniu uwierzytelniania dwuskładnikowego podczas logowania będzie wymagany bezpieczny kod PIN. Kod można uzyskać z aplikacji obsługującej TOTP na Twoim telefonie.') }}
                     </p>
 
                     <div>
@@ -69,7 +70,7 @@ onUnmounted(() => {
                             v-if="hasSetupData"
                             @click="showSetupModal = true"
                         >
-                            <ShieldCheck />Kontynuuj konfigurację
+                            <ShieldCheck />{{ t('Kontynuuj konfigurację') }}
                         </Button>
                         <Form
                             v-else
@@ -78,7 +79,7 @@ onUnmounted(() => {
                             #default="{ processing }"
                         >
                             <Button type="submit" :disabled="processing">
-                                <ShieldCheck />Włącz 2FA</Button
+                                <ShieldCheck />{{ t('Włącz 2FA') }}</Button
                             ></Form
                         >
                     </div>
@@ -88,13 +89,10 @@ onUnmounted(() => {
                     v-else
                     class="flex flex-col items-start justify-start space-y-4"
                 >
-                    <Badge variant="default">Włączone</Badge>
+                    <Badge variant="default">{{ t('Włączone') }}</Badge>
 
                     <p class="text-muted-foreground">
-                        Z włączonym uwierzytelnianiem dwuskładnikowym podczas
-                        logowania będzie wymagany bezpieczny kod PIN, który
-                        możesz uzyskać z aplikacji obsługującej TOTP na Twoim
-                        telefonie.
+                        {{ t('Z włączonym uwierzytelnianiem dwuskładnikowym podczas logowania będzie wymagany bezpieczny kod PIN, który możesz uzyskać z aplikacji obsługującej TOTP na Twoim telefonie.') }}
                     </p>
 
                     <TwoFactorRecoveryCodes />
@@ -107,7 +105,7 @@ onUnmounted(() => {
                                 :disabled="processing"
                             >
                                 <ShieldBan />
-                                Wyłącz 2FA
+                                {{ t('Wyłącz 2FA') }}
                             </Button>
                         </Form>
                     </div>

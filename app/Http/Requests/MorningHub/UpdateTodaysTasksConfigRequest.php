@@ -33,7 +33,7 @@ class UpdateTodaysTasksConfigRequest extends FormRequest
             $userIds = $this->user()->clickUpConnections()->pluck('id')->all();
             foreach ($connectionIds as $id) {
                 if (! in_array((int) $id, $userIds)) {
-                    $validator->errors()->add('connection_ids', 'Niektóre połączenia nie należą do Ciebie.');
+                    $validator->errors()->add('connection_ids', __('Niektóre połączenia nie należą do Ciebie.'));
                     break;
                 }
             }

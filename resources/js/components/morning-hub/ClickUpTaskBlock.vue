@@ -3,6 +3,7 @@ import { router } from '@inertiajs/vue3';
 import { Plus, RefreshCw, SkipForward } from 'lucide-vue-next';
 import { resolveBlockIcon } from '@/lib/block-icons';
 import { onMounted, ref } from 'vue';
+import { useTranslations } from '@/composables/useTranslations';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskCard from '@/components/morning-hub/ClickUpTaskCard.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
@@ -38,6 +39,7 @@ const emit = defineEmits<{
     timerSkip: [];
 }>();
 
+const { t } = useTranslations();
 const { fetchJson, postJson, putJson } = useClickUpApi();
 
 const refreshing = ref(false);
@@ -126,7 +128,7 @@ async function handleCreateTask() {
             </div>
         </CardHeader>
         <CardContent class="pt-0">
-            <p class="text-sm text-muted-foreground">Skonfiguruj połączenie ClickUp, aby zobaczyć zadania.</p>
+            <p class="text-sm text-muted-foreground">{{ t('Skonfiguruj połączenie ClickUp, aby zobaczyć zadania.') }}</p>
         </CardContent>
     </Card>
 
@@ -167,14 +169,14 @@ async function handleCreateTask() {
         <div v-if="showCreateForm" class="space-y-2 border-t px-4 py-3">
             <Input
                 v-model="newTaskName"
-                placeholder="Nazwa zadania..."
+                :placeholder="t('Nazwa zadania...')"
                 :disabled="creating"
                 @keyup.enter="handleCreateTask"
             />
             <div class="flex justify-end gap-2">
-                <Button variant="ghost" size="sm" @click="showCreateForm = false">Anuluj</Button>
+                <Button variant="ghost" size="sm" @click="showCreateForm = false">{{ t('Anuluj') }}</Button>
                 <Button size="sm" :disabled="!newTaskName.trim() || creating" @click="handleCreateTask">
-                    {{ creating ? 'Tworzenie...' : 'Utwórz' }}
+                    {{ creating ? t('Tworzenie...') : t('Utwórz') }}
                 </Button>
             </div>
         </div>
@@ -183,12 +185,12 @@ async function handleCreateTask() {
             <Alert v-if="tasksData.error" variant="destructive">
                 <AlertDescription class="flex items-center justify-between">
                     <span>{{ tasksData.error }}</span>
-                    <Button variant="outline" size="sm" @click="refresh">Ponów</Button>
+                    <Button variant="outline" size="sm" @click="refresh">{{ t('Ponów') }}</Button>
                 </AlertDescription>
             </Alert>
 
             <p v-else-if="tasksData.tasks.length === 0" class="text-sm text-muted-foreground">
-                Brak zadań na dziś.
+                {{ t('Brak zadań na dziś.') }}
             </p>
 
             <ClickUpTaskCard

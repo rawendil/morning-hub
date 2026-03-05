@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -8,7 +9,10 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tasks';
 import { update } from '@/routes/morning-hub/todays-tasks';
 import { index as clickupIndex } from '@/routes/morning-hub/clickup';
+import { useTranslations } from '@/composables/useTranslations';
 import type { BreadcrumbItem, ClickUpConnection } from '@/types';
+
+const { t } = useTranslations();
 
 type TodaysTasksConfig = {
     id: number;
@@ -20,9 +24,9 @@ const props = defineProps<{
     connections: ClickUpConnection[];
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Zadania na dziś — Konfiguracja', href: todaysTasksConfigIndex() },
-];
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    { title: t('Zadania na dziś — Konfiguracja'), href: todaysTasksConfigIndex() },
+]);
 
 const selectedConnectionIds = ref<number[]>((props.config?.connection_ids ?? []).map(Number));
 
@@ -36,16 +40,12 @@ function toggleConnectionId(id: number) {
 }
 </script>
 
-<script lang="ts">
-import { ref } from 'vue';
-</script>
-
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Zadania na dziś — Konfiguracja" />
+        <Head :title="t('Zadania na dziś — Konfiguracja')" />
 
         <div class="space-y-6 p-6">
-            <Heading title="Zadania na dziś — Konfiguracja" description="Wybierz połączenia ClickUp, z których mają być pobierane zadania." />
+            <Heading :title="t('Zadania na dziś — Konfiguracja')" :description="t('Wybierz połączenia ClickUp, z których mają być pobierane zadania.')" />
 
             <Form
                 :action="update()"
@@ -54,11 +54,11 @@ import { ref } from 'vue';
             >
                 <div class="max-w-xl space-y-6">
                     <div class="grid gap-2">
-                        <Label>Połączenia ClickUp</Label>
+                        <Label>{{ t('Połączenia ClickUp') }}</Label>
                         <p v-if="!connections.length" class="text-sm text-muted-foreground">
-                            Brak dostępnych połączeń ClickUp.
-                            <Link :href="clickupIndex()" class="underline">Dodaj połączenie</Link>,
-                            aby rozpocząć.
+                            {{ t('Brak dostępnych połączeń ClickUp.') }}
+                            <Link :href="clickupIndex()" class="underline">{{ t('Dodaj połączenie') }}</Link>,
+                            {{ t('aby rozpocząć.') }}
                         </p>
                         <div v-else class="space-y-2">
                             <template v-for="id in selectedConnectionIds" :key="`hidden-${id}`">
@@ -81,9 +81,9 @@ import { ref } from 'vue';
 
                     <div class="flex items-center gap-4">
                         <Button type="submit" :disabled="processing">
-                            {{ processing ? 'Zapisuję...' : 'Zapisz' }}
+                            {{ processing ? t('Zapisuję...') : t('Zapisz') }}
                         </Button>
-                        <p v-if="recentlySuccessful" class="text-sm text-muted-foreground">Zapisano.</p>
+                        <p v-if="recentlySuccessful" class="text-sm text-muted-foreground">{{ t('Zapisano.') }}</p>
                     </div>
                 </div>
             </Form>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Deferred, Head, Link, router } from '@inertiajs/vue3';
 import { RefreshCw, Settings } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useTranslations } from '@/composables/useTranslations';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskCard from '@/components/morning-hub/ClickUpTaskCard.vue';
 import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
@@ -15,14 +16,16 @@ import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tas
 import { updateTask as updateTaskRoute } from '@/routes/morning-hub/clickup';
 import type { BreadcrumbItem, BlockTodaysTasksData, UpdateTaskPayload } from '@/types';
 
+const { t } = useTranslations();
+
 const props = defineProps<{
     hasConfig: boolean;
     todaysTasksData?: BlockTodaysTasksData;
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Zadania na dziś', href: todaysTasks() },
-];
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    { title: t('Zadania na dziś'), href: todaysTasks() },
+]);
 
 const { putJson } = useClickUpApi();
 
@@ -88,11 +91,11 @@ const multipleGroups = (() => {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Zadania na dziś" />
+        <Head :title="t('Zadania na dziś')" />
 
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
-                <Heading title="Zadania na dziś" description="Twoje zadania z ClickUp zaplanowane na dziś." />
+                <Heading :title="t('Zadania na dziś')" :description="t('Twoje zadania z ClickUp zaplanowane na dziś.')" />
                 <div class="flex items-center gap-2">
                     <Button v-if="hasConfig" variant="ghost" size="icon" :disabled="refreshing" @click="refresh">
                         <RefreshCw class="h-4 w-4" :class="{ 'animate-spin': refreshing }" />
@@ -100,7 +103,7 @@ const multipleGroups = (() => {
                     <Button variant="outline" size="sm" as-child>
                         <Link :href="todaysTasksConfigIndex()">
                             <Settings class="mr-2 h-4 w-4" />
-                            Konfiguracja
+                            {{ t('Konfiguracja') }}
                         </Link>
                     </Button>
                 </div>
@@ -108,9 +111,9 @@ const multipleGroups = (() => {
 
             <div v-if="!hasConfig" class="rounded-lg border border-dashed p-8 text-center">
                 <p class="text-muted-foreground">
-                    Nie skonfigurowano połączeń ClickUp.
-                    <Link :href="todaysTasksConfigIndex()" class="underline">Przejdź do konfiguracji</Link>,
-                    aby wybrać połączenia.
+                    {{ t('Nie skonfigurowano połączeń ClickUp.') }}
+                    <Link :href="todaysTasksConfigIndex()" class="underline">{{ t('Przejdź do konfiguracji') }}</Link>,
+                    {{ t('aby wybrać połączenia.') }}
                 </p>
             </div>
 
@@ -122,7 +125,7 @@ const multipleGroups = (() => {
 
                     <div class="space-y-4">
                         <p v-if="allTasksEmpty" class="text-sm text-muted-foreground">
-                            Brak zadań na dziś. Dobra robota!
+                            {{ t('Brak zadań na dziś. Dobra robota!') }}
                         </p>
 
                         <template v-for="group in todaysTasksData?.groups" :key="group.connectionId">
@@ -133,7 +136,7 @@ const multipleGroups = (() => {
                             <Alert v-if="group.error" variant="destructive">
                                 <AlertDescription class="flex items-center justify-between">
                                     <span>{{ group.error }}</span>
-                                    <Button variant="outline" size="sm" @click="refresh">Ponów</Button>
+                                    <Button variant="outline" size="sm" @click="refresh">{{ t('Ponów') }}</Button>
                                 </AlertDescription>
                             </Alert>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { BookOpen, CalendarCheck, LayoutGrid, ListChecks, Plug } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -13,6 +14,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useTranslations } from '@/composables/useTranslations';
 import { dashboard, todaysTasks } from '@/routes';
 import { index as clickupIndex } from '@/routes/morning-hub/clickup';
 import { guide } from '@/routes/morning-hub';
@@ -20,41 +22,43 @@ import { index as routineIndex } from '@/routes/morning-hub/routine';
 import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tasks';
 import type { NavItem } from '@/types';
 
-const morningHubNavItems: NavItem[] = [
+const { t } = useTranslations();
+
+const morningHubNavItems = computed<NavItem[]>(() => [
     {
-        title: 'Poranna rutyna',
+        title: t('Poranna rutyna'),
         href: dashboard(),
         icon: LayoutGrid,
     },
     {
-        title: 'Zadania na dziś',
+        title: t('Zadania na dziś'),
         href: todaysTasks(),
         icon: CalendarCheck,
     },
-];
+]);
 
-const configNavItems: NavItem[] = [
+const configNavItems = computed<NavItem[]>(() => [
     {
-        title: 'Bloki rutyny',
+        title: t('Bloki rutyny'),
         href: routineIndex(),
         icon: ListChecks,
     },
     {
-        title: 'Źródła zadań',
+        title: t('Źródła zadań'),
         href: todaysTasksConfigIndex(),
         icon: CalendarCheck,
     },
     {
-        title: 'Połączenia ClickUp',
+        title: t('Połączenia ClickUp'),
         href: clickupIndex(),
         icon: Plug,
     },
     {
-        title: 'Przewodnik',
+        title: t('Przewodnik'),
         href: guide(),
         icon: BookOpen,
     },
-];
+]);
 
 </script>
 
@@ -74,7 +78,7 @@ const configNavItems: NavItem[] = [
 
         <SidebarContent>
             <NavMain :items="morningHubNavItems" label="Morning Hub" />
-            <NavMain :items="configNavItems" label="Konfiguracja" />
+            <NavMain :items="configNavItems" :label="t('Konfiguracja')" />
         </SidebarContent>
 
         <SidebarFooter>
