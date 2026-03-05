@@ -79,9 +79,6 @@ function timeAgo(isoDate: string): string {
                 />
             </div>
             <div class="flex items-center gap-2">
-                <span v-if="items.length" class="text-xs text-muted-foreground">
-                    {{ showRead ? `${unread}/${items.length}` : `${displayItems.length}` }} artykułów
-                </span>
                 <button
                     v-if="items.length"
                     class="flex items-center gap-1.5 text-muted-foreground"
