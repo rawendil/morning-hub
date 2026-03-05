@@ -54,8 +54,8 @@ Personal morning routine dashboard that helps you organize tasks, track habits, 
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/dev-me.git
-cd dev-me
+git clone https://github.com/YOUR_USERNAME/morning-hub.git
+cd morning-hub
 
 # Install dependencies
 composer install
