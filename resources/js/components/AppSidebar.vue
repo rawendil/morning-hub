@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, ListChecks, Plug } from 'lucide-vue-next';
+import { BookOpen, LayoutGrid, ListChecks, Plug } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as clickupIndex } from '@/routes/morning-hub/clickup';
+import { guide } from '@/routes/morning-hub';
 import { index as routineIndex } from '@/routes/morning-hub/routine';
 import type { NavItem } from '@/types';
 
@@ -36,6 +37,11 @@ const morningHubNavItems: NavItem[] = [
         title: 'ClickUp',
         href: clickupIndex(),
         icon: Plug,
+    },
+    {
+        title: 'Przewodnik',
+        href: guide(),
+        icon: BookOpen,
     },
 ];
 

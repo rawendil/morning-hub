@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MorningHub\ClickUpApiController;
 use App\Http\Controllers\MorningHub\ClickUpConnectionController;
+use App\Http\Controllers\MorningHub\GuideController;
 use App\Http\Controllers\MorningHub\HabitToggleController;
 use App\Http\Controllers\MorningHub\RoutineBlockController;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Habits
     Route::post('morning-hub/habits/{block}/toggle', HabitToggleController::class)
         ->name('morning-hub.habits.toggle');
+
+    // Guide
+    Route::get('morning-hub/guide', GuideController::class)
+        ->name('morning-hub.guide');
 
     // Routine Blocks CRUD
     Route::get('morning-hub/routine', [RoutineBlockController::class, 'index'])
