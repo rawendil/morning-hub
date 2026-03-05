@@ -36,8 +36,6 @@ class UpdateRoutineBlockRequest extends FormRequest
             'config.sources.*.name' => ['required', 'string', 'max:255'],
             'config.sources.*.url' => ['required', 'url', 'max:500'],
             'config.days' => ['required_if:type,feed', 'integer', 'min:1', 'max:30'],
-            'config.connection_ids' => ['required_if:type,todays_tasks', 'array', 'min:1'],
-            'config.connection_ids.*' => ['required', 'integer', 'exists:clickup_connections,id'],
             'config.placeholder_text' => ['nullable', 'string', 'max:500'],
             'config.placeholder_url' => ['nullable', 'url', 'max:500'],
         ];
@@ -54,16 +52,6 @@ class UpdateRoutineBlockRequest extends FormRequest
                 }
             }
 
-            if ($this->input('type') === 'todays_tasks') {
-                $connectionIds = $this->input('config.connection_ids', []);
-                $userIds = $this->user()->clickUpConnections()->pluck('id')->all();
-                foreach ($connectionIds as $id) {
-                    if (! in_array((int) $id, $userIds)) {
-                        $validator->errors()->add('config.connection_ids', 'Niektóre połączenia nie należą do Ciebie.');
-                        break;
-                    }
-                }
-            }
         });
     }
 }

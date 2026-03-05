@@ -108,7 +108,6 @@ export const DEFAULT_BLOCK_ICONS: Record<BlockType, string> = {
     notes: 'NotebookPen',
     plan: 'CalendarCheck',
     custom: 'Wrench',
-    todays_tasks: 'CalendarDays',
 };
 
 export function getDefaultIconName(type: BlockType): string {

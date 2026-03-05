@@ -4,6 +4,7 @@ use App\Http\Controllers\MorningHub\ClickUpApiController;
 use App\Http\Controllers\MorningHub\ClickUpConnectionController;
 use App\Http\Controllers\MorningHub\GuideController;
 use App\Http\Controllers\MorningHub\RoutineBlockController;
+use App\Http\Controllers\MorningHub\TodaysTasksConfigController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -44,6 +45,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('morning-hub.clickup.comments');
     Route::get('morning-hub/clickup/{connection}/statuses', [ClickUpApiController::class, 'statuses'])
         ->name('morning-hub.clickup.statuses');
+
+    // Today's Tasks Config
+    Route::get('morning-hub/todays-tasks', [TodaysTasksConfigController::class, 'index'])
+        ->name('morning-hub.todays-tasks.index');
+    Route::put('morning-hub/todays-tasks', [TodaysTasksConfigController::class, 'update'])
+        ->name('morning-hub.todays-tasks.update');
 
     // Guide
     Route::get('morning-hub/guide', GuideController::class)

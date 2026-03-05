@@ -188,54 +188,6 @@ test('feed block source requires name and valid url', function () {
         ->assertSessionHasErrors(['config.sources.0.name', 'config.sources.0.url']);
 });
 
-test('user can create todays_tasks block with valid connection ids', function () {
-    $user = User::factory()->create();
-    $conn1 = ClickUpConnection::factory()->for($user)->create();
-    $conn2 = ClickUpConnection::factory()->for($user)->create();
-
-    $this->actingAs($user)
-        ->post(route('morning-hub.routine.store'), [
-            'type' => 'todays_tasks',
-            'name' => 'Moje zadania na dziś',
-            'config' => [
-                'connection_ids' => [$conn1->id, $conn2->id],
-            ],
-        ])
-        ->assertRedirect(route('morning-hub.routine.index'));
-
-    $block = $user->routineBlocks()->where('name', 'Moje zadania na dziś')->first();
-    expect($block)->not->toBeNull();
-    expect($block->config['connection_ids'])->toBe([$conn1->id, $conn2->id]);
-});
-
-test('todays_tasks block requires connection_ids', function () {
-    $user = User::factory()->create();
-
-    $this->actingAs($user)
-        ->post(route('morning-hub.routine.store'), [
-            'type' => 'todays_tasks',
-            'name' => 'No Connections',
-            'config' => [],
-        ])
-        ->assertSessionHasErrors('config.connection_ids');
-});
-
-test('todays_tasks block rejects other users connections', function () {
-    $user = User::factory()->create();
-    $otherUser = User::factory()->create();
-    $otherConn = ClickUpConnection::factory()->for($otherUser)->create();
-
-    $this->actingAs($user)
-        ->post(route('morning-hub.routine.store'), [
-            'type' => 'todays_tasks',
-            'name' => 'Stolen Connections',
-            'config' => [
-                'connection_ids' => [$otherConn->id],
-            ],
-        ])
-        ->assertSessionHasErrors('config.connection_ids');
-});
-
 test('user can create block with custom icon', function () {
     $user = User::factory()->create();
 

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\BlockType;
-use App\Models\ClickUpConnection;
 use App\Models\RoutineBlock;
 use App\Services\ClickUpService;
 use App\Services\FeedService;
@@ -42,23 +41,6 @@ class DashboardController extends Controller
             $props["tasks_{$block->id}"] = Inertia::defer(
                 fn () => $this->fetchTasks($block),
                 "tasks_{$block->id}",
-            );
-        }
-
-        foreach ($blocks as $block) {
-            if ($block->type !== BlockType::TodaysTasks) {
-                continue;
-            }
-
-            $connectionIds = $block->config['connection_ids'] ?? [];
-
-            if (empty($connectionIds)) {
-                continue;
-            }
-
-            $props["todays_tasks_{$block->id}"] = Inertia::defer(
-                fn () => $this->fetchTodaysTasks($connectionIds),
-                "todays_tasks_{$block->id}",
             );
         }
 
@@ -102,60 +84,6 @@ class DashboardController extends Controller
         } catch (\Throwable $e) {
             return ['tasks' => [], 'error' => $e->getMessage()];
         }
-    }
-
-    /**
-     * @param  array<int, int>  $connectionIds
-     * @return array{groups: array<int, array{connectionId: int, connectionName: string, tasks: array<int, array<string, mixed>>, statuses: array<int, array<string, mixed>>, error: string|null}>, error: string|null}
-     */
-    private function fetchTodaysTasks(array $connectionIds): array
-    {
-        $connections = ClickUpConnection::whereIn('id', $connectionIds)->get();
-
-        $todayStart = now()->startOfDay()->getTimestampMs();
-        $todayEnd = now()->endOfDay()->getTimestampMs();
-
-        $groups = [];
-
-        foreach ($connections as $connection) {
-            try {
-                $service = new ClickUpService($connection->api_token);
-                $user = $service->getAuthenticatedUser();
-
-                $filters = [
-                    'assignees' => [$user['id']],
-                    'due_date_gt' => $todayStart - 1,
-                    'due_date_lt' => $todayEnd + 1,
-                ];
-
-                $listIds = $connection->default_list_ids ?? [];
-                $tasks = ! empty($listIds)
-                    ? $service->getTasksFromLists($listIds, $filters)
-                    : [];
-
-                $statuses = ! empty($listIds)
-                    ? $service->getListStatuses($listIds[0])
-                    : [];
-
-                $groups[] = [
-                    'connectionId' => $connection->id,
-                    'connectionName' => $connection->name,
-                    'tasks' => $tasks,
-                    'statuses' => $statuses,
-                    'error' => null,
-                ];
-            } catch (\Throwable $e) {
-                $groups[] = [
-                    'connectionId' => $connection->id,
-                    'connectionName' => $connection->name,
-                    'tasks' => [],
-                    'statuses' => [],
-                    'error' => $e->getMessage(),
-                ];
-            }
-        }
-
-        return ['groups' => $groups, 'error' => null];
     }
 
     /**

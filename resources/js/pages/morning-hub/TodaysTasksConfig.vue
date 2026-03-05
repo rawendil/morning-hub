@@ -1,0 +1,92 @@
+<script setup lang="ts">
+import { Form, Head, Link } from '@inertiajs/vue3';
+import Heading from '@/components/Heading.vue';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tasks';
+import { update } from '@/routes/morning-hub/todays-tasks';
+import { index as clickupIndex } from '@/routes/morning-hub/clickup';
+import type { BreadcrumbItem, ClickUpConnection } from '@/types';
+
+type TodaysTasksConfig = {
+    id: number;
+    connection_ids: number[] | null;
+} | null;
+
+const props = defineProps<{
+    config: TodaysTasksConfig;
+    connections: ClickUpConnection[];
+}>();
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Zadania na dziś — Konfiguracja', href: todaysTasksConfigIndex() },
+];
+
+const selectedConnectionIds = ref<number[]>((props.config?.connection_ids ?? []).map(Number));
+
+function toggleConnectionId(id: number) {
+    const index = selectedConnectionIds.value.indexOf(id);
+    if (index === -1) {
+        selectedConnectionIds.value.push(id);
+    } else {
+        selectedConnectionIds.value.splice(index, 1);
+    }
+}
+</script>
+
+<script lang="ts">
+import { ref } from 'vue';
+</script>
+
+<template>
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <Head title="Zadania na dziś — Konfiguracja" />
+
+        <div class="space-y-6 p-6">
+            <Heading title="Zadania na dziś — Konfiguracja" description="Wybierz połączenia ClickUp, z których mają być pobierane zadania." />
+
+            <Form
+                :action="update()"
+                method="put"
+                #default="{ errors, processing, recentlySuccessful }"
+            >
+                <div class="max-w-xl space-y-6">
+                    <div class="grid gap-2">
+                        <Label>Połączenia ClickUp</Label>
+                        <p v-if="!connections.length" class="text-sm text-muted-foreground">
+                            Brak dostępnych połączeń ClickUp.
+                            <Link :href="clickupIndex()" class="underline">Dodaj połączenie</Link>,
+                            aby rozpocząć.
+                        </p>
+                        <div v-else class="space-y-2">
+                            <template v-for="id in selectedConnectionIds" :key="`hidden-${id}`">
+                                <input type="hidden" name="connection_ids[]" :value="id" />
+                            </template>
+                            <label
+                                v-for="conn in connections"
+                                :key="conn.id"
+                                class="flex cursor-pointer items-center gap-2"
+                                @click="toggleConnectionId(conn.id)"
+                            >
+                                <Checkbox
+                                    :model-value="selectedConnectionIds.includes(conn.id)"
+                                />
+                                <span class="text-sm">{{ conn.name }}</span>
+                            </label>
+                        </div>
+                        <p v-if="errors['connection_ids']" class="text-sm text-destructive">{{ errors['connection_ids'] }}</p>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <Button type="submit" :disabled="processing">
+                            {{ processing ? 'Zapisuję...' : 'Zapisz' }}
+                        </Button>
+                        <p v-if="recentlySuccessful" class="text-sm text-muted-foreground">Zapisano.</p>
+                    </div>
+                </div>
+            </Form>
+        </div>
+    </AppLayout>
+</template>

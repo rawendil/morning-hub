@@ -41,7 +41,6 @@ const blockTypes: { value: BlockType; label: string }[] = [
     { value: 'feed', label: 'Kanał RSS' },
     { value: 'notes', label: 'Notatki' },
     { value: 'plan', label: 'Plan' },
-    { value: 'todays_tasks', label: 'Zadania na dziś' },
     { value: 'custom', label: 'Własny' },
 ];
 
@@ -54,7 +53,6 @@ const feedSources = ref<{ name: string; url: string }[]>(
     (props.block?.config?.sources as { name: string; url: string }[]) ?? [{ name: '', url: '' }],
 );
 const feedDays = ref<number>((props.block?.config?.days as number) ?? 5);
-const selectedConnectionIds = ref<number[]>((props.block?.config?.connection_ids as number[]) ?? []);
 const placeholderText = ref<string>((props.block?.config?.placeholder_text as string) ?? '');
 const placeholderUrl = ref<string>((props.block?.config?.placeholder_url as string) ?? '');
 
@@ -64,7 +62,6 @@ watch(() => props.block, (newBlock) => {
     habits.value = (newBlock?.config?.habits as string[]) ?? [''];
     feedSources.value = (newBlock?.config?.sources as { name: string; url: string }[]) ?? [{ name: '', url: '' }];
     feedDays.value = (newBlock?.config?.days as number) ?? 5;
-    selectedConnectionIds.value = (newBlock?.config?.connection_ids as number[]) ?? [];
     placeholderText.value = (newBlock?.config?.placeholder_text as string) ?? '';
     placeholderUrl.value = (newBlock?.config?.placeholder_url as string) ?? '';
 });
@@ -74,15 +71,6 @@ watch(selectedType, (newType) => {
         selectedIcon.value = getDefaultIconName(newType as BlockType);
     }
 });
-
-function toggleConnectionId(id: number) {
-    const idx = selectedConnectionIds.value.indexOf(id);
-    if (idx >= 0) {
-        selectedConnectionIds.value.splice(idx, 1);
-    } else {
-        selectedConnectionIds.value.push(id);
-    }
-}
 
 const needsConnection = computed(() => selectedType.value === 'clickup' || selectedType.value === 'braindump');
 const usesPlaceholder = computed(() => ['notes', 'plan', 'custom'].includes(selectedType.value));
@@ -287,32 +275,6 @@ const usesPlaceholder = computed(() => ['notes', 'plan', 'custom'].includes(sele
                         </div>
                     </div>
 
-                    <div v-if="selectedType === 'todays_tasks'" class="grid gap-2">
-                        <Label>Połączenia ClickUp</Label>
-                        <p v-if="!connections.length" class="text-sm text-muted-foreground">
-                            Brak dostępnych połączeń ClickUp. Najpierw dodaj połączenie.
-                        </p>
-                        <div v-else class="space-y-2">
-                            <template v-for="id in selectedConnectionIds" :key="`hidden-${id}`">
-                                <input type="hidden" name="config[connection_ids][]" :value="id" />
-                            </template>
-                            <label
-                                v-for="conn in connections"
-                                :key="conn.id"
-                                class="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors hover:bg-accent"
-                                :class="{ 'border-primary bg-accent': selectedConnectionIds.includes(conn.id) }"
-                            >
-                                <input
-                                    type="checkbox"
-                                    class="h-4 w-4 rounded border-input"
-                                    :checked="selectedConnectionIds.includes(conn.id)"
-                                    @change="toggleConnectionId(conn.id)"
-                                />
-                                {{ conn.name }}
-                            </label>
-                        </div>
-                        <InputError :message="errors['config.connection_ids']" />
-                    </div>
                 </div>
 
                 <DialogFooter class="gap-2">
