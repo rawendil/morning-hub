@@ -12,9 +12,11 @@ import { dashboard, login, register } from '@/routes';
 withDefaults(
     defineProps<{
         canRegister: boolean;
+        contactEmail: string;
     }>(),
     {
         canRegister: true,
+        contactEmail: '',
     },
 );
 
@@ -103,6 +105,13 @@ const features = computed(() => [
                 </Card>
             </div>
         </main>
+
+        <!-- Contact -->
+        <div v-if="contactEmail" class="py-6 text-center">
+            <a :href="`mailto:${contactEmail}`" class="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                {{ contactEmail }}
+            </a>
+        </div>
 
         <!-- Footer with forest photo -->
         <footer class="relative mt-auto h-64 sm:h-80 lg:h-96">

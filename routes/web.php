@@ -8,6 +8,7 @@ use Laravel\Fortify\Features;
 
 Route::inertia('/', 'Welcome', [
     'canRegister' => Features::enabled(Features::registration()),
+    'contactEmail' => fn () => config('app.contact_email'),
 ])->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {

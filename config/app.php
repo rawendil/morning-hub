@@ -118,6 +118,8 @@ return [
     |
     */
 
+    'contact_email' => env('CONTACT_EMAIL', 'contact@example.com'),
+
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
