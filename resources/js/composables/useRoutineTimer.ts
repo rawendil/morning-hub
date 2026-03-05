@@ -17,13 +17,68 @@ export type UseRoutineTimerReturn = {
     formatTime: (seconds: number) => string;
 };
 
+type StoredTimerState = {
+    date: string;
+    activeBlockId: number | null;
+    remainingSeconds: number;
+    completedBlockIds: number[];
+};
+
+const STORAGE_KEY = 'morning-hub-timer-state';
+
+function todayString(): string {
+    return new Date().toISOString().slice(0, 10);
+}
+
+function loadState(): StoredTimerState | null {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+            return null;
+        }
+
+        const parsed: StoredTimerState = JSON.parse(raw);
+        if (parsed.date !== todayString()) {
+            localStorage.removeItem(STORAGE_KEY);
+            return null;
+        }
+
+        return parsed;
+    } catch {
+        return null;
+    }
+}
+
+function persistState(state: StoredTimerState): void {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
 export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
-    const activeBlockId = ref<number | null>(null);
-    const remainingSeconds = ref(0);
+    const stored = loadState();
+
+    const activeBlockId = ref<number | null>(stored?.activeBlockId ?? null);
+    const remainingSeconds = ref(stored?.remainingSeconds ?? 0);
     const isRunning = ref(false);
-    const completedBlockIds = ref(new Set<number>());
+    const completedBlockIds = ref(new Set<number>(stored?.completedBlockIds ?? []));
 
     let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    function saveState(): void {
+        persistState({
+            date: todayString(),
+            activeBlockId: activeBlockId.value,
+            remainingSeconds: remainingSeconds.value,
+            completedBlockIds: [...completedBlockIds.value],
+        });
+    }
 
     function clearTimer(): void {
         if (intervalId !== null) {
@@ -35,7 +90,9 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
 
     function startInterval(): void {
         clearTimer();
-        if (remainingSeconds.value <= 0) return;
+        if (remainingSeconds.value <= 0) {
+            return;
+        }
 
         isRunning.value = true;
         intervalId = setInterval(() => {
@@ -44,6 +101,7 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
                 remainingSeconds.value = 0;
                 clearTimer();
             }
+            saveState();
         }, 1000);
     }
 
@@ -62,23 +120,30 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
         if (remainingSeconds.value > 0) {
             startInterval();
         }
+        saveState();
     }
 
     function pause(): void {
         clearTimer();
+        saveState();
     }
 
     function resume(): void {
-        if (activeBlockId.value === null || remainingSeconds.value <= 0) return;
+        if (activeBlockId.value === null || remainingSeconds.value <= 0) {
+            return;
+        }
         startInterval();
     }
 
     function reset(): void {
         clearTimer();
-        if (activeBlockId.value === null) return;
+        if (activeBlockId.value === null) {
+            return;
+        }
 
         const block = getBlock(activeBlockId.value);
         remainingSeconds.value = (block?.timer_minutes ?? 0) * 60;
+        saveState();
     }
 
     function skip(): void {
@@ -88,6 +153,7 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
         clearTimer();
         activeBlockId.value = null;
         remainingSeconds.value = 0;
+        saveState();
     }
 
     const isExpired = computed(
