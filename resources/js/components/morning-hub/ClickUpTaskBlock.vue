@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { Plus, RefreshCw, SkipForward } from 'lucide-vue-next';
+import { resolveBlockIcon } from '@/lib/block-icons';
 import { onMounted, ref } from 'vue';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskCard from '@/components/morning-hub/ClickUpTaskCard.vue';
@@ -119,7 +120,10 @@ async function handleCreateTask() {
 <template>
     <Card v-if="!block.clickup_connection_id" :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
         <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
-            <CardTitle class="text-base">{{ block.name }}</CardTitle>
+            <div class="flex items-center gap-2">
+                <component :is="resolveBlockIcon(block)" class="h-4 w-4 text-muted-foreground" />
+                <CardTitle class="text-base">{{ block.name }}</CardTitle>
+            </div>
         </CardHeader>
         <CardContent class="pt-0">
             <p class="text-sm text-muted-foreground">Skonfiguruj połączenie ClickUp, aby zobaczyć zadania.</p>
@@ -131,6 +135,7 @@ async function handleCreateTask() {
     <Card v-else :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
         <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
             <div class="flex items-center gap-2">
+                <component :is="resolveBlockIcon(block)" class="h-4 w-4 text-muted-foreground" />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
                 <RoutineTimerBadge
                     v-if="block.timer_minutes"

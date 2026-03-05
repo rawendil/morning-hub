@@ -5,7 +5,8 @@ export type BlockType =
     | 'feed'
     | 'notes'
     | 'plan'
-    | 'custom';
+    | 'custom'
+    | 'todays_tasks';
 
 export type ClickUpConnection = {
     id: number;
@@ -114,6 +115,19 @@ export type CreateTaskPayload = {
     list_id: string;
     name: string;
     description?: string;
+};
+
+export type TodaysTasksConnectionGroup = {
+    connectionId: number;
+    connectionName: string;
+    tasks: ClickUpTask[];
+    statuses: ClickUpStatus[];
+    error: string | null;
+};
+
+export type BlockTodaysTasksData = {
+    groups: TodaysTasksConnectionGroup[];
+    error: string | null;
 };
 
 export type FeedItem = {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Brain, Check, Plus, SkipForward } from 'lucide-vue-next';
+import { Check, Plus, SkipForward } from 'lucide-vue-next';
+import { resolveBlockIcon } from '@/lib/block-icons';
 import { ref } from 'vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Button } from '@/components/ui/button';
@@ -71,7 +72,7 @@ function handleKeydown(event: KeyboardEvent) {
     <Card :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
         <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
             <div class="flex items-center gap-2">
-                <Brain class="h-4 w-4 text-muted-foreground" />
+                <component :is="resolveBlockIcon(block)" class="h-4 w-4 text-muted-foreground" />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
                 <RoutineTimerBadge
                     v-if="block.timer_minutes"

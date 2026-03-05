@@ -11,6 +11,7 @@ enum BlockType: string
     case Habits = 'habits';
     case Feed = 'feed';
     case Custom = 'custom';
+    case TodaysTasks = 'todays_tasks';
 
     public function label(): string
     {
@@ -22,6 +23,7 @@ enum BlockType: string
             self::Notes => 'Notatki',
             self::Plan => 'Plan',
             self::Custom => 'Własny',
+            self::TodaysTasks => 'Zadania na dziś',
         };
     }
 }
