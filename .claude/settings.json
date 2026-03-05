@@ -1,7 +1,41 @@
 {
   "permissions": {
     "allow": [
-      "mcp__laravel-boost__application-info"
+      "mcp__laravel-boost__application-info",
+      "Bash(php artisan make:migration create_clickup_connections_table --no-interaction)",
+      "Bash(php artisan make:migration create_routine_blocks_table --no-interaction)",
+      "Bash(php artisan migrate --no-interaction)",
+      "Bash(php artisan make:test MorningHub/ClickUpConnectionModelTest --pest --no-interaction)",
+      "Bash(php artisan test --compact --filter=ClickUpConnectionModel)",
+      "Bash(php artisan make:model ClickUpConnection --factory --no-interaction)",
+      "Bash(php artisan make:test MorningHub/RoutineBlockModelTest --pest --no-interaction)",
+      "Bash(php artisan make:model RoutineBlock --factory --no-interaction)",
+      "Bash(php artisan test --compact --filter=RoutineBlockModel)",
+      "Bash(php artisan make:test ClickUpServiceTest --unit --pest --no-interaction)",
+      "Bash(php artisan test --compact --filter=PolicyTest)",
+      "Bash(php artisan make:policy ClickUpConnectionPolicy --model=ClickUpConnection --no-interaction)",
+      "Bash(php artisan test --compact --filter=ClickUpServiceTest)",
+      "Bash(php artisan make:policy RoutineBlockPolicy --model=RoutineBlock --no-interaction)",
+      "Bash(vendor/bin/pint --dirty --format agent)",
+      "Bash(php artisan route:list --path=morning-hub --columns=method,uri,name)",
+      "Bash(php artisan route:list --path=morning-hub)",
+      "Bash(php artisan test --compact)",
+      "Bash(php artisan wayfinder:generate --no-interaction)",
+      "mcp__laravel-boost__database-schema",
+      "Bash(php artisan make:request MorningHub/StoreClickUpConnectionRequest --no-interaction)",
+      "Bash(php artisan make:request MorningHub/UpdateClickUpConnectionRequest --no-interaction)",
+      "Bash(php artisan test --compact --filter=ClickUpApiTest)",
+      "mcp__laravel-boost__list-routes",
+      "Bash(php artisan make:request MorningHub/ReorderRoutineBlocksRequest --no-interaction)",
+      "Bash(php artisan test --compact --filter=ClickUpConnectionTest)",
+      "Bash(php artisan make:test MorningHub/RoutineBlockTest --pest --no-interaction)",
+      "Bash(php artisan test --compact --filter=RoutineBlockTest)",
+      "Bash(php artisan test --compact --filter=\"user can view routine page\")",
+      "Bash(npm run build)",
+      "Bash(git add app/Http/Controllers/MorningHub/ClickUpConnectionController.php app/Http/Requests/MorningHub/StoreClickUpConnectionRequest.php app/Http/Requests/MorningHub/UpdateClickUpConnectionRequest.php tests/Feature/MorningHub/ClickUpConnectionTest.php resources/js/pages/morning-hub/ClickUp.vue)",
+      "Bash(git add app/Http/Controllers/MorningHub/RoutineBlockController.php app/Http/Requests/MorningHub/StoreRoutineBlockRequest.php app/Http/Requests/MorningHub/UpdateRoutineBlockRequest.php app/Http/Requests/MorningHub/ReorderRoutineBlocksRequest.php tests/Feature/MorningHub/RoutineBlockTest.php resources/js/pages/morning-hub/Routine.vue)",
+      "Bash(git commit:*)",
+      "Bash(git restore --staged app/Http/Controllers/MorningHub/RoutineBlockController.php app/Http/Requests/MorningHub/ReorderRoutineBlocksRequest.php app/Http/Requests/MorningHub/StoreRoutineBlockRequest.php app/Http/Requests/MorningHub/UpdateRoutineBlockRequest.php resources/js/pages/morning-hub/Routine.vue tests/Feature/MorningHub/RoutineBlockTest.php)"
     ]
   }
 }

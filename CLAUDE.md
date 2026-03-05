@@ -1,4 +1,78 @@
 <laravel-boost-guidelines>
+=== .ai/architecture rules ===
+
+# Project Architecture
+
+## Thin Controller, Fat Service
+
+- Kontrolery powinny być maksymalnie chude — ich jedyną odpowiedzialnością jest:
+  - Walidacja (przez Form Request)
+  - Wywołanie odpowiedniego serwisu
+  - Zwrócenie odpowiedzi (Inertia::render, redirect, JSON)
+- Cała logika biznesowa MUSI być w dedykowanych serwisach w `app/Services/`.
+- Kontrolery NIE MOGĄ zawierać prywatnych metod z logiką biznesową.
+- Serwisy powinny być wstrzykiwane przez constructor injection, nie tworzone inline przez `new`.
+- Każdy nowy serwis powinien:
+  - Mieć explicit return types i type hints
+  - Posiadać PHPDoc bloki z array shapes tam gdzie to sensowne
+  - Być tworzony przez `php artisan make:class` w katalogu `app/Services/`
+- Gdy tworzysz nową funkcjonalność wymagającą logiki biznesowej, ZAWSZE utwórz serwis.
+- Przy modyfikacji istniejącego kontrolera, który zawiera logikę biznesową — zaproponuj refaktor do serwisu.
+
+=== .ai/data-storage rules ===
+
+# Data Storage Strategy
+
+Projekt stosuje zasadę minimalnego przechowywania danych w bazie. Dane efemeryczne żyją po stronie klienta.
+
+## Gdzie przechowywać dane
+
+| Kategoria | Lokalizacja | Przykłady |
+|---|---|---|
+| Konfiguracja strukturalna | Baza danych | Bloki rutyny, połączenia API |
+| Dane wrażliwe (tokeny, klucze) | Baza danych (encrypted) | `api_token` w `clickup_connections` |
+| Efemeryczny stan dzienny | `localStorage` z daily reset | Timer rutyny, ukończenie nawyków |
+| Preferencje per-browser | `localStorage` (opcjonalnie z TTL) | Przeczytane artykuły, onboarding flag |
+| Preferencje UI z SSR | `localStorage` + cookie | Tryb jasny/ciemny (cookie dla SSR) |
+| Dane zewnętrzne (API) | Nigdzie — `Inertia::defer()` | Taski ClickUp, artykuły RSS |
+| Prosty UI state | Cookie | Stan sidebara |
+
+## Zasady decyzyjne
+
+- **Serwer potrzebuje danych przy renderowaniu?** → Baza danych lub `Inertia::defer()`
+- **Dane zmieniają się często (co sekundę)?** → `localStorage` (zero kosztu serwera)
+- **Dane żyją max 1 dzień?** → `localStorage` z daily reset pattern (porównanie `date` z `todayString()`)
+- **Utrata danych jest akceptowalna?** → `localStorage`
+- **Dane muszą przetrwać między urządzeniami?** → Baza danych
+- **Dane są wrażliwe lub wymagają integralności?** → Baza danych (użytkownik może edytować localStorage w DevTools)
+
+## Pattern: localStorage z daily reset
+
+Wzorzec stosowany w `useRoutineTimer.ts` i `useHabitsStorage.ts`:
+
+```ts
+type StoredState = {
+    date: string; // 'YYYY-MM-DD'
+    // ... dane specyficzne dla composable
+};
+
+function loadState(): StoredState | null {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = JSON.parse(raw);
+    if (parsed.date !== todayString()) {
+        localStorage.removeItem(STORAGE_KEY);
+        return null; // reset na nowy dzień
+    }
+    return parsed;
+}
+```
+
+## Czego NIE robić
+
+- NIE używaj sesji PHP do przechowywania stanu UI/dziennego — sesja wygasa i wymaga requestu przy każdej zmianie.
+- NIE twórz tabel w bazie dla danych, których utrata nie jest problemem.
+- NIE przechowuj danych zewnętrznych (API) lokalnie — zawsze pobieraj na żywo przez `Inertia::defer()`.
+
 === foundation rules ===
 
 # Laravel Boost Guidelines
@@ -22,6 +96,12 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/sail (SAIL) - v1
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
+- @inertiajs/vue3 (INERTIA_VUE) - v2
+- tailwindcss (TAILWINDCSS) - v4
+- vue (VUE) - v3
+- @laravel/vite-plugin-wayfinder (WAYFINDER_VITE) - v0
+- eslint (ESLINT) - v9
+- prettier (PRETTIER) - v3
 
 ## Skills Activation
 
@@ -29,6 +109,8 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - `wayfinder-development` — Activates whenever referencing backend routes in frontend components. Use when importing from @/actions or @/routes, calling Laravel routes from TypeScript, or working with Wayfinder route functions.
 - `pest-testing` — Tests applications using the Pest 4 PHP framework. Activates when writing tests, creating unit or feature tests, adding assertions, testing Livewire components, browser testing, debugging test failures, working with datasets or mocking; or when the user mentions test, spec, TDD, expects, assertion, coverage, or needs to verify functionality works.
+- `inertia-vue-development` — Develops Inertia.js v2 Vue client-side applications. Activates when creating Vue pages, forms, or navigation; using &lt;Link&gt;, &lt;Form&gt;, useForm, or router; working with deferred props, prefetching, or polling; or when user mentions Vue with Inertia, Vue pages, Vue forms, or Vue navigation.
+- `tailwindcss-development` — Styles applications using Tailwind CSS v4 utilities. Activates when adding styles, restyling components, working with gradients, spacing, layout, flex, grid, responsive design, dark mode, colors, typography, or borders; or when the user mentions CSS, styling, classes, Tailwind, restyle, hero section, cards, buttons, or any visual/UI changes.
 - `developing-with-fortify` — Laravel Fortify headless authentication backend development. Activate when implementing authentication features including login, registration, password reset, email verification, two-factor authentication (2FA/TOTP), profile updates, headless auth, authentication scaffolding, or auth guards in Laravel applications.
 
 ## Conventions
@@ -149,6 +231,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 - Inertia creates fully client-side rendered SPAs without modern SPA complexity, leveraging existing server-side patterns.
 - Components live in `resources/js/pages` (unless specified in `vite.config.js`). Use `Inertia::render()` for server-side routing instead of Blade views.
 - ALWAYS use `search-docs` tool for version-specific Inertia documentation and updated code examples.
+- IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
 # Inertia v2
 
@@ -264,6 +347,21 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 - Do NOT delete tests without approval.
 - CRITICAL: ALWAYS use `search-docs` tool for version-specific Pest documentation and updated code examples.
 - IMPORTANT: Activate `pest-testing` every time you're working with a Pest or testing-related task.
+
+=== inertia-vue/core rules ===
+
+# Inertia + Vue
+
+Vue components must have a single root element.
+- IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
+
+=== tailwindcss/core rules ===
+
+# Tailwind CSS
+
+- Always use existing Tailwind conventions; check project patterns before adding new ones.
+- IMPORTANT: Always use `search-docs` tool for version-specific Tailwind CSS documentation and updated code examples. Never rely on training data.
+- IMPORTANT: Activate `tailwindcss-development` every time you're working with a Tailwind CSS or styling-related task.
 
 === laravel/fortify rules ===
 
