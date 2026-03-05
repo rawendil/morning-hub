@@ -9,6 +9,7 @@ export type UseRoutineTimerReturn = {
     isRunning: Ref<boolean>;
     isExpired: ComputedRef<boolean>;
     blockStates: ComputedRef<Map<number, BlockTimerState>>;
+    completedElapsedSeconds: ComputedRef<number>;
     start: (blockId: number) => void;
     pause: () => void;
     resume: () => void;
@@ -22,6 +23,7 @@ type StoredTimerState = {
     activeBlockId: number | null;
     remainingSeconds: number;
     completedBlockIds: number[];
+    elapsedSeconds: Record<number, number>;
 };
 
 const STORAGE_KEY = 'morning-hub-timer-state';
@@ -68,8 +70,23 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
     const remainingSeconds = ref(stored?.remainingSeconds ?? 0);
     const isRunning = ref(false);
     const completedBlockIds = ref(new Set<number>(stored?.completedBlockIds ?? []));
+    const elapsedSeconds = ref<Map<number, number>>(
+        new Map(Object.entries(stored?.elapsedSeconds ?? {}).map(([k, v]) => [Number(k), v])),
+    );
 
     let intervalId: ReturnType<typeof setInterval> | null = null;
+    let segmentStartedAt: number | null = null;
+
+    function accumulateElapsed(): void {
+        if (segmentStartedAt === null || activeBlockId.value === null) {
+            return;
+        }
+
+        const elapsed = Math.floor((Date.now() - segmentStartedAt) / 1000);
+        const current = elapsedSeconds.value.get(activeBlockId.value) ?? 0;
+        elapsedSeconds.value.set(activeBlockId.value, current + elapsed);
+        segmentStartedAt = null;
+    }
 
     function saveState(): void {
         persistState({
@@ -77,10 +94,12 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
             activeBlockId: activeBlockId.value,
             remainingSeconds: remainingSeconds.value,
             completedBlockIds: [...completedBlockIds.value],
+            elapsedSeconds: Object.fromEntries(elapsedSeconds.value),
         });
     }
 
     function clearTimer(): void {
+        accumulateElapsed();
         if (intervalId !== null) {
             clearInterval(intervalId);
             intervalId = null;
@@ -94,6 +113,7 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
             return;
         }
 
+        segmentStartedAt = Date.now();
         isRunning.value = true;
         intervalId = setInterval(() => {
             remainingSeconds.value--;
@@ -112,6 +132,7 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
     function start(blockId: number): void {
         clearTimer();
         activeBlockId.value = blockId;
+        elapsedSeconds.value.set(blockId, 0);
 
         const block = getBlock(blockId);
         const minutes = block?.timer_minutes ?? 0;
@@ -143,6 +164,7 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
 
         const block = getBlock(activeBlockId.value);
         remainingSeconds.value = (block?.timer_minutes ?? 0) * 60;
+        elapsedSeconds.value.set(activeBlockId.value, 0);
         saveState();
     }
 
@@ -174,6 +196,14 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
         return states;
     });
 
+    const completedElapsedSeconds = computed(() => {
+        let total = 0;
+        for (const blockId of completedBlockIds.value) {
+            total += elapsedSeconds.value.get(blockId) ?? 0;
+        }
+        return total;
+    });
+
     function formatTime(seconds: number): string {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
@@ -190,6 +220,7 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
         isRunning,
         isExpired,
         blockStates,
+        completedElapsedSeconds,
         start,
         pause,
         resume,

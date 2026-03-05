@@ -12,7 +12,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { useRoutineTimer } from '@/composables/useRoutineTimer';
 import { dashboard } from '@/routes';
 import { index as routineIndex } from '@/routes/morning-hub/routine';
-import type { BreadcrumbItem, BlockFeedData, BlockTasksData, RoutineBlock } from '@/types';
+import type { BreadcrumbItem, BlockFeedData, BlockTasksData, BlockTodaysTasksData, RoutineBlock } from '@/types';
 
 const props = defineProps<{
     blocks: RoutineBlock[];
@@ -36,6 +36,10 @@ function getFeedData(blockId: number): BlockFeedData | undefined {
     return (page.props as Record<string, unknown>)[`feed_${blockId}`] as BlockFeedData | undefined;
 }
 
+function getTodaysTasksData(blockId: number): BlockTodaysTasksData | undefined {
+    return (page.props as Record<string, unknown>)[`todays_tasks_${blockId}`] as BlockTodaysTasksData | undefined;
+}
+
 const detailOpen = ref(false);
 const detailConnectionId = ref<number | null>(null);
 const detailTaskId = ref<string | null>(null);
@@ -52,6 +56,7 @@ const {
     isRunning,
     isExpired,
     blockStates,
+    completedElapsedSeconds,
     start,
     pause,
     resume,
@@ -59,6 +64,8 @@ const {
     skip,
     formatTime,
 } = useRoutineTimer(props.blocks);
+
+const completedElapsedMinutes = computed(() => Math.floor(completedElapsedSeconds.value / 60));
 
 const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
 const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.timer_minutes ?? 0), 0));
@@ -87,7 +94,7 @@ const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.tim
                         :active-block-id="activeBlockId"
                         @select-block="(id) => start(id)"
                     />
-                    <span class="text-sm text-muted-foreground">{{ totalMinutes }} min</span>
+                    <span class="text-sm text-muted-foreground">{{ completedElapsedMinutes }} / {{ totalMinutes }} min</span>
                 </div>
 
                 <div class="grid gap-4">
@@ -126,6 +133,30 @@ const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.tim
                             <DashboardBlockRenderer
                                 :block="block"
                                 :feed-data="getFeedData(block.id)"
+                                :completed-indices="getHabitsData(block.id)"
+                                :is-active-block="activeBlockId === block.id"
+                                :is-timer-running="activeBlockId === block.id && isRunning"
+                                :is-timer-expired="activeBlockId === block.id && isExpired"
+                                :remaining-seconds="activeBlockId === block.id ? remainingSeconds : 0"
+                                :formatted-time="activeBlockId === block.id ? formatTime(remainingSeconds) : ''"
+                                @select-task="openTaskDetail"
+                                @timer-start="start(block.id)"
+                                @timer-pause="pause()"
+                                @timer-resume="resume()"
+                                @timer-reset="reset()"
+                                @timer-skip="skip()"
+                            />
+                        </Deferred>
+                        <Deferred
+                            v-else-if="block.type === 'todays_tasks' && (block.config?.connection_ids as number[] | undefined)?.length"
+                            :data="`todays_tasks_${block.id}`"
+                        >
+                            <template #fallback>
+                                <ClickUpTaskBlockSkeleton />
+                            </template>
+                            <DashboardBlockRenderer
+                                :block="block"
+                                :todays-tasks-data="getTodaysTasksData(block.id)"
                                 :completed-indices="getHabitsData(block.id)"
                                 :is-active-block="activeBlockId === block.id"
                                 :is-timer-running="activeBlockId === block.id && isRunning"
