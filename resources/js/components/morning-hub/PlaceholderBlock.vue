@@ -2,7 +2,6 @@
 import { Brain, CalendarCheck, NotebookPen, SkipForward, Wrench } from 'lucide-vue-next';
 import { computed } from 'vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -45,7 +44,6 @@ const config = computed(() => typeConfig[props.block.type as Exclude<BlockType, 
             <div class="flex items-center gap-2">
                 <component :is="config.icon" class="h-4 w-4 text-muted-foreground" />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
-                <Badge variant="secondary">{{ config.label }}</Badge>
                 <RoutineTimerBadge
                     v-if="block.timer_minutes"
                     :timer-minutes="block.timer_minutes"
