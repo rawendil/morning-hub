@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { CheckCircle2, ListChecks, Timer } from 'lucide-vue-next';
+import { ClipboardList, Repeat, Lightbulb } from 'lucide-vue-next';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,19 +17,19 @@ withDefaults(
 
 const features = [
     {
-        icon: Timer,
-        title: 'Skupiony timer',
-        description: 'Odmierzaj czas każdego bloku rutyny, aby utrzymać tempo i budować nawyki.',
+        icon: ClipboardList,
+        title: 'Organizacja zadań',
+        description: 'Zbieraj zadania z ClickUp, planuj dzień i skup się na priorytetach — bez przeskakiwania między narzędziami.',
     },
     {
-        icon: ListChecks,
-        title: 'Zadania ClickUp',
-        description: 'Pobieraj priorytetowe zadania bezpośrednio z ClickUp, żeby nic nie umknęło.',
+        icon: Repeat,
+        title: 'Nawyki i rutyna',
+        description: 'Buduj poranne rytuały z timerem i checklistą nawyków, które resetują się każdego ranka.',
     },
     {
-        icon: CheckCircle2,
-        title: 'Codzienne nawyki',
-        description: 'Śledź powtarzające się nawyki prostą checklistą, która resetuje się co rano.',
+        icon: Lightbulb,
+        title: 'Inspiracja i notatki',
+        description: 'Przeglądaj artykuły RSS, zapisuj myśli w zrzucie i zacznij dzień z czystą głową.',
     },
 ];
 </script>
