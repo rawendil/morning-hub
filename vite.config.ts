@@ -5,6 +5,9 @@ import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    server: {
+        port: 5180,
+    },
     plugins: [
         laravel({
             input: ['resources/js/app.ts'],
