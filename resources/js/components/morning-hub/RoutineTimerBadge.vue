@@ -35,47 +35,47 @@ const displayText = computed(() => {
 
 <template>
     <div class="flex items-center gap-1">
-        <Badge :variant="badgeVariant" class="gap-1">
-            <Clock v-if="!isActive" class="h-3 w-3" />
-            {{ displayText }}
+        <Badge :variant="badgeVariant" class="gap-1 px-2.5 py-0.5 text-sm">
+            <Clock v-if="!isActive" class="h-3.5 w-3.5" />
+            <span :class="{ 'font-mono tabular-nums': isActive }">{{ displayText }}</span>
         </Badge>
 
         <Button
             v-if="!isActive"
             variant="ghost"
             size="icon"
-            class="h-6 w-6"
+            class="h-7 w-7"
             @click="$emit('start')"
         >
-            <Play class="h-3 w-3" />
+            <Play class="h-3.5 w-3.5" />
         </Button>
         <template v-else>
             <Button
                 v-if="isExpired"
                 variant="ghost"
                 size="icon"
-                class="h-6 w-6"
+                class="h-7 w-7"
                 @click="$emit('reset')"
             >
-                <RotateCcw class="h-3 w-3" />
+                <RotateCcw class="h-3.5 w-3.5" />
             </Button>
             <Button
                 v-else-if="isRunning"
                 variant="ghost"
                 size="icon"
-                class="h-6 w-6"
+                class="h-7 w-7"
                 @click="$emit('pause')"
             >
-                <Pause class="h-3 w-3" />
+                <Pause class="h-3.5 w-3.5" />
             </Button>
             <Button
                 v-else
                 variant="ghost"
                 size="icon"
-                class="h-6 w-6"
+                class="h-7 w-7"
                 @click="$emit('resume')"
             >
-                <Play class="h-3 w-3" />
+                <Play class="h-3.5 w-3.5" />
             </Button>
         </template>
     </div>
