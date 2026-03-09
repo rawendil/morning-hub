@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { Deferred, Head, Link, usePage } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { toast } from 'vue-sonner';
 import { useTranslations } from '@/composables/useTranslations';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
 import FeedBlockSkeleton from '@/components/morning-hub/FeedBlockSkeleton.vue';
 import OnboardingModal from '@/components/morning-hub/OnboardingModal.vue';
+import RoutineCompletionDialog from '@/components/morning-hub/RoutineCompletionDialog.vue';
 import DashboardBlockRenderer from '@/components/morning-hub/DashboardBlockRenderer.vue';
 import Heading from '@/components/Heading.vue';
 import RoutineProgress from '@/components/morning-hub/RoutineProgress.vue';
@@ -64,6 +66,37 @@ const completedElapsedMinutes = computed(() => Math.floor(completedElapsedSecond
 
 const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
 const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.timer_minutes ?? 0), 0));
+
+const routineCompleteOpen = ref(false);
+
+const allBlocksCompleted = computed(
+    () => props.blocks.length > 0 && [...blockStates.value.values()].every((s) => s === 'completed'),
+);
+
+watch(
+    blockStates,
+    (newStates, oldStates) => {
+        for (const [blockId, state] of newStates) {
+            if (state === 'completed' && oldStates?.get(blockId) !== 'completed') {
+                const block = props.blocks.find((b) => b.id === blockId);
+                if (block) {
+                    toast.success(`${block.name} — ukończono! ✓`);
+                }
+            }
+        }
+    },
+    { immediate: false },
+);
+
+watch(
+    allBlocksCompleted,
+    (isComplete) => {
+        if (isComplete) {
+            routineCompleteOpen.value = true;
+        }
+    },
+    { immediate: false },
+);
 </script>
 
 <template>
@@ -170,5 +203,11 @@ const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.tim
         />
 
         <OnboardingModal />
+
+        <RoutineCompletionDialog
+            v-model:open="routineCompleteOpen"
+            :completed-minutes="completedElapsedMinutes"
+            :total-blocks="props.blocks.filter((b) => blockStates.get(b.id) === 'completed').length"
+        />
     </AppLayout>
 </template>
