@@ -78,12 +78,12 @@ async function handleUpdateTask(connectionId: number, taskId: string, payload: U
     }
 }
 
-const allTasksEmpty = (() => {
+const allTasksEmpty = computed(() => {
     if (!props.todaysTasksData) return false;
     return props.todaysTasksData.groups.every((g) => g.tasks.length === 0 && !g.error);
 });
 
-const multipleGroups = (() => {
+const multipleGroups = computed(() => {
     if (!props.todaysTasksData) return false;
     return props.todaysTasksData.groups.length > 1;
 });

@@ -35,7 +35,40 @@
       "Bash(git add app/Http/Controllers/MorningHub/ClickUpConnectionController.php app/Http/Requests/MorningHub/StoreClickUpConnectionRequest.php app/Http/Requests/MorningHub/UpdateClickUpConnectionRequest.php tests/Feature/MorningHub/ClickUpConnectionTest.php resources/js/pages/morning-hub/ClickUp.vue)",
       "Bash(git add app/Http/Controllers/MorningHub/RoutineBlockController.php app/Http/Requests/MorningHub/StoreRoutineBlockRequest.php app/Http/Requests/MorningHub/UpdateRoutineBlockRequest.php app/Http/Requests/MorningHub/ReorderRoutineBlocksRequest.php tests/Feature/MorningHub/RoutineBlockTest.php resources/js/pages/morning-hub/Routine.vue)",
       "Bash(git commit:*)",
-      "Bash(git restore --staged app/Http/Controllers/MorningHub/RoutineBlockController.php app/Http/Requests/MorningHub/ReorderRoutineBlocksRequest.php app/Http/Requests/MorningHub/StoreRoutineBlockRequest.php app/Http/Requests/MorningHub/UpdateRoutineBlockRequest.php resources/js/pages/morning-hub/Routine.vue tests/Feature/MorningHub/RoutineBlockTest.php)"
+      "Bash(git restore --staged app/Http/Controllers/MorningHub/RoutineBlockController.php app/Http/Requests/MorningHub/ReorderRoutineBlocksRequest.php app/Http/Requests/MorningHub/StoreRoutineBlockRequest.php app/Http/Requests/MorningHub/UpdateRoutineBlockRequest.php resources/js/pages/morning-hub/Routine.vue tests/Feature/MorningHub/RoutineBlockTest.php)",
+      "mcp__clickup__getTaskById",
+      "WebFetch(domain:www.claudehub.dev)",
+      "WebFetch(domain:alexop.dev)",
+      "WebFetch(domain:susomejias.dev)",
+      "Read(/REDACTED_PATH/.claude/**)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''hooks'', {}\\), indent=2\\)\\)\")",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(git add .env.example composer.json vite.config.ts)",
+      "Bash(git add resources/js/components/morning-hub/RoutineTimerBadge.vue)",
+      "mcp__clickup__updateTask",
+      "Bash(grep -r \"from ''@/components/ui\" REDACTED_PATH/Projects/morning-hub/resources/js/pages --include=\"*.vue\")",
+      "Bash(git check-ignore -q .worktrees)",
+      "Bash(git add .gitignore)",
+      "Bash(git worktree add .worktrees/feature/routine-popups -b feature/routine-popups)",
+      "Bash(npm install)",
+      "Bash(php artisan test --compact --filter \"AuthenticationTest > login screen\")",
+      "Bash(php artisan test --compact --filter \"AuthenticationTest\")",
+      "Bash(ln -s REDACTED_PATH/Projects/morning-hub/public/build REDACTED_PATH/Projects/morning-hub/.worktrees/feature/routine-popups/public/build)",
+      "Bash(npm install vue-sonner)",
+      "Bash(vendor/bin/phpstan analyse --error-format=table)",
+      "Bash(grep -v \"^$\")",
+      "Bash(git add package.json package-lock.json resources/js/components/ui/sonner/index.ts resources/js/layouts/app/AppSidebarLayout.vue resources/js/components/morning-hub/RoutineCompletionDialog.vue resources/js/pages/Dashboard.vue)",
+      "Bash(git branch -d feature/routine-popups)",
+      "Bash(git worktree remove .worktrees/feature/routine-popups)",
+      "Bash(grep -r 'type NavItem' REDACTED_PATH/Projects/morning-hub/resources/js/types*)",
+      "Bash(php artisan:*)",
+      "Bash(vendor/bin/phpstan analyse:*)",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_run_code",
+      "Bash(git add:*)"
+    ],
+    "additionalDirectories": [
+      "REDACTED_PATH/.claude"
     ]
   }
 }
