@@ -24,7 +24,7 @@ class TodaysTasksController extends Controller
 
         if (! empty($connectionIds)) {
             $props['todaysTasksData'] = Inertia::defer(
-                fn () => $this->todaysTasksService->fetchGroupedTasks($connectionIds),
+                fn () => $this->todaysTasksService->fetchGroupedTasks($request->user(), $connectionIds),
                 'todaysTasksData',
             );
         }

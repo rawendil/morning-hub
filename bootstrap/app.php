@@ -3,10 +3,12 @@
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\HandleLocale;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -30,5 +32,18 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->dontFlash([
+            'api_token',
+            'password',
+            'password_confirmation',
+        ]);
+
+        $exceptions->reportable(function (AuthorizationException $e): void {
+            Log::channel('security')->warning('Authorization denied', [
+                'user_id' => auth()->id(),
+                'url' => request()->fullUrl(),
+                'method' => request()->method(),
+                'ip' => request()->ip(),
+            ]);
+        });
     })->create();

@@ -2,17 +2,21 @@
 
 namespace App\Services;
 
-use App\Models\ClickUpConnection;
+use App\Models\User;
 
 class TodaysTasksService
 {
+    public function __construct(
+        private readonly ClickUpServiceFactory $clickUpServiceFactory,
+    ) {}
+
     /**
      * @param  array<int, int>  $connectionIds
      * @return array{groups: array<int, array{connectionId: int, connectionName: string, tasks: array<int, array<string, mixed>>, statuses: array<int, array<string, mixed>>, error: string|null}>}
      */
-    public function fetchGroupedTasks(array $connectionIds): array
+    public function fetchGroupedTasks(User $user, array $connectionIds): array
     {
-        $connections = ClickUpConnection::whereIn('id', $connectionIds)->get();
+        $connections = $user->clickUpConnections()->whereIn('id', $connectionIds)->get();
 
         $todayStart = now()->startOfDay()->getTimestampMs();
         $todayEnd = now()->endOfDay()->getTimestampMs();
@@ -21,11 +25,11 @@ class TodaysTasksService
 
         foreach ($connections as $connection) {
             try {
-                $service = new ClickUpService($connection->api_token);
-                $user = $service->getAuthenticatedUser();
+                $service = $this->clickUpServiceFactory->make($connection->api_token);
+                $clickUpUser = $service->getAuthenticatedUser();
 
                 $filters = [
-                    'assignees' => [$user['id']],
+                    'assignees' => [$clickUpUser['id']],
                     'due_date_gt' => $todayStart - 1,
                     'due_date_lt' => $todayEnd + 1,
                 ];

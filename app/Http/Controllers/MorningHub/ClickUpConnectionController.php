@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MorningHub\StoreClickUpConnectionRequest;
 use App\Http\Requests\MorningHub\UpdateClickUpConnectionRequest;
 use App\Models\ClickUpConnection;
-use App\Services\ClickUpService;
+use App\Services\ClickUpServiceFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,6 +16,10 @@ use Inertia\Response;
 
 class ClickUpConnectionController extends Controller
 {
+    public function __construct(
+        private readonly ClickUpServiceFactory $clickUpServiceFactory,
+    ) {}
+
     public function index(Request $request): Response
     {
         return Inertia::render('morning-hub/ClickUp', [
@@ -25,7 +29,7 @@ class ClickUpConnectionController extends Controller
 
     public function store(StoreClickUpConnectionRequest $request): RedirectResponse
     {
-        $service = new ClickUpService($request->validated('api_token'));
+        $service = $this->clickUpServiceFactory->make($request->validated('api_token'));
 
         if (! $service->testConnection()) {
             return back()->withErrors(['api_token' => 'The API token is invalid or the connection failed.']);
@@ -41,7 +45,7 @@ class ClickUpConnectionController extends Controller
         $data = $request->validated();
 
         if (isset($data['api_token'])) {
-            $service = new ClickUpService($data['api_token']);
+            $service = $this->clickUpServiceFactory->make($data['api_token']);
             if (! $service->testConnection()) {
                 return back()->withErrors(['api_token' => 'The API token is invalid or the connection failed.']);
             }
@@ -69,7 +73,7 @@ class ClickUpConnectionController extends Controller
     {
         Gate::authorize('view', $connection);
 
-        $service = new ClickUpService($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token);
         $success = $service->testConnection();
 
         return response()->json([

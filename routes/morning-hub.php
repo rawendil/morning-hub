@@ -13,39 +13,43 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('morning-hub/clickup', [ClickUpConnectionController::class, 'index'])
         ->name('morning-hub.clickup.index');
     Route::post('morning-hub/clickup/connections', [ClickUpConnectionController::class, 'store'])
+        ->middleware('throttle:5,1')
         ->name('morning-hub.clickup.store');
     Route::put('morning-hub/clickup/connections/{connection}', [ClickUpConnectionController::class, 'update'])
         ->name('morning-hub.clickup.update');
     Route::delete('morning-hub/clickup/connections/{connection}', [ClickUpConnectionController::class, 'destroy'])
         ->name('morning-hub.clickup.destroy');
     Route::post('morning-hub/clickup/connections/{connection}/test', [ClickUpConnectionController::class, 'test'])
+        ->middleware('throttle:5,1')
         ->name('morning-hub.clickup.test');
 
     // ClickUp API proxy (JSON responses)
-    Route::get('morning-hub/clickup/{connection}/workspaces', [ClickUpApiController::class, 'workspaces'])
-        ->name('morning-hub.clickup.workspaces');
-    Route::get('morning-hub/clickup/{connection}/spaces', [ClickUpApiController::class, 'spaces'])
-        ->name('morning-hub.clickup.spaces');
-    Route::get('morning-hub/clickup/{connection}/folders', [ClickUpApiController::class, 'folders'])
-        ->name('morning-hub.clickup.folders');
-    Route::get('morning-hub/clickup/{connection}/lists', [ClickUpApiController::class, 'lists'])
-        ->name('morning-hub.clickup.lists');
-    Route::get('morning-hub/clickup/{connection}/all-lists', [ClickUpApiController::class, 'allLists'])
-        ->name('morning-hub.clickup.allLists');
-    Route::get('morning-hub/clickup/{connection}/me', [ClickUpApiController::class, 'me'])
-        ->name('morning-hub.clickup.me');
-    Route::get('morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'task'])
-        ->name('morning-hub.clickup.task');
-    Route::put('morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'updateTask'])
-        ->name('morning-hub.clickup.updateTask');
-    Route::post('morning-hub/clickup/{connection}/tasks', [ClickUpApiController::class, 'createTask'])
-        ->name('morning-hub.clickup.createTask');
-    Route::post('morning-hub/clickup/{connection}/tasks/{taskId}/comments', [ClickUpApiController::class, 'createComment'])
-        ->name('morning-hub.clickup.createComment');
-    Route::get('morning-hub/clickup/{connection}/tasks/{taskId}/comments', [ClickUpApiController::class, 'comments'])
-        ->name('morning-hub.clickup.comments');
-    Route::get('morning-hub/clickup/{connection}/statuses', [ClickUpApiController::class, 'statuses'])
-        ->name('morning-hub.clickup.statuses');
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::get('morning-hub/clickup/{connection}/workspaces', [ClickUpApiController::class, 'workspaces'])
+            ->name('morning-hub.clickup.workspaces');
+        Route::get('morning-hub/clickup/{connection}/spaces', [ClickUpApiController::class, 'spaces'])
+            ->name('morning-hub.clickup.spaces');
+        Route::get('morning-hub/clickup/{connection}/folders', [ClickUpApiController::class, 'folders'])
+            ->name('morning-hub.clickup.folders');
+        Route::get('morning-hub/clickup/{connection}/lists', [ClickUpApiController::class, 'lists'])
+            ->name('morning-hub.clickup.lists');
+        Route::get('morning-hub/clickup/{connection}/all-lists', [ClickUpApiController::class, 'allLists'])
+            ->name('morning-hub.clickup.allLists');
+        Route::get('morning-hub/clickup/{connection}/me', [ClickUpApiController::class, 'me'])
+            ->name('morning-hub.clickup.me');
+        Route::get('morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'task'])
+            ->name('morning-hub.clickup.task');
+        Route::put('morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'updateTask'])
+            ->name('morning-hub.clickup.updateTask');
+        Route::post('morning-hub/clickup/{connection}/tasks', [ClickUpApiController::class, 'createTask'])
+            ->name('morning-hub.clickup.createTask');
+        Route::post('morning-hub/clickup/{connection}/tasks/{taskId}/comments', [ClickUpApiController::class, 'createComment'])
+            ->name('morning-hub.clickup.createComment');
+        Route::get('morning-hub/clickup/{connection}/tasks/{taskId}/comments', [ClickUpApiController::class, 'comments'])
+            ->name('morning-hub.clickup.comments');
+        Route::get('morning-hub/clickup/{connection}/statuses', [ClickUpApiController::class, 'statuses'])
+            ->name('morning-hub.clickup.statuses');
+    });
 
     // Today's Tasks Config
     Route::get('morning-hub/todays-tasks', [TodaysTasksConfigController::class, 'index'])
