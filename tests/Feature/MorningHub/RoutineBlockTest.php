@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ClickUpConnection;
+use App\Models\GoogleCalendarConnection;
 use App\Models\RoutineBlock;
 use App\Models\User;
 
@@ -269,6 +270,71 @@ test('placeholder url must be a valid url', function () {
             ],
         ])
         ->assertSessionHasErrors('config.placeholder_url');
+});
+
+test('routine page passes google calendar connection id when connection exists', function () {
+    $user = User::factory()->create();
+    $connection = GoogleCalendarConnection::factory()->for($user)->create();
+
+    $this->actingAs($user)
+        ->get(route('morning-hub.routine.index'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('googleCalendarConnectionId', $connection->id)
+        );
+});
+
+test('routine page passes null google calendar connection id when no connection', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get(route('morning-hub.routine.index'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('googleCalendarConnectionId', null)
+        );
+});
+
+test('user can create google_calendar block with valid connection', function () {
+    $user = User::factory()->create();
+    $connection = GoogleCalendarConnection::factory()->for($user)->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'google_calendar',
+            'name' => 'My Calendar',
+            'google_calendar_connection_id' => $connection->id,
+        ])
+        ->assertRedirect(route('morning-hub.routine.index'));
+
+    $block = $user->routineBlocks()->where('name', 'My Calendar')->first();
+    expect($block)->not->toBeNull();
+    expect($block->google_calendar_connection_id)->toBe($connection->id);
+});
+
+test('user cannot create google_calendar block with another users connection', function () {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $connection = GoogleCalendarConnection::factory()->for($otherUser)->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'google_calendar',
+            'name' => 'Stolen Calendar',
+            'google_calendar_connection_id' => $connection->id,
+        ])
+        ->assertSessionHasErrors('google_calendar_connection_id');
+});
+
+test('google_calendar block requires connection id', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.routine.store'), [
+            'type' => 'google_calendar',
+            'name' => 'No Connection Calendar',
+        ])
+        ->assertSessionHasErrors('google_calendar_connection_id');
 });
 
 test('routine page includes user connections for form', function () {

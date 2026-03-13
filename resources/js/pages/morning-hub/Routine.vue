@@ -15,9 +15,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { destroy, index, reorder } from '@/routes/morning-hub/routine';
-import { useTranslations } from '@/composables/useTranslations';
 import type { BreadcrumbItem, ClickUpConnection, RoutineBlock } from '@/types';
 
 const { t } = useTranslations();
@@ -25,6 +25,7 @@ const { t } = useTranslations();
 const props = defineProps<{
     blocks: RoutineBlock[];
     connections: ClickUpConnection[];
+    googleCalendarConnectionId: number | null;
 }>();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -51,7 +52,9 @@ function confirmDelete() {
     if (!deleteBlock.value) return;
     router.delete(destroy.url(deleteBlock.value), {
         preserveScroll: true,
-        onSuccess: () => { deleteOpen.value = false; },
+        onSuccess: () => {
+            deleteOpen.value = false;
+        },
     });
 }
 
@@ -60,11 +63,18 @@ function moveBlock(blockIndex: number, direction: -1 | 1) {
     const targetIndex = blockIndex + direction;
     if (targetIndex < 0 || targetIndex >= ordered.length) return;
 
-    [ordered[blockIndex], ordered[targetIndex]] = [ordered[targetIndex], ordered[blockIndex]];
+    [ordered[blockIndex], ordered[targetIndex]] = [
+        ordered[targetIndex],
+        ordered[blockIndex],
+    ];
 
-    router.patch(reorder.url(), {
-        blocks: ordered.map((b) => b.id),
-    }, { preserveScroll: true });
+    router.patch(
+        reorder.url(),
+        {
+            blocks: ordered.map((b) => b.id),
+        },
+        { preserveScroll: true },
+    );
 }
 </script>
 
@@ -74,15 +84,27 @@ function moveBlock(blockIndex: number, direction: -1 | 1) {
 
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
-                <Heading :title="t('Poranna rutyna')" :description="t('Konfiguruj bloki swojej porannej rutyny.')" />
+                <Heading
+                    :title="t('Poranna rutyna')"
+                    :description="t('Konfiguruj bloki swojej porannej rutyny.')"
+                />
                 <Button class="gap-2" @click="addOpen = true">
                     <Plus class="h-4 w-4" />
                     {{ t('Dodaj blok') }}
                 </Button>
             </div>
 
-            <div v-if="blocks.length === 0" class="rounded-lg border border-dashed p-8 text-center">
-                <p class="text-muted-foreground">{{ t('Brak bloków. Dodaj pierwszy blok rutyny, aby rozpocząć.') }}</p>
+            <div
+                v-if="blocks.length === 0"
+                class="rounded-lg border border-dashed p-8 text-center"
+            >
+                <p class="text-muted-foreground">
+                    {{
+                        t(
+                            'Brak bloków. Dodaj pierwszy blok rutyny, aby rozpocząć.',
+                        )
+                    }}
+                </p>
             </div>
 
             <div v-else class="grid gap-3">
@@ -100,15 +122,28 @@ function moveBlock(blockIndex: number, direction: -1 | 1) {
             </div>
         </div>
 
-        <RoutineBlockForm v-model:open="addOpen" :connections="connections" />
-        <RoutineBlockForm v-model:open="editOpen" :block="editingBlock" :connections="connections" />
+        <RoutineBlockForm
+            v-model:open="addOpen"
+            :connections="connections"
+            :google-calendar-connection-id="googleCalendarConnectionId"
+        />
+        <RoutineBlockForm
+            v-model:open="editOpen"
+            :block="editingBlock"
+            :connections="connections"
+            :google-calendar-connection-id="googleCalendarConnectionId"
+        />
 
         <Dialog v-model:open="deleteOpen">
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{{ t('Usuń blok') }}</DialogTitle>
                     <DialogDescription>
-                        {{ t('Czy na pewno chcesz usunąć ":name"?', { name: deleteBlock?.name ?? '' }) }}
+                        {{
+                            t('Czy na pewno chcesz usunąć ":name"?', {
+                                name: deleteBlock?.name ?? '',
+                            })
+                        }}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter class="gap-2">

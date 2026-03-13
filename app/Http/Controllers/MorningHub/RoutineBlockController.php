@@ -17,9 +17,12 @@ class RoutineBlockController extends Controller
 {
     public function index(Request $request): Response
     {
+        $googleCalendarConnection = $request->user()->googleCalendarConnection;
+
         return Inertia::render('morning-hub/Routine', [
             'blocks' => $request->user()->routineBlocks()->ordered()->with('clickUpConnection')->get(),
             'connections' => $request->user()->clickUpConnections()->get(),
+            'googleCalendarConnectionId' => $googleCalendarConnection?->id,
         ]);
     }
 
