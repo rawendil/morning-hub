@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { CheckCircle, ExternalLink, Eye, EyeOff, SkipForward } from 'lucide-vue-next';
-import { resolveBlockIcon } from '@/lib/block-icons';
 import { computed, ref } from 'vue';
-import { useTranslations } from '@/composables/useTranslations';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
-import { useReadArticles } from '@/composables/useReadArticles';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +11,9 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { useReadArticles } from '@/composables/useReadArticles';
+import { useTranslations } from '@/composables/useTranslations';
+import { resolveBlockIcon } from '@/lib/block-icons';
 import type { BlockFeedData, RoutineBlock } from '@/types';
 
 const props = defineProps<{

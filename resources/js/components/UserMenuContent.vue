@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import UserInfo from '@/components/UserInfo.vue';
 import { useTranslations } from '@/composables/useTranslations';
 import { logout } from '@/routes';

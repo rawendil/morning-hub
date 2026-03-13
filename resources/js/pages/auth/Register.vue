@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
+import SocialLoginButton from '@/components/SocialLoginButton.vue';
+import SocialLoginSeparator from '@/components/SocialLoginSeparator.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import SocialLoginButton from '@/components/SocialLoginButton.vue';
-import SocialLoginSeparator from '@/components/SocialLoginSeparator.vue';
 import { useTranslations } from '@/composables/useTranslations';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';

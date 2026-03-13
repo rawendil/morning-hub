@@ -8,8 +8,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { resolveBlockIcon } from '@/lib/block-icons';
 import { useTranslations } from '@/composables/useTranslations';
+import { resolveBlockIcon } from '@/lib/block-icons';
 import type { RoutineBlock } from '@/types';
 
 const props = defineProps<{

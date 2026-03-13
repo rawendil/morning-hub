@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { Check } from 'lucide-vue-next';
 import type { BlockTimerState } from '@/composables/useRoutineTimer';
 import type { RoutineBlock } from '@/types';
-import { Check } from 'lucide-vue-next';
 
 defineProps<{
     blocks: RoutineBlock[];

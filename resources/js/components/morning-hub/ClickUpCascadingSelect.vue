@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { ref, watch, onMounted } from 'vue';
-import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -12,6 +11,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import { useTranslations } from '@/composables/useTranslations';
 import { update, workspaces, spaces, allLists, me } from '@/routes/morning-hub/clickup';
 import type {

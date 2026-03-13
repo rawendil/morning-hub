@@ -1,4 +1,5 @@
-import { computed, onBeforeUnmount, ref, type ComputedRef, type Ref } from 'vue';
+import { computed, onBeforeUnmount, ref   } from 'vue';
+import type {ComputedRef, Ref} from 'vue';
 import type { RoutineBlock } from '@/types';
 
 export type BlockTimerState = 'pending' | 'active' | 'expired' | 'completed';

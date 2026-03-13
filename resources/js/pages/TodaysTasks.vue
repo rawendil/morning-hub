@@ -2,18 +2,18 @@
 import { Deferred, Head, Link, router } from '@inertiajs/vue3';
 import { RefreshCw, Settings } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { useTranslations } from '@/composables/useTranslations';
+import Heading from '@/components/Heading.vue';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskCard from '@/components/morning-hub/ClickUpTaskCard.vue';
 import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
-import Heading from '@/components/Heading.vue';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { useClickUpApi } from '@/composables/useClickUpApi';
+import { useTranslations } from '@/composables/useTranslations';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { todaysTasks } from '@/routes';
-import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tasks';
 import { updateTask as updateTaskRoute } from '@/routes/morning-hub/clickup';
+import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tasks';
 import type { BreadcrumbItem, BlockTodaysTasksData, UpdateTaskPayload } from '@/types';
 
 const { t } = useTranslations();

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ExternalLink } from 'lucide-vue-next';
 import { computed } from 'vue';
-import { useTranslations } from '@/composables/useTranslations';
 import { Badge } from '@/components/ui/badge';
 import {
     DropdownMenu,
@@ -9,6 +8,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useTranslations } from '@/composables/useTranslations';
 import type { ClickUpStatus, ClickUpTask, UpdateTaskPayload } from '@/types';
 
 const props = defineProps<{

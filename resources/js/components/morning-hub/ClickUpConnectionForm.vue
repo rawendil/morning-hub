@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { store, update } from '@/actions/App/Http/Controllers/MorningHub/ClickUpConnectionController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,7 +15,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { store, update } from '@/actions/App/Http/Controllers/MorningHub/ClickUpConnectionController';
 import { useTranslations } from '@/composables/useTranslations';
 import type { ClickUpConnection } from '@/types';
 

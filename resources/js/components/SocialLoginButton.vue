@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { redirect } from '@/actions/App/Http/Controllers/Auth/GoogleAuthController';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/composables/useTranslations';
-import { redirect } from '@/actions/App/Http/Controllers/Auth/GoogleAuthController';
 
 const { t } = useTranslations();
 

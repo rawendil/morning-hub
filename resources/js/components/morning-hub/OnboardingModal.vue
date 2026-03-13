@@ -2,7 +2,6 @@
 import { Link } from '@inertiajs/vue3';
 import { LayoutGrid, Rocket, Sparkles } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
-import { useTranslations } from '@/composables/useTranslations';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -12,6 +11,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useTranslations } from '@/composables/useTranslations';
 import { index as routineIndex } from '@/routes/morning-hub/routine';
 
 const { t } = useTranslations();

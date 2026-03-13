@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { SkipForward } from 'lucide-vue-next';
 import { computed } from 'vue';
-import { useTranslations } from '@/composables/useTranslations';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
-import { resolveBlockIcon } from '@/lib/block-icons';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -14,6 +12,8 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useHabitsStorage } from '@/composables/useHabitsStorage';
+import { useTranslations } from '@/composables/useTranslations';
+import { resolveBlockIcon } from '@/lib/block-icons';
 import type { RoutineBlock } from '@/types';
 
 const props = defineProps<{

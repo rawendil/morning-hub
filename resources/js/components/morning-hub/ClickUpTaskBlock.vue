@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { Plus, RefreshCw, SkipForward } from 'lucide-vue-next';
-import { resolveBlockIcon } from '@/lib/block-icons';
 import { onMounted, ref } from 'vue';
-import { useTranslations } from '@/composables/useTranslations';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskCard from '@/components/morning-hub/ClickUpTaskCard.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
@@ -17,6 +15,8 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useClickUpApi } from '@/composables/useClickUpApi';
+import { useTranslations } from '@/composables/useTranslations';
+import { resolveBlockIcon } from '@/lib/block-icons';
 import { createTask as createTaskRoute, statuses as statusesRoute, updateTask as updateTaskRoute } from '@/routes/morning-hub/clickup';
 import type { BlockTasksData, ClickUpStatus, RoutineBlock, UpdateTaskPayload } from '@/types';
 

@@ -6,8 +6,8 @@ import Heading from '@/components/Heading.vue';
 import ClickUpConnectionCard from '@/components/morning-hub/ClickUpConnectionCard.vue';
 import ClickUpConnectionForm from '@/components/morning-hub/ClickUpConnectionForm.vue';
 import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { useTranslations } from '@/composables/useTranslations';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { index } from '@/routes/morning-hub/clickup';
 import type { BreadcrumbItem, ClickUpConnection } from '@/types';
 

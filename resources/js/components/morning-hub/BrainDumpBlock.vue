@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Check, Plus, SkipForward } from 'lucide-vue-next';
-import { resolveBlockIcon } from '@/lib/block-icons';
 import { ref } from 'vue';
-import { useTranslations } from '@/composables/useTranslations';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +11,8 @@ import {
 } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useClickUpApi } from '@/composables/useClickUpApi';
+import { useTranslations } from '@/composables/useTranslations';
+import { resolveBlockIcon } from '@/lib/block-icons';
 import { createTask as createTaskRoute } from '@/routes/morning-hub/clickup';
 import type { RoutineBlock } from '@/types';
 

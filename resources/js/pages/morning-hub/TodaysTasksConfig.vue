@@ -5,11 +5,11 @@ import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { index as clickupIndex } from '@/routes/morning-hub/clickup';
 import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tasks';
 import { update } from '@/routes/morning-hub/todays-tasks';
-import { index as clickupIndex } from '@/routes/morning-hub/clickup';
-import { useTranslations } from '@/composables/useTranslations';
 import type { BreadcrumbItem, ClickUpConnection } from '@/types';
 
 const { t } = useTranslations();
