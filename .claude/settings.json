@@ -65,10 +65,20 @@
       "Bash(vendor/bin/phpstan analyse:*)",
       "mcp__plugin_playwright_playwright__browser_snapshot",
       "mcp__plugin_playwright_playwright__browser_run_code",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(grep -r .ai REDACTED_PATH/Projects/morning-hub -type d)",
+      "Bash(xargs ls:*)",
+      "Bash(grep -n \"api_token\\\\|apiToken\" REDACTED_PATH/Projects/morning-hub/app/Services/*.php)",
+      "Bash(npm install:*)",
+      "Bash(grep -r api_token REDACTED_PATH/Projects/morning-hub/resources/js --include=*.ts --include=*.tsx --include=*.vue)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(composer show:*)",
+      "Bash(ls REDACTED_PATH/Projects/morning-hub/app/Models/Google*)"
     ],
     "additionalDirectories": [
-      "REDACTED_PATH/.claude"
+      "REDACTED_PATH/.claude",
+      "REDACTED_PATH/Projects/morning-hub/docs/superpowers"
     ]
   }
 }
