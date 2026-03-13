@@ -2,14 +2,16 @@
 import BrainDumpBlock from '@/components/morning-hub/BrainDumpBlock.vue';
 import ClickUpTaskBlock from '@/components/morning-hub/ClickUpTaskBlock.vue';
 import FeedBlock from '@/components/morning-hub/FeedBlock.vue';
+import GoogleCalendarBlock from '@/components/morning-hub/GoogleCalendarBlock.vue';
 import HabitsBlock from '@/components/morning-hub/HabitsBlock.vue';
 import PlaceholderBlock from '@/components/morning-hub/PlaceholderBlock.vue';
-import type { BlockFeedData, BlockTasksData, RoutineBlock } from '@/types';
+import type { BlockFeedData, BlockGoogleCalendarData, BlockTasksData, RoutineBlock } from '@/types';
 
 defineProps<{
     block: RoutineBlock;
     tasksData?: BlockTasksData;
     feedData?: BlockFeedData;
+    eventsData?: BlockGoogleCalendarData;
     isActiveBlock: boolean;
     isTimerRunning: boolean;
     isTimerExpired: boolean;
@@ -76,6 +78,21 @@ const emit = defineEmits<{
         v-else-if="block.type === 'feed'"
         :block="block"
         :feed-data="feedData"
+        :is-active-block="isActiveBlock"
+        :is-timer-running="isTimerRunning"
+        :is-timer-expired="isTimerExpired"
+        :remaining-seconds="remainingSeconds"
+        :formatted-time="formattedTime"
+        @timer-start="emit('timerStart')"
+        @timer-pause="emit('timerPause')"
+        @timer-resume="emit('timerResume')"
+        @timer-reset="emit('timerReset')"
+        @timer-skip="emit('timerSkip')"
+    />
+    <GoogleCalendarBlock
+        v-else-if="block.type === 'google_calendar'"
+        :block="block"
+        :events-data="eventsData"
         :is-active-block="isActiveBlock"
         :is-timer-running="isTimerRunning"
         :is-timer-expired="isTimerExpired"

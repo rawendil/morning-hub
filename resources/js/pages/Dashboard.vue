@@ -2,20 +2,21 @@
 import { Deferred, Head, Link, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import { useTranslations } from '@/composables/useTranslations';
+import Heading from '@/components/Heading.vue';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
+import DashboardBlockRenderer from '@/components/morning-hub/DashboardBlockRenderer.vue';
 import FeedBlockSkeleton from '@/components/morning-hub/FeedBlockSkeleton.vue';
+import GoogleCalendarBlockSkeleton from '@/components/morning-hub/GoogleCalendarBlockSkeleton.vue';
 import OnboardingModal from '@/components/morning-hub/OnboardingModal.vue';
 import RoutineCompletionDialog from '@/components/morning-hub/RoutineCompletionDialog.vue';
-import DashboardBlockRenderer from '@/components/morning-hub/DashboardBlockRenderer.vue';
-import Heading from '@/components/Heading.vue';
 import RoutineProgress from '@/components/morning-hub/RoutineProgress.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { useRoutineTimer } from '@/composables/useRoutineTimer';
+import { useTranslations } from '@/composables/useTranslations';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { index as routineIndex } from '@/routes/morning-hub/routine';
-import type { BreadcrumbItem, BlockFeedData, BlockTasksData, RoutineBlock } from '@/types';
+import type { BreadcrumbItem, BlockFeedData, BlockGoogleCalendarData, BlockTasksData, RoutineBlock } from '@/types';
 
 const { t } = useTranslations();
 
@@ -35,6 +36,10 @@ function getTasksData(blockId: number): BlockTasksData | undefined {
 
 function getFeedData(blockId: number): BlockFeedData | undefined {
     return (page.props as Record<string, unknown>)[`feed_${blockId}`] as BlockFeedData | undefined;
+}
+
+function getEventsData(blockId: number): BlockGoogleCalendarData | undefined {
+    return (page.props as Record<string, unknown>)[`events_${blockId}`] as BlockGoogleCalendarData | undefined;
 }
 
 const detailOpen = ref(false);
@@ -161,6 +166,30 @@ watch(
                             <DashboardBlockRenderer
                                 :block="block"
                                 :feed-data="getFeedData(block.id)"
+
+                                :is-active-block="activeBlockId === block.id"
+                                :is-timer-running="activeBlockId === block.id && isRunning"
+                                :is-timer-expired="activeBlockId === block.id && isExpired"
+                                :remaining-seconds="activeBlockId === block.id ? remainingSeconds : 0"
+                                :formatted-time="activeBlockId === block.id ? formatTime(remainingSeconds) : ''"
+                                @select-task="openTaskDetail"
+                                @timer-start="start(block.id)"
+                                @timer-pause="pause()"
+                                @timer-resume="resume()"
+                                @timer-reset="reset()"
+                                @timer-skip="skip()"
+                            />
+                        </Deferred>
+                        <Deferred
+                            v-else-if="block.type === 'google_calendar' && block.google_calendar_connection_id"
+                            :data="`events_${block.id}`"
+                        >
+                            <template #fallback>
+                                <GoogleCalendarBlockSkeleton />
+                            </template>
+                            <DashboardBlockRenderer
+                                :block="block"
+                                :events-data="getEventsData(block.id)"
 
                                 :is-active-block="activeBlockId === block.id"
                                 :is-timer-running="activeBlockId === block.id && isRunning"

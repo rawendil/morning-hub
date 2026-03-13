@@ -1,4 +1,3 @@
-import type { Component } from 'vue';
 import {
     AlarmClock,
     Apple,
@@ -48,6 +47,7 @@ import {
     Wrench,
     Zap,
 } from 'lucide-vue-next';
+import type { Component } from 'vue';
 import type { BlockType, RoutineBlock } from '@/types';
 
 export const ICON_MAP: Record<string, Component> = {
@@ -105,6 +105,7 @@ export const DEFAULT_BLOCK_ICONS: Record<BlockType, string> = {
     braindump: 'Brain',
     habits: 'ListChecks',
     feed: 'Rss',
+    google_calendar: 'CalendarDays',
     notes: 'NotebookPen',
     plan: 'CalendarCheck',
     custom: 'Wrench',
