@@ -6,6 +6,7 @@ use App\Http\Controllers\MorningHub\GuideController;
 use App\Http\Controllers\MorningHub\RoutineBlockController;
 use App\Http\Controllers\MorningHub\ThemeShowcaseController;
 use App\Http\Controllers\MorningHub\TodaysTasksConfigController;
+use App\Http\Middleware\LogApiProxyAccess;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -24,7 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('morning-hub.clickup.test');
 
     // ClickUp API proxy (JSON responses)
-    Route::middleware('throttle:60,1')->group(function () {
+    Route::middleware(['throttle:60,1', LogApiProxyAccess::class])->group(function () {
         Route::get('morning-hub/clickup/{connection}/workspaces', [ClickUpApiController::class, 'workspaces'])
             ->name('morning-hub.clickup.workspaces');
         Route::get('morning-hub/clickup/{connection}/spaces', [ClickUpApiController::class, 'spaces'])

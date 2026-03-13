@@ -73,7 +73,7 @@ class ClickUpConnectionController extends Controller
     {
         Gate::authorize('view', $connection);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
         $success = $service->testConnection();
 
         return response()->json([

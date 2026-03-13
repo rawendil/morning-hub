@@ -19,7 +19,7 @@ class ClickUpApiController extends Controller
     {
         Gate::authorize('view', $connection);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->getWorkspaces()]);
     }
@@ -29,7 +29,7 @@ class ClickUpApiController extends Controller
         Gate::authorize('view', $connection);
         $request->validate(['workspace_id' => 'required|string']);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->getSpaces($request->input('workspace_id'))]);
     }
@@ -39,7 +39,7 @@ class ClickUpApiController extends Controller
         Gate::authorize('view', $connection);
         $request->validate(['space_id' => 'required|string']);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->getFolders($request->input('space_id'))]);
     }
@@ -48,7 +48,7 @@ class ClickUpApiController extends Controller
     {
         Gate::authorize('view', $connection);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         if ($request->has('folder_id')) {
             return response()->json(['data' => $service->getLists($request->input('folder_id'))]);
@@ -64,7 +64,7 @@ class ClickUpApiController extends Controller
         Gate::authorize('view', $connection);
         $request->validate(['space_id' => 'required|string']);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->getAllListsInSpace($request->input('space_id'))]);
     }
@@ -73,7 +73,7 @@ class ClickUpApiController extends Controller
     {
         Gate::authorize('view', $connection);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->getAuthenticatedUser()]);
     }
@@ -82,7 +82,7 @@ class ClickUpApiController extends Controller
     {
         Gate::authorize('view', $connection);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->getTask($taskId)]);
     }
@@ -98,7 +98,7 @@ class ClickUpApiController extends Controller
             'name' => ['sometimes', 'string', 'max:500'],
         ]);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->updateTask($taskId, $validated)]);
     }
@@ -116,7 +116,7 @@ class ClickUpApiController extends Controller
         $listId = $validated['list_id'];
         unset($validated['list_id']);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->createTask($listId, $validated)], 201);
     }
@@ -129,7 +129,7 @@ class ClickUpApiController extends Controller
             'comment_text' => ['required', 'string', 'max:10000'],
         ]);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->createComment($taskId, $validated['comment_text'])], 201);
     }
@@ -138,7 +138,7 @@ class ClickUpApiController extends Controller
     {
         Gate::authorize('view', $connection);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->getComments($taskId)]);
     }
@@ -148,7 +148,7 @@ class ClickUpApiController extends Controller
         Gate::authorize('view', $connection);
         $request->validate(['list_id' => ['required', 'string']]);
 
-        $service = $this->clickUpServiceFactory->make($connection->api_token);
+        $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->getListStatuses($request->input('list_id'))]);
     }

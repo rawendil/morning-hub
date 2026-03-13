@@ -52,7 +52,7 @@ test('audit log is written when connection is created', function () {
 
     expect(file_exists($logFile))->toBeTrue();
     $logContent = file_get_contents($logFile);
-    expect($logContent)->toContain('ClickUp connection created');
+    expect($logContent)->toContain('clickup connection created');
     expect($logContent)->toContain('Audit Test');
     expect($logContent)->not->toContain('pk_audit_token');
 });
@@ -71,7 +71,7 @@ test('audit log is written when connection is deleted', function () {
 
     expect(file_exists($logFile))->toBeTrue();
     $logContent = file_get_contents($logFile);
-    expect($logContent)->toContain('ClickUp connection deleted');
+    expect($logContent)->toContain('clickup connection deleted');
     expect($logContent)->toContain('Delete Me');
 });
 
@@ -83,6 +83,26 @@ test('cross-user access to connection API proxy is forbidden', function () {
     $this->actingAs($user)
         ->get(route('morning-hub.clickup.workspaces', $connection))
         ->assertForbidden();
+});
+
+test('401 from provider is logged to security channel', function () {
+    $logFile = storage_path('logs/security-'.now()->format('Y-m-d').'.log');
+    if (file_exists($logFile)) {
+        unlink($logFile);
+    }
+
+    Http::fake(['https://api.clickup.com/api/v2/team' => Http::response(['err' => 'Token invalid'], 401)]);
+
+    $user = User::factory()->create();
+    $connection = ClickUpConnection::factory()->for($user)->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.clickup.test', $connection));
+
+    expect(file_exists($logFile))->toBeTrue();
+    $logContent = file_get_contents($logFile);
+    expect($logContent)->toContain('API authentication failed (401)');
+    expect($logContent)->toContain('clickup');
 });
 
 test('store endpoint is rate limited', function () {

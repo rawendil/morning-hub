@@ -25,7 +25,7 @@ class TodaysTasksService
 
         foreach ($connections as $connection) {
             try {
-                $service = $this->clickUpServiceFactory->make($connection->api_token);
+                $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
                 $clickUpUser = $service->getAuthenticatedUser();
 
                 $filters = [

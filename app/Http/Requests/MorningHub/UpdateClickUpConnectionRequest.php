@@ -22,7 +22,7 @@ class UpdateClickUpConnectionRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'api_token' => ['sometimes', 'string'],
+            'api_token' => ['sometimes', 'string', 'starts_with:pk_', 'min:10'],
             'workspace_id' => ['nullable', 'string'],
             'default_space_id' => ['nullable', 'string'],
             'default_folder_id' => ['nullable', 'string'],

@@ -4,6 +4,7 @@ namespace App\Http\Requests\MorningHub;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class StoreClickUpConnectionRequest extends FormRequest
 {
@@ -22,7 +23,16 @@ class StoreClickUpConnectionRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'api_token' => ['required', 'string'],
+            'api_token' => ['required', 'string', 'starts_with:pk_', 'min:10'],
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            if (app()->isProduction() && ! $this->isSecure()) {
+                $validator->errors()->add('api_token', 'API tokens must be submitted over HTTPS.');
+            }
+        });
     }
 }

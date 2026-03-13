@@ -4,47 +4,53 @@ namespace App\Services;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Pool;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ClickUpService
 {
     private const BASE_URL = 'https://api.clickup.com/api/v2';
 
-    public function __construct(private readonly string $apiToken) {}
+    public function __construct(
+        private readonly string $apiToken,
+        private readonly ?int $connectionId = null,
+    ) {}
 
     public function testConnection(): bool
     {
-        return $this->client()->get(self::BASE_URL.'/team')->successful();
+        return $this->request('get', self::BASE_URL.'/team')->successful();
     }
 
     /** @return array<int, array<string, mixed>> */
     public function getWorkspaces(): array
     {
-        return $this->client()->get(self::BASE_URL.'/team')->json('teams', []);
+        return $this->request('get', self::BASE_URL.'/team')->json('teams', []);
     }
 
     /** @return array<int, array<string, mixed>> */
     public function getSpaces(string $workspaceId): array
     {
-        return $this->client()->get(self::BASE_URL."/team/{$workspaceId}/space")->json('spaces', []);
+        return $this->request('get', self::BASE_URL."/team/{$workspaceId}/space")->json('spaces', []);
     }
 
     /** @return array<int, array<string, mixed>> */
     public function getFolders(string $spaceId): array
     {
-        return $this->client()->get(self::BASE_URL."/space/{$spaceId}/folder")->json('folders', []);
+        return $this->request('get', self::BASE_URL."/space/{$spaceId}/folder")->json('folders', []);
     }
 
     /** @return array<int, array<string, mixed>> */
     public function getLists(string $folderId): array
     {
-        return $this->client()->get(self::BASE_URL."/folder/{$folderId}/list")->json('lists', []);
+        return $this->request('get', self::BASE_URL."/folder/{$folderId}/list")->json('lists', []);
     }
 
     /** @return array<int, array<string, mixed>> */
     public function getFolderlessLists(string $spaceId): array
     {
-        return $this->client()->get(self::BASE_URL."/space/{$spaceId}/list")->json('lists', []);
+        return $this->request('get', self::BASE_URL."/space/{$spaceId}/list")->json('lists', []);
     }
 
     /** @return array{folders: array<int, array{id: string, name: string, lists: array<int, array<string, mixed>>}>, folderless: array<int, array<string, mixed>>} */
@@ -98,8 +104,14 @@ class ClickUpService
 
         $allTasks = [];
         foreach ($listIds as $listId) {
-            if (isset($responses[$listId]) && $responses[$listId]->ok()) {
-                $allTasks = array_merge($allTasks, $responses[$listId]->json('tasks', []));
+            if (isset($responses[$listId])) {
+                if ($responses[$listId]->status() === 401) {
+                    $this->logAuthFailure("/list/{$listId}/task");
+                }
+
+                if ($responses[$listId]->ok()) {
+                    $allTasks = array_merge($allTasks, $responses[$listId]->json('tasks', []));
+                }
             }
         }
 
@@ -124,16 +136,14 @@ class ClickUpService
             'subtasks' => 'true',
         ], $filters);
 
-        return $this->client()
-            ->get(self::BASE_URL."/list/{$listId}/task", $query)
+        return $this->request('get', self::BASE_URL."/list/{$listId}/task", $query)
             ->json('tasks', []);
     }
 
     /** @return array<string, mixed> */
     public function getTask(string $taskId): array
     {
-        return $this->client()
-            ->get(self::BASE_URL."/task/{$taskId}", ['include_subtasks' => 'true'])
+        return $this->request('get', self::BASE_URL."/task/{$taskId}", ['include_subtasks' => 'true'])
             ->json();
     }
 
@@ -143,8 +153,7 @@ class ClickUpService
      */
     public function updateTask(string $taskId, array $data): array
     {
-        return $this->client()
-            ->put(self::BASE_URL."/task/{$taskId}", $data)
+        return $this->request('put', self::BASE_URL."/task/{$taskId}", $data)
             ->json();
     }
 
@@ -154,42 +163,61 @@ class ClickUpService
      */
     public function createTask(string $listId, array $data): array
     {
-        return $this->client()
-            ->post(self::BASE_URL."/list/{$listId}/task", $data)
+        return $this->request('post', self::BASE_URL."/list/{$listId}/task", $data)
             ->json();
     }
 
     /** @return array<string, mixed> */
     public function createComment(string $taskId, string $commentText): array
     {
-        return $this->client()
-            ->post(self::BASE_URL."/task/{$taskId}/comment", [
-                'comment_text' => $commentText,
-                'notify_all' => false,
-            ])
-            ->json();
+        return $this->request('post', self::BASE_URL."/task/{$taskId}/comment", [
+            'comment_text' => $commentText,
+            'notify_all' => false,
+        ])->json();
     }
 
     /** @return array<int, array<string, mixed>> */
     public function getComments(string $taskId): array
     {
-        return $this->client()
-            ->get(self::BASE_URL."/task/{$taskId}/comment")
+        return $this->request('get', self::BASE_URL."/task/{$taskId}/comment")
             ->json('comments', []);
     }
 
     /** @return array<int, array<string, mixed>> */
     public function getListStatuses(string $listId): array
     {
-        return $this->client()
-            ->get(self::BASE_URL."/list/{$listId}")
+        return $this->request('get', self::BASE_URL."/list/{$listId}")
             ->json('statuses', []);
     }
 
     /** @return array{id: int, username: string, email: string} */
     public function getAuthenticatedUser(): array
     {
-        return $this->client()->get(self::BASE_URL.'/user')->json('user', []);
+        return $this->request('get', self::BASE_URL.'/user')->json('user', []);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function request(string $method, string $url, array $data = []): Response
+    {
+        /** @var Response $response */
+        $response = $this->client()->{$method}($url, $data);
+
+        if ($response->status() === 401) {
+            $this->logAuthFailure(Str::after($url, self::BASE_URL));
+        }
+
+        return $response;
+    }
+
+    private function logAuthFailure(string $endpoint): void
+    {
+        Log::channel('security')->warning('API authentication failed (401)', [
+            'provider' => 'clickup',
+            'connection_id' => $this->connectionId,
+            'endpoint' => $endpoint,
+        ]);
     }
 
     private function client(): PendingRequest

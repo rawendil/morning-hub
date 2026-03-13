@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use App\Observers\ClickUpConnectionObserver;
+use App\Contracts\ApiCredentialProvider;
+use App\Models\Concerns\HasEncryptedCredentials;
+use App\Observers\ApiCredentialObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[ObservedBy(ClickUpConnectionObserver::class)]
-class ClickUpConnection extends Model
+#[ObservedBy(ApiCredentialObserver::class)]
+class ClickUpConnection extends Model implements ApiCredentialProvider
 {
     /** @use HasFactory<\Database\Factories\ClickUpConnectionFactory> */
-    use HasFactory;
+    use HasEncryptedCredentials, HasFactory;
 
     protected $table = 'clickup_connections';
 
@@ -45,5 +47,15 @@ class ClickUpConnection extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public static function tokenFormatPattern(): ?string
+    {
+        return '/^pk_.{6,}/';
+    }
+
+    public function getProviderName(): string
+    {
+        return 'clickup';
     }
 }

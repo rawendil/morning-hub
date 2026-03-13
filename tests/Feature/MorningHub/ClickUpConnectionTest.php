@@ -176,6 +176,28 @@ test('updating default_list_ids to null clears default_list_id', function () {
     expect($connection->default_list_id)->toBeNull();
 });
 
+test('user cannot create connection with token missing pk_ prefix', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.clickup.store'), [
+            'name' => 'Bad Prefix',
+            'api_token' => 'sk_not_a_clickup_token',
+        ])
+        ->assertSessionHasErrors('api_token');
+});
+
+test('user cannot create connection with too short token', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post(route('morning-hub.clickup.store'), [
+            'name' => 'Short Token',
+            'api_token' => 'pk_short',
+        ])
+        ->assertSessionHasErrors('api_token');
+});
+
 test('deleting connection nullifies related blocks', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
