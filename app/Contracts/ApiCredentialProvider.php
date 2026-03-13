@@ -11,4 +11,7 @@ interface ApiCredentialProvider
     public function getProviderName(): string;
 
     public function validateTokenFormat(string $attribute = 'api_token'): bool;
+
+    /** @return string[] */
+    public function getCredentialAttributes(): array;
 }

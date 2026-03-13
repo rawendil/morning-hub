@@ -19,14 +19,22 @@ class ApiCredentialObserver
 
     public function updated(Model&ApiCredentialProvider $model): void
     {
-        $tokenChanged = $model->wasChanged('api_token');
+        $credentialAttributes = $model->getCredentialAttributes();
+        $changedCredentials = array_filter(
+            $credentialAttributes,
+            fn (string $attr) => $model->wasChanged($attr),
+        );
+
+        $firstCredential = $credentialAttributes[0] ?? 'api_token';
+        $tokenChanged = $model->wasChanged($firstCredential);
 
         Log::channel('security')->info($model->getProviderName().' connection updated', [
             'user_id' => $model->getAttribute('user_id'),
             'connection_id' => $model->getKey(),
             'connection_name' => $model->getAttribute('name'),
             'token_changed' => $tokenChanged,
-            'masked_token' => $tokenChanged ? $model->maskedToken() : null,
+            'masked_token' => $tokenChanged ? $model->maskedToken($firstCredential) : null,
+            'changed_credentials' => array_values($changedCredentials),
         ]);
     }
 

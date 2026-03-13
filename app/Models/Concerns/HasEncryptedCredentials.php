@@ -51,6 +51,12 @@ trait HasEncryptedCredentials
             ->toString();
     }
 
+    /** @return string[] */
+    public function getCredentialAttributes(): array
+    {
+        return ['api_token'];
+    }
+
     /**
      * Override in model to define token format regex.
      * Return null to skip format validation.
