@@ -11,6 +11,7 @@ enum BlockType: string
     case Habits = 'habits';
     case Feed = 'feed';
     case Custom = 'custom';
+    case GoogleCalendar = 'google_calendar';
 
     public function label(): string
     {
@@ -22,6 +23,7 @@ enum BlockType: string
             self::Notes => __('Notatki'),
             self::Plan => __('Plan'),
             self::Custom => __('Własny'),
+            self::GoogleCalendar => __('Google Calendar'),
         };
     }
 }

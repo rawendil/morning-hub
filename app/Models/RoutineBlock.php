@@ -19,6 +19,7 @@ class RoutineBlock extends Model
         'sort_order',
         'timer_minutes',
         'clickup_connection_id',
+        'google_calendar_connection_id',
         'config',
     ];
 
@@ -41,6 +42,12 @@ class RoutineBlock extends Model
     public function clickUpConnection(): BelongsTo
     {
         return $this->belongsTo(ClickUpConnection::class, 'clickup_connection_id');
+    }
+
+    /** @return BelongsTo<GoogleCalendarConnection, $this> */
+    public function googleCalendarConnection(): BelongsTo
+    {
+        return $this->belongsTo(GoogleCalendarConnection::class);
     }
 
     /** @param Builder<RoutineBlock> $query */

@@ -81,4 +81,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(TodaysTasksConfig::class);
     }
+
+    /** @return HasOne<GoogleCalendarConnection, $this> */
+    public function googleCalendarConnection(): HasOne
+    {
+        return $this->hasOne(GoogleCalendarConnection::class);
+    }
 }
