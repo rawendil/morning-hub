@@ -13,10 +13,10 @@ class GoogleCalendarConnectionFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'google_id' => $this->faker->numerify('google-######'),
-            'name' => $this->faker->safeEmail(),
-            'access_token' => 'ya29.'.$this->faker->sha256(),
-            'refresh_token' => '1//'.$this->faker->sha256(),
+            'google_id' => 'google-'.fake()->randomNumber(6),
+            'name' => fake()->unique()->safeEmail(),
+            'access_token' => 'ya29.'.fake()->sha1(),
+            'refresh_token' => '1//'.fake()->sha1(),
             'token_expires_at' => now()->addHour(),
             'calendar_ids' => null,
         ];
@@ -29,6 +29,7 @@ class GoogleCalendarConnectionFactory extends Factory
         ]);
     }
 
+    /** @param string[] $calendarIds */
     public function withCalendars(array $calendarIds = ['primary']): static
     {
         return $this->state(fn () => [
