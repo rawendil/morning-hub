@@ -28,6 +28,7 @@ class StoreRoutineBlockRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'timer_minutes' => ['nullable', 'integer', 'min:1', 'max:120'],
             'clickup_connection_id' => ['nullable', 'integer', 'exists:clickup_connections,id'],
+            'google_calendar_connection_id' => ['nullable', 'required_if:type,google_calendar', 'integer', 'exists:google_calendar_connections,id'],
             'config' => ['nullable', 'array'],
             'config.icon' => ['nullable', 'string', 'max:50'],
             'config.habits' => ['required_if:type,habits', 'array', 'min:1'],
@@ -49,6 +50,17 @@ class StoreRoutineBlockRequest extends FormRequest
                     ->where('id', $this->clickup_connection_id)->exists();
                 if (! $belongs) {
                     $validator->errors()->add('clickup_connection_id', 'This connection does not belong to you.');
+                }
+            }
+
+            if ($validator->errors()->isEmpty() && $this->input('google_calendar_connection_id')) {
+                $ownsConnection = $this->user()
+                    ->googleCalendarConnection()
+                    ->where('id', $this->input('google_calendar_connection_id'))
+                    ->exists();
+
+                if (! $ownsConnection) {
+                    $validator->errors()->add('google_calendar_connection_id', 'Invalid Google Calendar connection.');
                 }
             }
 
