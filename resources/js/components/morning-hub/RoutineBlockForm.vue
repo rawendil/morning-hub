@@ -255,11 +255,13 @@ const usesPlaceholder = computed(() =>
                             v-if="googleCalendarConnectionId"
                             class="text-sm text-muted-foreground"
                         >
-                            {{
-                                t(
-                                    'Połączenie Google Calendar jest aktywne. Kalendarze można skonfigurować w ustawieniach.',
-                                )
-                            }}
+                            {{ t('Połączenie Google Calendar jest aktywne.') }}
+                            <a
+                                :href="googleCalendarIndex.url()"
+                                class="underline"
+                            >
+                                {{ t('Konfiguruj kalendarze') }}
+                            </a>
                         </p>
                         <p v-else class="text-sm text-muted-foreground">
                             {{ t('Brak połączenia Google Calendar.') }}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { CalendarX, SkipForward } from 'lucide-vue-next';
+import { CalendarX, ExternalLink, SkipForward } from 'lucide-vue-next';
 import { computed } from 'vue';
 import GoogleCalendarBlockSkeleton from '@/components/morning-hub/GoogleCalendarBlockSkeleton.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
@@ -73,15 +73,26 @@ function formatEventTime(dateStr: string): string {
                     @reset="emit('timerReset')"
                 />
             </div>
-            <Button
-                v-if="isActiveBlock"
-                variant="ghost"
-                size="icon"
-                class="h-8 w-8"
-                @click="emit('timerSkip')"
-            >
-                <SkipForward class="h-4 w-4" />
-            </Button>
+            <div class="flex items-center gap-1">
+                <Button
+                    v-if="isActiveBlock"
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8"
+                    @click="emit('timerSkip')"
+                >
+                    <SkipForward class="h-4 w-4" />
+                </Button>
+                <a
+                    href="https://calendar.google.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <Button variant="ghost" size="icon" class="h-8 w-8">
+                        <ExternalLink class="h-4 w-4" />
+                    </Button>
+                </a>
+            </div>
         </CardHeader>
 
         <CardContent class="space-y-1 pt-0">
