@@ -7,6 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import SocialLoginButton from '@/components/SocialLoginButton.vue';
+import SocialLoginSeparator from '@/components/SocialLoginSeparator.vue';
 import { useTranslations } from '@/composables/useTranslations';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { register } from '@/routes';
@@ -100,6 +102,9 @@ const { t } = useTranslations();
                     {{ t('Zaloguj się') }}
                 </Button>
             </div>
+
+            <SocialLoginSeparator />
+            <SocialLoginButton />
 
             <div
                 class="text-center text-sm text-muted-foreground"

@@ -48,3 +48,24 @@ test('correct password must be provided to update password', function () {
         ->assertSessionHasErrors('current_password')
         ->assertRedirect(route('user-password.edit'));
 });
+
+test('user without password can set a password without current_password', function () {
+    $user = User::factory()->withoutPassword()->withGoogle()->create();
+
+    expect($user->hasPassword())->toBeFalse();
+
+    $response = $this
+        ->actingAs($user)
+        ->from(route('user-password.edit'))
+        ->put(route('user-password.update'), [
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ]);
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('user-password.edit'));
+
+    expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue()
+        ->and($user->hasPassword())->toBeTrue();
+});

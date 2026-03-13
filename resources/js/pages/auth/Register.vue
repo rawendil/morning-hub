@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import SocialLoginButton from '@/components/SocialLoginButton.vue';
+import SocialLoginSeparator from '@/components/SocialLoginSeparator.vue';
 import { useTranslations } from '@/composables/useTranslations';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
@@ -96,6 +98,9 @@ const { t } = useTranslations();
                     {{ t('Utwórz konto') }}
                 </Button>
             </div>
+
+            <SocialLoginSeparator />
+            <SocialLoginButton />
 
             <div class="text-center text-sm text-muted-foreground">
                 {{ t('Masz już konto?') }}

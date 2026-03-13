@@ -11,6 +11,8 @@ export type User = {
 
 export type Auth = {
     user: User;
+    hasPassword: boolean;
+    hasGoogle: boolean;
 };
 
 export type TwoFactorConfigContent = {

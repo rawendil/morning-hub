@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import Heading from '@/components/Heading.vue';
@@ -14,6 +14,9 @@ import { edit } from '@/routes/user-password';
 import type { BreadcrumbItem } from '@/types';
 
 const { t } = useTranslations();
+
+const page = usePage();
+const hasPassword = computed(() => page.props.auth.hasPassword);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     {
@@ -33,8 +36,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             <div class="space-y-6">
                 <Heading
                     variant="small"
-                    :title="t('Zmiana hasła')"
-                    :description="t('Upewnij się, że Twoje konto używa długiego, losowego hasła')"
+                    :title="hasPassword ? t('Zmiana hasła') : t('Ustaw hasło')"
+                    :description="hasPassword ? t('Upewnij się, że Twoje konto używa długiego, losowego hasła') : t('Ustaw hasło, aby móc logować się tradycyjnie')"
                 />
 
                 <Form
@@ -51,7 +54,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     class="space-y-6"
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
-                    <div class="grid gap-2">
+                    <div v-if="hasPassword" class="grid gap-2">
                         <Label for="current_password">{{ t('Aktualne hasło') }}</Label>
                         <Input
                             id="current_password"
@@ -65,7 +68,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password">{{ t('Nowe hasło') }}</Label>
+                        <Label for="password">{{ hasPassword ? t('Nowe hasło') : t('Hasło') }}</Label>
                         <Input
                             id="password"
                             name="password"
@@ -96,7 +99,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                         <Button
                             :disabled="processing"
                             data-test="update-password-button"
-                            >{{ t('Zapisz hasło') }}</Button
+                            >{{ hasPassword ? t('Zapisz hasło') : t('Ustaw hasło') }}</Button
                         >
 
                         <Transition

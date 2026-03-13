@@ -24,6 +24,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id',
+        'google_avatar',
     ];
 
     /**
@@ -50,6 +52,16 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public function hasPassword(): bool
+    {
+        return $this->password !== null;
+    }
+
+    public function hasGoogleLinked(): bool
+    {
+        return $this->google_id !== null;
     }
 
     /** @return HasMany<ClickUpConnection, $this> */
