@@ -6,18 +6,23 @@ use App\Enums\BlockType;
 use App\Models\RoutineBlock;
 use App\Services\ClickUpService;
 use App\Services\FeedService;
+use App\Services\GoogleCalendarServiceFactory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        private readonly GoogleCalendarServiceFactory $googleCalendarServiceFactory,
+    ) {}
+
     public function __invoke(Request $request): Response
     {
         $blocks = $request->user()
             ->routineBlocks()
             ->ordered()
-            ->with('clickUpConnection')
+            ->with(['clickUpConnection', 'googleCalendarConnection'])
             ->get();
 
         $props = ['blocks' => $blocks];
@@ -59,6 +64,23 @@ class DashboardController extends Controller
             $props["feed_{$block->id}"] = Inertia::defer(
                 fn () => $this->fetchFeed($sources, $days),
                 "feed_{$block->id}",
+            );
+        }
+
+        foreach ($blocks as $block) {
+            if ($block->type !== BlockType::GoogleCalendar) {
+                continue;
+            }
+
+            if (! $block->googleCalendarConnection) {
+                continue;
+            }
+
+            $props["events_{$block->id}"] = Inertia::defer(
+                fn () => $this->googleCalendarServiceFactory
+                    ->make($block->googleCalendarConnection)
+                    ->getEventsForDashboard(),
+                "events_{$block->id}",
             );
         }
 
