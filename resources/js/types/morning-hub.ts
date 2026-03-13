@@ -5,7 +5,8 @@ export type BlockType =
     | 'feed'
     | 'notes'
     | 'plan'
-    | 'custom';
+    | 'custom'
+    | 'google_calendar';
 
 export type ClickUpConnection = {
     id: number;
@@ -28,6 +29,8 @@ export type RoutineBlock = {
     timer_minutes: number | null;
     clickup_connection_id: number | null;
     clickup_connection?: ClickUpConnection;
+    google_calendar_connection_id: number | null;
+    google_calendar_connection?: GoogleCalendarConnection;
     config: Record<string, unknown> | null;
 };
 
@@ -144,4 +147,36 @@ export type FeedItem = {
 export type BlockFeedData = {
     items: FeedItem[];
     error: string | null;
+};
+
+export type GoogleCalendarConnection = {
+    id: number;
+    google_id: string;
+    name: string;
+    calendar_ids: string[] | null;
+    token_expires_at: string;
+    created_at: string;
+    updated_at: string;
+};
+
+export type GoogleCalendarEvent = {
+    id: string;
+    title: string;
+    start: string;
+    end: string;
+    all_day: boolean;
+    location: string | null;
+    calendar_color: string;
+    calendar_name: string;
+};
+
+export type BlockGoogleCalendarData = {
+    events: GoogleCalendarEvent[];
+    error: string | null;
+};
+
+export type GoogleCalendarListItem = {
+    id: string;
+    name: string;
+    color: string;
 };
