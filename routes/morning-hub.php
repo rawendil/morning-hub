@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\MorningHub\ClickUpApiController;
 use App\Http\Controllers\MorningHub\ClickUpConnectionController;
+use App\Http\Controllers\MorningHub\GoogleCalendarApiController;
+use App\Http\Controllers\MorningHub\GoogleCalendarConnectionController;
+use App\Http\Controllers\MorningHub\GoogleCalendarOAuthController;
 use App\Http\Controllers\MorningHub\GuideController;
 use App\Http\Controllers\MorningHub\RoutineBlockController;
 use App\Http\Controllers\MorningHub\ThemeShowcaseController;
@@ -51,6 +54,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('morning-hub/clickup/{connection}/statuses', [ClickUpApiController::class, 'statuses'])
             ->name('morning-hub.clickup.statuses');
     });
+
+    // Google Calendar OAuth
+    Route::get('morning-hub/google-calendar/connect', [GoogleCalendarOAuthController::class, 'redirect'])
+        ->middleware('throttle:5,1')
+        ->name('morning-hub.google-calendar.connect');
+    Route::get('morning-hub/google-calendar/callback', [GoogleCalendarOAuthController::class, 'callback'])
+        ->name('morning-hub.google-calendar.callback');
+    Route::delete('morning-hub/google-calendar/disconnect', [GoogleCalendarOAuthController::class, 'disconnect'])
+        ->middleware('throttle:5,1')
+        ->name('morning-hub.google-calendar.disconnect');
+
+    // Google Calendar Connection Config
+    Route::get('morning-hub/google-calendar', [GoogleCalendarConnectionController::class, 'index'])
+        ->name('morning-hub.google-calendar.index');
+    Route::put('morning-hub/google-calendar', [GoogleCalendarConnectionController::class, 'update'])
+        ->name('morning-hub.google-calendar.update');
+    Route::post('morning-hub/google-calendar/test', [GoogleCalendarConnectionController::class, 'test'])
+        ->middleware('throttle:5,1')
+        ->name('morning-hub.google-calendar.test');
+
+    // Google Calendar API proxy
+    Route::get('morning-hub/google-calendar/calendars', [GoogleCalendarApiController::class, 'calendars'])
+        ->middleware(['throttle:60,1', LogApiProxyAccess::class])
+        ->name('morning-hub.google-calendar.calendars');
 
     // Today's Tasks Config
     Route::get('morning-hub/todays-tasks', [TodaysTasksConfigController::class, 'index'])

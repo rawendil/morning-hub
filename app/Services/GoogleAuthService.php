@@ -126,6 +126,8 @@ class GoogleAuthService
             throw new \InvalidArgumentException(__('Nie można odłączyć Google bez ustawionego hasła.'));
         }
 
+        $user->googleCalendarConnection?->delete();
+
         $user->update([
             'google_id' => null,
             'google_avatar' => null,
