@@ -88,6 +88,128 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </p>
                 </div>
             </section>
+
+            <!-- Nawyki -->
+            <section class="space-y-3">
+                <h3 class="text-lg font-semibold tracking-tight">{{ t('Blok nawyków') }}</h3>
+                <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
+                    <p>
+                        {{ t('Blok nawyków to codzienna checklista, która resetuje się automatycznie każdego ranka.') }}
+                    </p>
+                    <ul class="list-disc space-y-1 pl-5">
+                        <li v-html="t('Dodaj nawyki w <strong>Blokach rutyny</strong> (Konfiguracja) — np. medytacja, ćwiczenia, woda.')" />
+                        <li>{{ t('Postęp nawyków jest zapisywany lokalnie i resetuje się o północy.') }}</li>
+                        <li>{{ t('Na karcie bloku widać pasek postępu (np. 3/5 ukończonych).') }}</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Kanał RSS -->
+            <section class="space-y-3">
+                <h3 class="text-lg font-semibold tracking-tight">{{ t('Blok kanału RSS') }}</h3>
+                <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
+                    <p>
+                        {{ t('Blok kanału RSS wyświetla artykuły z wybranych źródeł RSS/Atom. Skonfiguruj go w Blokach rutyny:') }}
+                    </p>
+                    <ul class="list-disc space-y-1 pl-5">
+                        <li v-html="t('Dodaj <strong>źródła RSS</strong> — podaj nazwę i adres URL kanału.')" />
+                        <li v-html="t('Ustaw <strong>liczbę dni</strong> — ile dni wstecz mają być pobierane artykuły (domyślnie 7).')" />
+                        <li>{{ t('Przeczytane artykuły są oznaczane ikoną oka — możesz je ukryć przełącznikiem.') }}</li>
+                        <li>{{ t('Status przeczytanych artykułów jest zapisywany lokalnie przez 30 dni.') }}</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Zrzut myśli -->
+            <section class="space-y-3">
+                <h3 class="text-lg font-semibold tracking-tight">{{ t('Blok zrzutu myśli') }}</h3>
+                <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
+                    <p>
+                        {{ t('Zrzut myśli pozwala szybko zapisać myśl jako zadanie w ClickUp — bez opuszczania panelu rutyny.') }}
+                    </p>
+                    <ul class="list-disc space-y-1 pl-5">
+                        <li v-html="t('Wpisz myśl i naciśnij <strong>Ctrl+Enter</strong> (lub przycisk), aby utworzyć zadanie.')" />
+                        <li v-html="t('Zadanie trafia na <strong>domyślną listę</strong> połączenia ClickUp przypisanego do bloku.')" />
+                        <li>{{ t('Ostatnio utworzone zadania wyświetlają się pod polem tekstowym.') }}</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Google Calendar -->
+            <section class="space-y-3">
+                <h3 class="text-lg font-semibold tracking-tight">{{ t('Blok Google Calendar') }}</h3>
+                <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
+                    <p>
+                        {{ t('Blok Google Calendar wyświetla wydarzenia z wybranych kalendarzy Google. Wymaga kilku kroków konfiguracji:') }}
+                    </p>
+                    <ul class="list-disc space-y-1 pl-5">
+                        <li v-html="t('Najpierw <strong>połącz konto Google</strong> w ustawieniach Profilu (sekcja Integracje).')" />
+                        <li v-html="t('Następnie przejdź do <strong>Google Calendar</strong> (Konfiguracja) i połącz kalendarz.')" />
+                        <li v-html="t('Wybierz <strong>kalendarze</strong>, z których chcesz widzieć wydarzenia.')" />
+                        <li>{{ t('Wydarzenia pojawiają się również na stronie „Zadania na dziś" w formie timeline.') }}</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Timer -->
+            <section class="space-y-3">
+                <h3 class="text-lg font-semibold tracking-tight">{{ t('Timer rutyny') }}</h3>
+                <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
+                    <p>
+                        {{ t('Każdy blok rutyny może mieć opcjonalny timer, który pomaga trzymać się ram czasowych poranka.') }}
+                    </p>
+                    <ul class="list-disc space-y-1 pl-5">
+                        <li v-html="t('Ustaw <strong>czas w minutach</strong> przy tworzeniu lub edycji bloku.')" />
+                        <li>{{ t('Timer obsługuje start, pauzę, wznowienie i pominięcie bloku.') }}</li>
+                        <li>{{ t('Po upływie czasu blok jest oznaczany jako ukończony, a timer przechodzi do następnego.') }}</li>
+                        <li>{{ t('Stan timera jest zapisywany lokalnie — możesz zamknąć przeglądarkę i wrócić.') }}</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Zmiana statusu zadań -->
+            <section class="space-y-3">
+                <h3 class="text-lg font-semibold tracking-tight">{{ t('Zmiana statusu zadań') }}</h3>
+                <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
+                    <p>
+                        {{ t('Możesz zmieniać status zadań ClickUp bezpośrednio z panelu — bez otwierania ClickUp.') }}
+                    </p>
+                    <ul class="list-disc space-y-1 pl-5">
+                        <li>{{ t('Kliknij badge statusu na karcie zadania, aby zobaczyć dostępne statusy.') }}</li>
+                        <li>{{ t('Zmiana jest natychmiastowa — status aktualizuje się w ClickUp od razu.') }}</li>
+                        <li>{{ t('Kliknij kartę zadania, aby otworzyć modal ze szczegółami, opisem i podzadaniami.') }}</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Wygląd -->
+            <section class="space-y-3">
+                <h3 class="text-lg font-semibold tracking-tight">{{ t('Motyw i wygląd') }}</h3>
+                <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
+                    <p>
+                        {{ t('Aplikacja obsługuje trzy tryby wyglądu: jasny, ciemny i systemowy (dopasowuje się do ustawień systemu operacyjnego).') }}
+                    </p>
+                    <ul class="list-disc space-y-1 pl-5">
+                        <li v-html="t('Zmień motyw w <strong>Ustawieniach → Wygląd</strong>.')" />
+                        <li>{{ t('Wybrany motyw jest zapamiętywany w przeglądarce.') }}</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Dane lokalne -->
+            <section class="space-y-3">
+                <h3 class="text-lg font-semibold tracking-tight">{{ t('Dane lokalne') }}</h3>
+                <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
+                    <p>
+                        {{ t('Część danych (postęp rutyny, nawyki, przeczytane artykuły) jest przechowywana lokalnie w przeglądarce, a nie na serwerze.') }}
+                    </p>
+                    <ul class="list-disc space-y-1 pl-5">
+                        <li>{{ t('Wyczyszczenie danych przeglądarki resetuje te dane.') }}</li>
+                        <li>{{ t('Dane dzienne (timer, nawyki) resetują się automatycznie każdego ranka.') }}</li>
+                        <li>{{ t('Konfiguracja bloków i połączeń jest zapisana na serwerze i działa na każdym urządzeniu.') }}</li>
+                    </ul>
+                </div>
+            </section>
         </div>
     </AppLayout>
 </template>
