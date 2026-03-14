@@ -8,6 +8,7 @@ class TodaysTasksService
 {
     public function __construct(
         private readonly ClickUpServiceFactory $clickUpServiceFactory,
+        private readonly GoogleCalendarServiceFactory $googleCalendarServiceFactory,
     ) {}
 
     /**
@@ -62,5 +63,21 @@ class TodaysTasksService
         }
 
         return ['groups' => $groups];
+    }
+
+    /**
+     * @return array{events: array<int, array<string, mixed>>, error: string|null}
+     */
+    public function fetchCalendarEvents(User $user): array
+    {
+        $connection = $user->googleCalendarConnection;
+
+        if (! $connection) {
+            return ['events' => [], 'error' => null];
+        }
+
+        $service = $this->googleCalendarServiceFactory->make($connection);
+
+        return $service->getEventsForDashboard();
     }
 }

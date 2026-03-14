@@ -70,6 +70,7 @@ export type ClickUpTask = {
     name: string;
     status: { status: string; color: string };
     priority: { id: string; priority: string; color: string } | null;
+    start_date: string | null;
     due_date: string | null;
     date_created: string;
     url: string;
@@ -174,6 +175,10 @@ export type BlockGoogleCalendarData = {
     events: GoogleCalendarEvent[];
     error: string | null;
 };
+
+export type TimelineItem =
+    | { type: 'task'; sortTime: number; connectionId: number; task: ClickUpTask; statuses: ClickUpStatus[] }
+    | { type: 'event'; sortTime: number; event: GoogleCalendarEvent };
 
 export type GoogleCalendarListItem = {
     id: string;
