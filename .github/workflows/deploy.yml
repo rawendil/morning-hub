@@ -19,7 +19,7 @@ jobs:
           command_timeout: 10m
           script: |
             set -e
-            cd ~/domains/morning-hub.REDACTED_USER.usermd.net/morning-hub
+            cd ${{ secrets.DEPLOY_PATH }}
             git pull origin master
             npm install
             npm run build

@@ -2,11 +2,9 @@
 
 A personal morning routine dashboard that helps you organize tasks, track habits, and stay focused before starting your day. Integrates with ClickUp and RSS feeds to give you a single view of everything that matters.
 
-**Live demo:** [morning-hub.REDACTED_USER.usermd.net](https://morning-hub.REDACTED_USER.usermd.net)
+**Live demo:** [morning-hub.rawendil-md2.usermd.net](https://morning-hub.rawendil-md2.usermd.net)
 
 > **Note:** Google login and Google Calendar integration are restricted to pre-approved test users only (Google OAuth app is in testing mode). If you'd like to try the full experience, please open an issue and I'll add your Google account to the allowlist.
-
-![Welcome](docs/screenshots/welcome.png)
 
 ## Features
 
