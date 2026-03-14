@@ -8,8 +8,6 @@ A personal morning routine dashboard that helps you organize tasks, track habits
 
 ![Welcome](docs/screenshots/welcome.png)
 
-![Dashboard](docs/screenshots/dashboard.png)
-
 ## Features
 
 - **Morning Routine Blocks** - configurable routine steps with time estimates and progress tracking
@@ -21,17 +19,10 @@ A personal morning routine dashboard that helps you organize tasks, track habits
 - **Onboarding Guide** - step-by-step setup wizard for new users
 - **Two-Factor Auth** - secure your account with TOTP-based 2FA
 
-## Screenshots
-
-### Routine Configuration
-![Routine Config](docs/screenshots/routine-config.png)
-
-### Today's Tasks
-![Today's Tasks](docs/screenshots/todays-tasks.png)
-
 ## Tech Stack
 
 **Backend:**
+
 - PHP 8.3 / Laravel 12
 - Inertia.js v2 (server-side)
 - Laravel Fortify (authentication)
@@ -40,6 +31,7 @@ A personal morning routine dashboard that helps you organize tasks, track habits
 - Pest 4 (testing)
 
 **Frontend:**
+
 - Vue 3 + TypeScript
 - Inertia.js v2 (client-side)
 - Tailwind CSS v4
@@ -49,7 +41,7 @@ A personal morning routine dashboard that helps you organize tasks, track habits
 
 ## Requirements
 
-- PHP >= 8.2
+- PHP >= 8.3
 - Node.js >= 18
 - Composer
 - SQLite
@@ -58,7 +50,7 @@ A personal morning routine dashboard that helps you organize tasks, track habits
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/morning-hub.git
+git clone https://github.com/rawendil/morning-hub.git
 cd morning-hub
 
 # Install dependencies
