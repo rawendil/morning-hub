@@ -27,4 +27,3 @@ jobs:
             php83 artisan migrate --force
             php83 artisan config:cache
             php83 artisan route:cache
-            php83 artisan view:cache
