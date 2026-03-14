@@ -90,6 +90,13 @@ async function handleUpdateTask(connectionId: number, taskId: string, payload: U
 
 const hasAnySource = computed(() => props.hasConfig || props.hasCalendar);
 
+const deferredProps = computed(() => {
+    const parts: string[] = [];
+    if (props.hasConfig) parts.push('todaysTasksData');
+    if (props.hasCalendar) parts.push('calendarData');
+    return parts.join(' ');
+});
+
 const allEmpty = computed(() => {
     if (!props.todaysTasksData && !props.calendarData) return false;
 
@@ -141,7 +148,7 @@ function itemKey(item: (typeof timeline.value)[number]): string {
             </div>
 
             <template v-else>
-                <Deferred data="todaysTasksData calendarData">
+                <Deferred :data="deferredProps">
                     <template #fallback>
                         <ClickUpTaskBlockSkeleton />
                     </template>
