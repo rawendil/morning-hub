@@ -190,6 +190,43 @@ class ClickUpService
             ->json('statuses', []);
     }
 
+    /**
+     * @param  array<int, string>  $listIds
+     * @return array<string, array<int, array<string, mixed>>> Keyed by listId
+     */
+    public function getMultipleListStatuses(array $listIds): array
+    {
+        if (empty($listIds)) {
+            return [];
+        }
+
+        if (count($listIds) === 1) {
+            return [$listIds[0] => $this->getListStatuses($listIds[0])];
+        }
+
+        $responses = Http::pool(fn (Pool $pool) => array_map(
+            fn (string $listId) => $pool
+                ->as($listId)
+                ->withHeaders([
+                    'Authorization' => $this->apiToken,
+                    'Content-Type' => 'application/json',
+                ])
+                ->get(self::BASE_URL."/list/{$listId}"),
+            $listIds
+        ));
+
+        $result = [];
+        foreach ($listIds as $listId) {
+            if (isset($responses[$listId]) && $responses[$listId]->ok()) {
+                $result[$listId] = $responses[$listId]->json('statuses', []);
+            } else {
+                $result[$listId] = [];
+            }
+        }
+
+        return $result;
+    }
+
     /** @return array{id: int, username: string, email: string} */
     public function getAuthenticatedUser(): array
     {

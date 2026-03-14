@@ -80,5 +80,10 @@
       "REDACTED_PATH/.claude",
       "REDACTED_PATH/Projects/morning-hub/docs/superpowers"
     ]
+  },
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true
   }
 }

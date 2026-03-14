@@ -28,5 +28,6 @@ yarn-error.log
 /.zed
 /.worktrees
 
+/docs
 /rawcodestudio-plugins
 /.playwright-mcp

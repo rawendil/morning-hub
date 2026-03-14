@@ -306,6 +306,55 @@ test('getAuthenticatedUser returns user data', function () {
     expect($user)->toMatchArray(['id' => 123, 'username' => 'Test User', 'email' => 'test@example.com']);
 });
 
+test('getMultipleListStatuses returns statuses keyed by list id', function () {
+    Http::fake([
+        'https://api.clickup.com/api/v2/list/l1' => Http::response([
+            'statuses' => [
+                ['status' => 'open', 'type' => 'open'],
+                ['status' => 'in progress', 'type' => 'custom'],
+            ],
+        ], 200),
+        'https://api.clickup.com/api/v2/list/l2' => Http::response([
+            'statuses' => [
+                ['status' => 'to do', 'type' => 'open'],
+                ['status' => 'review', 'type' => 'custom'],
+                ['status' => 'done', 'type' => 'closed'],
+            ],
+        ], 200),
+    ]);
+
+    $service = new ClickUpService('test-token');
+    $result = $service->getMultipleListStatuses(['l1', 'l2']);
+
+    expect($result)->toHaveKeys(['l1', 'l2']);
+    expect($result['l1'])->toHaveCount(2);
+    expect($result['l2'])->toHaveCount(3);
+});
+
+test('getMultipleListStatuses with single list delegates to getListStatuses', function () {
+    Http::fake([
+        'https://api.clickup.com/api/v2/list/l1' => Http::response([
+            'statuses' => [
+                ['status' => 'open', 'type' => 'open'],
+            ],
+        ], 200),
+    ]);
+
+    $service = new ClickUpService('test-token');
+    $result = $service->getMultipleListStatuses(['l1']);
+
+    expect($result)->toHaveKeys(['l1']);
+    expect($result['l1'])->toHaveCount(1);
+});
+
+test('getMultipleListStatuses with empty array returns empty', function () {
+    Http::fake();
+    $service = new ClickUpService('test-token');
+    $result = $service->getMultipleListStatuses([]);
+    expect($result)->toBe([]);
+    Http::assertNothingSent();
+});
+
 test('getTasksFromLists handles partial failures', function () {
     Http::fake([
         'https://api.clickup.com/api/v2/list/l1/task*' => Http::response([

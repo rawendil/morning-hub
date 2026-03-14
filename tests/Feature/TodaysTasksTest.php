@@ -30,7 +30,11 @@ test('page has deferred props when config has connection ids', function () {
             'tasks' => [['id' => 't1', 'name' => 'Today Task', 'due_date' => (string) now()->getTimestampMs()]],
         ], 200),
         'https://api.clickup.com/api/v2/list/*' => Http::response([
-            'statuses' => [],
+            'statuses' => [
+                ['status' => 'open', 'color' => '#d3d3d3', 'orderindex' => 0, 'type' => 'open'],
+                ['status' => 'in progress', 'color' => '#4194f6', 'orderindex' => 1, 'type' => 'custom'],
+                ['status' => 'closed', 'color' => '#6bc950', 'orderindex' => 2, 'type' => 'closed'],
+            ],
         ], 200),
     ]);
 
