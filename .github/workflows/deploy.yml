@@ -6,22 +6,25 @@ on:
 
 jobs:
   deploy:
+    name: Deploy to production
     runs-on: ubuntu-latest
 
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
+          host: REDACTED_HOST
+          username: REDACTED_USER
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 10m
           script: |
+            set -e
             cd ~/domains/morning-hub.REDACTED_USER.usermd.net/morning-hub
             git pull origin master
-            composer2 install --no-dev --optimize-autoloader --no-interaction
             npm install
             npm run build
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
+            php83 $(which composer) install --no-dev --optimize-autoloader
+            php83 artisan migrate --force
+            php83 artisan config:cache
+            php83 artisan route:cache
+            php83 artisan view:cache
