@@ -22,7 +22,7 @@ jobs:
             cd ~/domains/morning-hub.REDACTED_USER.usermd.net/morning-hub
             git pull origin master
             npm install
-            PHP_BINARY=php83 npm run build
+            npm run build
             php83 $(which composer) install --no-dev --optimize-autoloader
             php83 artisan migrate --force
             php83 artisan config:cache
