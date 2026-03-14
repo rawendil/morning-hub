@@ -1,6 +1,6 @@
 # Morning Hub
 
-Personal morning routine dashboard that helps you organize tasks, track habits, and stay focused before starting your day. Integrates with ClickUp and RSS feeds to give you a single view of everything that matters.
+A personal morning routine dashboard that helps you organize tasks, track habits, and stay focused before starting your day. Integrates with ClickUp and RSS feeds to give you a single view of everything that matters.
 
 **Live demo:** [morning-hub.REDACTED_USER.usermd.net](https://morning-hub.REDACTED_USER.usermd.net)
 
