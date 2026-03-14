@@ -12,11 +12,9 @@ import { dashboard, login, register } from '@/routes';
 withDefaults(
     defineProps<{
         canRegister: boolean;
-        contactEmail: string;
     }>(),
     {
         canRegister: true,
-        contactEmail: '',
     },
 );
 
@@ -106,11 +104,14 @@ const features = computed(() => [
             </div>
         </main>
 
-        <!-- Contact -->
-        <div v-if="contactEmail" class="py-6 text-center">
-            <a :href="`mailto:${contactEmail}`" class="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                {{ contactEmail }}
-            </a>
+        <!-- Author -->
+        <div class="py-6 text-center">
+            <p class="text-sm text-muted-foreground">
+                Stworzone przez
+                <a href="https://rawcodestudio.net/" target="_blank" rel="noopener noreferrer" class="font-medium text-foreground underline decoration-muted-foreground/50 underline-offset-4 transition-colors hover:decoration-foreground">
+                    Raw Code Studio
+                </a>
+            </p>
         </div>
 
         <!-- Footer with forest photo -->
