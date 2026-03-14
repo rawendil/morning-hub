@@ -4,6 +4,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { Toaster } from 'vue-sonner';
+import CookieConsentModal from '@/components/CookieConsentModal.vue';
 import 'vue-sonner/style.css';
 import '../css/app.css';
 import { initializeTheme } from '@/composables/useAppearance';
@@ -22,6 +23,7 @@ createInertiaApp({
             render: () => [
                 h(App, props),
                 h(Toaster, { position: 'bottom-right', richColors: true }),
+                h(CookieConsentModal),
             ],
         }).use(plugin);
 

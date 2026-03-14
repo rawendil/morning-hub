@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Calendar, CalendarCheck, ExternalLink, LayoutGrid, ListChecks, Plug } from 'lucide-vue-next';
+import { BookOpen, Calendar, CalendarCheck, Cookie, ExternalLink, LayoutGrid, ListChecks, Plug } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -14,6 +14,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useCookieConsent } from '@/composables/useCookieConsent';
 import { useTranslations } from '@/composables/useTranslations';
 import { dashboard, todaysTasks } from '@/routes';
 import { guide } from '@/routes/morning-hub';
@@ -24,6 +25,7 @@ import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tas
 import type { NavItem } from '@/types';
 
 const { t } = useTranslations();
+const { openSettings } = useCookieConsent();
 
 const morningHubNavItems = computed<NavItem[]>(() => [
     {
@@ -93,6 +95,12 @@ const integrationNavItems = computed<NavItem[]>(() => [
 
         <SidebarFooter>
             <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton @click="openSettings">
+                        <Cookie />
+                        <span>{{ t('Ustawienia cookies') }}</span>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <SidebarMenuButton as-child>
                         <a href="https://rawcodestudio.net/" target="_blank" rel="noopener noreferrer">
