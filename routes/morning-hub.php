@@ -7,7 +7,6 @@ use App\Http\Controllers\MorningHub\GoogleCalendarConnectionController;
 use App\Http\Controllers\MorningHub\GoogleCalendarOAuthController;
 use App\Http\Controllers\MorningHub\GuideController;
 use App\Http\Controllers\MorningHub\RoutineBlockController;
-use App\Http\Controllers\MorningHub\ThemeShowcaseController;
 use App\Http\Controllers\MorningHub\TodaysTasksConfigController;
 use App\Http\Middleware\LogApiProxyAccess;
 use Illuminate\Support\Facades\Route;
@@ -88,10 +87,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Guide
     Route::get('morning-hub/guide', GuideController::class)
         ->name('morning-hub.guide');
-
-    // Theme Showcase
-    Route::get('morning-hub/theme-showcase', ThemeShowcaseController::class)
-        ->name('morning-hub.theme-showcase');
 
     // Routine Blocks CRUD
     Route::get('morning-hub/routine', [RoutineBlockController::class, 'index'])

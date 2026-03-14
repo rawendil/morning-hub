@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Calendar, CalendarCheck, LayoutGrid, ListChecks, Palette, Plug } from 'lucide-vue-next';
+import { BookOpen, Calendar, CalendarCheck, ExternalLink, LayoutGrid, ListChecks, Plug } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useTranslations } from '@/composables/useTranslations';
 import { dashboard, todaysTasks } from '@/routes';
-import { guide, themeShowcase } from '@/routes/morning-hub';
+import { guide } from '@/routes/morning-hub';
 import { index as clickupIndex } from '@/routes/morning-hub/clickup';
 import { index as googleCalendarIndex } from '@/routes/morning-hub/google-calendar';
 import { index as routineIndex } from '@/routes/morning-hub/routine';
@@ -50,7 +50,15 @@ const configNavItems = computed<NavItem[]>(() => [
         icon: CalendarCheck,
     },
     {
-        title: t('Połączenia ClickUp'),
+        title: t('Przewodnik'),
+        href: guide(),
+        icon: BookOpen,
+    },
+]);
+
+const integrationNavItems = computed<NavItem[]>(() => [
+    {
+        title: 'ClickUp',
         href: clickupIndex(),
         icon: Plug,
     },
@@ -58,16 +66,6 @@ const configNavItems = computed<NavItem[]>(() => [
         title: t('Google Calendar'),
         href: googleCalendarIndex(),
         icon: Calendar,
-    },
-    {
-        title: t('Przewodnik'),
-        href: guide(),
-        icon: BookOpen,
-    },
-    {
-        title: 'Theme Showcase',
-        href: themeShowcase(),
-        icon: Palette,
     },
 ]);
 
@@ -90,9 +88,20 @@ const configNavItems = computed<NavItem[]>(() => [
         <SidebarContent>
             <NavMain :items="morningHubNavItems" label="Morning Hub" />
             <NavMain :items="configNavItems" :label="t('Konfiguracja')" />
+            <NavMain :items="integrationNavItems" :label="t('Integracje')" />
         </SidebarContent>
 
         <SidebarFooter>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton as-child>
+                        <a href="https://rawcodestudio.net/" target="_blank" rel="noopener noreferrer">
+                            <ExternalLink />
+                            <span>{{ t('Stworzone przez') }} RawCode Studio</span>
+                        </a>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
             <NavUser />
         </SidebarFooter>
     </Sidebar>
