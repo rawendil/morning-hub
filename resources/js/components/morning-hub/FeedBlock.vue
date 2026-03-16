@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { CheckCircle, ExternalLink, Eye, EyeOff, SkipForward } from 'lucide-vue-next';
+import { ExternalLink, Eye, EyeOff, SkipForward } from 'lucide-vue-next';
+import { Checkbox } from '@/components/ui/checkbox';
 import { computed, ref } from 'vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Badge } from '@/components/ui/badge';
@@ -118,12 +119,12 @@ function timeAgo(isoDate: string): string {
                 class="flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/50"
                 :class="{ 'opacity-50': isRead(item.link) }"
             >
-                <button
-                    class="mt-1 shrink-0 text-muted-foreground transition-colors hover:text-primary"
-                    :class="{ 'text-primary': isRead(item.link) }"
-                    @click="toggleRead(item.link)"
-                >
-                    <CheckCircle class="h-4 w-4" />
+                <button class="mt-1 shrink-0" @click="toggleRead(item.link)">
+                    <Checkbox
+                        :model-value="isRead(item.link)"
+                        class="pointer-events-none"
+                        :tabindex="-1"
+                    />
                 </button>
                 <a
                     :href="item.link"
