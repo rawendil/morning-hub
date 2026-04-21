@@ -79,6 +79,7 @@ export type ClickUpTask = {
     due_date: string | null;
     date_created: string;
     url: string;
+    list: { id: string; name: string };
 };
 
 export type ClickUpTaskDetail = ClickUpTask & {

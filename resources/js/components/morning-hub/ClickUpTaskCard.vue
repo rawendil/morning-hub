@@ -78,7 +78,7 @@ const dueLabel = computed(() => {
             class="min-w-0 flex-1 truncate text-left hover:underline"
             @click="emit('select', task.id)"
         >
-            {{ task.name }}
+            <span class="text-muted-foreground">{{ task.list.name }}: </span>{{ task.name }}
         </button>
 
         <div class="flex shrink-0 items-center gap-1.5">
