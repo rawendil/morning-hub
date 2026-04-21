@@ -146,10 +146,28 @@ class ClickUpApiController extends Controller
     public function statuses(Request $request, ClickUpConnection $connection): JsonResponse
     {
         Gate::authorize('view', $connection);
-        $request->validate(['list_id' => ['required', 'string']]);
 
         $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
-        return response()->json(['data' => $service->getListStatuses($request->input('list_id'))]);
+        if ($request->has('list_id')) {
+            $request->validate(['list_id' => ['required', 'string']]);
+
+            return response()->json(['data' => $service->getListStatuses($request->input('list_id'))]);
+        }
+
+        /** @var array<int, string> $listIds */
+        $listIds = $connection->default_list_ids ?? [];
+        if (empty($listIds)) {
+            return response()->json(['data' => []]);
+        }
+
+        $allStatuses = collect($service->getMultipleListStatuses($listIds))
+            ->flatten(1)
+            ->unique('status')
+            ->sortBy('orderindex')
+            ->values()
+            ->all();
+
+        return response()->json(['data' => $allStatuses]);
     }
 }

@@ -324,14 +324,14 @@ test('user can fetch list statuses', function () {
         ->assertJsonCount(2, 'data');
 });
 
-test('statuses endpoint requires list_id', function () {
+test('statuses endpoint returns empty array when no list_id and no default_list_ids', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
     $this->actingAs($user)
         ->getJson(route('morning-hub.clickup.statuses', $connection))
-        ->assertUnprocessable()
-        ->assertJsonValidationErrors('list_id');
+        ->assertOk()
+        ->assertJson(['data' => []]);
 });
 
 // --- Phase: Multi-list ---

@@ -58,18 +58,24 @@ class TodaysTasksService
                     ->values()
                     ->all();
 
+                /** @var array<string, mixed> $connectionFilters */
+                $connectionFilters = $connection->default_filters ?? [];
+                $selectedStatuses = isset($connectionFilters['statuses']) && is_array($connectionFilters['statuses']) && count($connectionFilters['statuses']) > 0
+                    ? $connectionFilters['statuses']
+                    : $activeStatusNames;
+
                 // Query 1: overdue + due today
                 $dueDateTasks = $service->getTasksFromLists($listIds, [
                     'assignees' => [$clickUpUser['id']],
                     'due_date_lt' => $todayEnd + 1,
                 ]);
 
-                // Query 2: tasks in active statuses (regardless of due date)
+                // Query 2: tasks in selected/active statuses (regardless of due date)
                 $statusTasks = [];
-                if (! empty($activeStatusNames)) {
+                if (! empty($selectedStatuses)) {
                     $statusTasks = $service->getTasksFromLists($listIds, [
                         'assignees' => [$clickUpUser['id']],
-                        'statuses' => $activeStatusNames,
+                        'statuses' => $selectedStatuses,
                     ]);
                 }
 

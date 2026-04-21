@@ -8,6 +8,11 @@ export type BlockType =
     | 'custom'
     | 'google_calendar';
 
+export type ClickUpConnectionFilters = {
+    assignees?: number[];
+    statuses?: string[];
+};
+
 export type ClickUpConnection = {
     id: number;
     name: string;
@@ -16,7 +21,7 @@ export type ClickUpConnection = {
     default_folder_id: string | null;
     default_list_id: string | null;
     default_list_ids: string[] | null;
-    default_filters: Record<string, unknown> | null;
+    default_filters: ClickUpConnectionFilters | null;
     created_at: string;
     updated_at: string;
 };

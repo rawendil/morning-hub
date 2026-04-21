@@ -32,6 +32,8 @@ class UpdateClickUpConnectionRequest extends FormRequest
             'default_filters' => ['nullable', 'array'],
             'default_filters.assignees' => ['nullable', 'array'],
             'default_filters.assignees.*' => ['integer'],
+            'default_filters.statuses' => ['nullable', 'array'],
+            'default_filters.statuses.*' => ['string', 'max:255'],
         ];
     }
 }
