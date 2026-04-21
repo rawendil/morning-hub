@@ -1,36 +1,36 @@
 # Data Storage Strategy
 
-Projekt stosuje zasadę minimalnego przechowywania danych w bazie. Dane efemeryczne żyją po stronie klienta.
+The project follows a minimal database storage principle. Ephemeral data lives on the client side.
 
-## Gdzie przechowywać dane
+## Where to store data
 
-| Kategoria | Lokalizacja | Przykłady |
+| Category | Location | Examples |
 |---|---|---|
-| Konfiguracja strukturalna | Baza danych | Bloki rutyny, połączenia API |
-| Dane wrażliwe (tokeny, klucze) | Baza danych (encrypted) | `api_token` w `clickup_connections` |
-| Efemeryczny stan dzienny | `localStorage` z daily reset | Timer rutyny, ukończenie nawyków |
-| Preferencje per-browser | `localStorage` (opcjonalnie z TTL) | Przeczytane artykuły, onboarding flag |
-| Preferencje UI z SSR | `localStorage` + cookie | Tryb jasny/ciemny (cookie dla SSR) |
-| Dane zewnętrzne (API) | Nigdzie — `Inertia::defer()` | Taski ClickUp, artykuły RSS |
-| Prosty UI state | Cookie | Stan sidebara |
+| Structural configuration | Database | Routine blocks, API connections |
+| Sensitive data (tokens, keys) | Database (encrypted) | `api_token` in `clickup_connections` |
+| Ephemeral daily state | `localStorage` with daily reset | Routine timer, habit completion |
+| Per-browser preferences | `localStorage` (optionally with TTL) | Read articles, onboarding flag |
+| UI preferences with SSR | `localStorage` + cookie | Light/dark mode (cookie for SSR) |
+| External data (API) | Nowhere — `Inertia::defer()` | ClickUp tasks, RSS articles |
+| Simple UI state | Cookie | Sidebar state |
 
-## Zasady decyzyjne
+## Decision rules
 
-- **Serwer potrzebuje danych przy renderowaniu?** → Baza danych lub `Inertia::defer()`
-- **Dane zmieniają się często (co sekundę)?** → `localStorage` (zero kosztu serwera)
-- **Dane żyją max 1 dzień?** → `localStorage` z daily reset pattern (porównanie `date` z `todayString()`)
-- **Utrata danych jest akceptowalna?** → `localStorage`
-- **Dane muszą przetrwać między urządzeniami?** → Baza danych
-- **Dane są wrażliwe lub wymagają integralności?** → Baza danych (użytkownik może edytować localStorage w DevTools)
+- **Does the server need the data at render time?** → Database or `Inertia::defer()`
+- **Does the data change frequently (every second)?** → `localStorage` (zero server cost)
+- **Does the data live at most 1 day?** → `localStorage` with daily reset pattern (compare `date` with `todayString()`)
+- **Is data loss acceptable?** → `localStorage`
+- **Must the data persist across devices?** → Database
+- **Is the data sensitive or requires integrity?** → Database (users can edit localStorage in DevTools)
 
-## Pattern: localStorage z daily reset
+## Pattern: localStorage with daily reset
 
-Wzorzec stosowany w `useRoutineTimer.ts` i `useHabitsStorage.ts`:
+Pattern used in `useRoutineTimer.ts` and `useHabitsStorage.ts`:
 
 ```ts
 type StoredState = {
     date: string; // 'YYYY-MM-DD'
-    // ... dane specyficzne dla composable
+    // ... composable-specific data
 };
 
 function loadState(): StoredState | null {
@@ -38,14 +38,14 @@ function loadState(): StoredState | null {
     const parsed = JSON.parse(raw);
     if (parsed.date !== todayString()) {
         localStorage.removeItem(STORAGE_KEY);
-        return null; // reset na nowy dzień
+        return null; // reset on new day
     }
     return parsed;
 }
 ```
 
-## Czego NIE robić
+## What NOT to do
 
-- NIE używaj sesji PHP do przechowywania stanu UI/dziennego — sesja wygasa i wymaga requestu przy każdej zmianie.
-- NIE twórz tabel w bazie dla danych, których utrata nie jest problemem.
-- NIE przechowuj danych zewnętrznych (API) lokalnie — zawsze pobieraj na żywo przez `Inertia::defer()`.
+- Do NOT use PHP sessions to store UI/daily state — sessions expire and require a request on every change.
+- Do NOT create database tables for data whose loss is not a problem.
+- Do NOT store external (API) data locally — always fetch live via `Inertia::defer()`.

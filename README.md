@@ -91,6 +91,32 @@ composer run dev
 3. Set time estimates for each block
 4. Reorder blocks by priority
 
+## Security
+
+### Authentication
+
+- Password-based login and Google OAuth (via Laravel Socialite) are supported side-by-side — you can link a Google account to an existing password account and unlink it at any time.
+- Sessions are stored server-side in the database (not in cookies) with a 120-minute lifetime.
+- CSRF protection is enabled on all state-changing requests via encrypted cookies.
+- Login attempts are rate-limited to 5 requests per minute (Laravel Fortify default).
+
+### Two-Factor Authentication (2FA)
+
+- TOTP-based 2FA is available and can be enabled from account settings.
+- Enabling 2FA requires password confirmation before setup — a compromised session alone is not enough.
+- Recovery codes are generated on setup and can be regenerated at any time.
+
+### API Token Storage
+
+- Third-party API tokens (e.g. ClickUp) are encrypted at rest using Laravel's `encrypted` Eloquent cast, backed by `APP_KEY`.
+- Tokens are hidden from model serialization and never included in API responses or logs.
+- Tokens are validated against expected format patterns (e.g. ClickUp tokens must start with `pk_`) before being saved.
+
+### Sensitive Data Handling
+
+- Passwords and API tokens are excluded from exception reports and are never logged.
+- Google OAuth credentials are stored in environment variables and accessed only through Laravel's config layer — never via `env()` directly in application code.
+
 ## License
 
 MIT

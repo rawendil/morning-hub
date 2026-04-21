@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import Heading from '@/components/Heading.vue';
+import { Card, CardContent } from '@/components/ui/card';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { guide } from '@/routes/morning-hub';
@@ -18,9 +19,11 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     <AppLayout :breadcrumbs="breadcrumbItems">
         <Head :title="t('Przewodnik')" />
 
-        <div class="mx-auto max-w-3xl space-y-10 p-6">
+        <div class="mx-auto max-w-3xl space-y-6 p-6">
             <Heading :title="t('Przewodnik')" :description="t('Porady i dobre praktyki, dzięki którym wyciągniesz więcej z narzędzi projektu.')" />
 
+            <Card>
+                <CardContent class="space-y-10 py-6">
             <!-- Zadania na dziś -->
             <section class="space-y-3">
                 <h3 class="text-lg font-semibold tracking-tight">{{ t('Zadania na dziś') }}</h3>
@@ -113,7 +116,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </p>
                     <ul class="list-disc space-y-1 pl-5">
                         <li v-html="t('Dodaj <strong>źródła RSS</strong> — podaj nazwę i adres URL kanału.')" />
-                        <li v-html="t('Ustaw <strong>liczbę dni</strong> — ile dni wstecz mają być pobierane artykuły (domyślnie 7).')" />
+                        <li v-html="t('Ustaw <strong>liczbę dni</strong> — ile dni wstecz mają być pobierane artykuły (domyślnie 5).')" />
                         <li>{{ t('Przeczytane artykuły są oznaczane ikoną oka — możesz je ukryć przełącznikiem.') }}</li>
                         <li>{{ t('Status przeczytanych artykułów jest zapisywany lokalnie przez 30 dni.') }}</li>
                     </ul>
@@ -161,7 +164,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     <ul class="list-disc space-y-1 pl-5">
                         <li v-html="t('Ustaw <strong>czas w minutach</strong> przy tworzeniu lub edycji bloku.')" />
                         <li>{{ t('Timer obsługuje start, pauzę, wznowienie i pominięcie bloku.') }}</li>
-                        <li>{{ t('Po upływie czasu blok jest oznaczany jako ukończony, a timer przechodzi do następnego.') }}</li>
+                        <li>{{ t('Po upływie czasu blok jest oznaczany jako ukończony — przejdź do następnego ręcznie lub użyj przycisku pominięcia.') }}</li>
                         <li>{{ t('Stan timera jest zapisywany lokalnie — możesz zamknąć przeglądarkę i wrócić.') }}</li>
                     </ul>
                 </div>
@@ -182,20 +185,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 </div>
             </section>
 
-            <!-- Wygląd -->
-            <section class="space-y-3">
-                <h3 class="text-lg font-semibold tracking-tight">{{ t('Motyw i wygląd') }}</h3>
-                <div class="text-sm leading-relaxed text-muted-foreground space-y-2">
-                    <p>
-                        {{ t('Aplikacja obsługuje trzy tryby wyglądu: jasny, ciemny i systemowy (dopasowuje się do ustawień systemu operacyjnego).') }}
-                    </p>
-                    <ul class="list-disc space-y-1 pl-5">
-                        <li v-html="t('Zmień motyw w <strong>Ustawieniach → Wygląd</strong>.')" />
-                        <li>{{ t('Wybrany motyw jest zapamiętywany w przeglądarce.') }}</li>
-                    </ul>
-                </div>
-            </section>
-
             <!-- Dane lokalne -->
             <section class="space-y-3">
                 <h3 class="text-lg font-semibold tracking-tight">{{ t('Dane lokalne') }}</h3>
@@ -210,6 +199,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </ul>
                 </div>
             </section>
+                </CardContent>
+            </Card>
         </div>
     </AppLayout>
 </template>

@@ -2,16 +2,16 @@
 
 ## Thin Controller, Fat Service
 
-- Kontrolery powinny być maksymalnie chude — ich jedyną odpowiedzialnością jest:
-  - Walidacja (przez Form Request)
-  - Wywołanie odpowiedniego serwisu
-  - Zwrócenie odpowiedzi (Inertia::render, redirect, JSON)
-- Cała logika biznesowa MUSI być w dedykowanych serwisach w `app/Services/`.
-- Kontrolery NIE MOGĄ zawierać prywatnych metod z logiką biznesową.
-- Serwisy powinny być wstrzykiwane przez constructor injection, nie tworzone inline przez `new`.
-- Każdy nowy serwis powinien:
-  - Mieć explicit return types i type hints
-  - Posiadać PHPDoc bloki z array shapes tam gdzie to sensowne
-  - Być tworzony przez `php artisan make:class` w katalogu `app/Services/`
-- Gdy tworzysz nową funkcjonalność wymagającą logiki biznesowej, ZAWSZE utwórz serwis.
-- Przy modyfikacji istniejącego kontrolera, który zawiera logikę biznesową — zaproponuj refaktor do serwisu.
+- Controllers should be as lean as possible — their only responsibilities are:
+  - Validation (via Form Request)
+  - Calling the appropriate service
+  - Returning a response (Inertia::render, redirect, JSON)
+- All business logic MUST live in dedicated services under `app/Services/`.
+- Controllers MUST NOT contain private methods with business logic.
+- Services should be injected via constructor injection, not instantiated inline with `new`.
+- Every new service should:
+  - Have explicit return types and type hints
+  - Include PHPDoc blocks with array shapes where appropriate
+  - Be created via `php artisan make:class` in the `app/Services/` directory
+- When building new functionality that requires business logic, ALWAYS create a service.
+- When modifying an existing controller that contains business logic — propose a refactor to a service.
