@@ -157,7 +157,7 @@ watch(
                             />
                         </Deferred>
                         <Deferred
-                            v-else-if="block.type === 'feed' && block.config?.sources?.length"
+                            v-else-if="block.type === 'feed' && (block.config?.sources as unknown[] | undefined)?.length"
                             :data="`feed_${block.id}`"
                         >
                             <template #fallback>

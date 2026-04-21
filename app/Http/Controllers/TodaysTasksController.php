@@ -16,7 +16,8 @@ class TodaysTasksController extends Controller
     public function __invoke(Request $request): Response
     {
         $config = $request->user()->todaysTasksConfig;
-        $connectionIds = $config?->connection_ids ?? [];
+        /** @var array<int, int> $connectionIds */
+        $connectionIds = $config?->connection_ids ?? []; // @phpstan-ignore nullsafe.neverNull
 
         $user = $request->user();
 

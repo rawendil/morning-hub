@@ -93,6 +93,7 @@ class DashboardController extends Controller
         try {
             $service = new ClickUpService($block->clickUpConnection->api_token);
 
+            /** @var array<int, string> $listIds */
             $listIds = $block->clickUpConnection->default_list_ids;
             $filters = $block->clickUpConnection->default_filters ?? [];
 

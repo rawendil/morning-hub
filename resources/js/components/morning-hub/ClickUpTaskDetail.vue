@@ -172,7 +172,7 @@ async function handleAddComment() {
                     <Select
                         :model-value="taskDetail.priority?.id?.toString() ?? 'none'"
                         :disabled="saving"
-                        @update:model-value="handlePriorityChange"
+                        @update:model-value="(v) => handlePriorityChange(v == null ? 'none' : String(v))"
                     >
                         <SelectTrigger class="h-7 w-32">
                             <SelectValue />
