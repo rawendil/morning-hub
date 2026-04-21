@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
-import { CheckCircle, Pencil, Plug, Settings, Trash2, XCircle } from 'lucide-vue-next';
+import {
+    CheckCircle,
+    Pencil,
+    Plug,
+    Settings,
+    Trash2,
+    XCircle,
+} from 'lucide-vue-next';
 import { ref } from 'vue';
 import ClickUpCascadingSelect from '@/components/morning-hub/ClickUpCascadingSelect.vue';
 import ClickUpConnectionForm from '@/components/morning-hub/ClickUpConnectionForm.vue';
@@ -54,7 +61,7 @@ async function testConnection() {
         const response = await fetch(test.url(props.connection), {
             method: 'POST',
             headers: {
-                'Accept': 'application/json',
+                Accept: 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-XSRF-TOKEN': getCsrfToken(),
             },
@@ -70,14 +77,18 @@ async function testConnection() {
 function deleteConnection() {
     router.delete(destroy.url(props.connection), {
         preserveScroll: true,
-        onSuccess: () => { deleteOpen.value = false; },
+        onSuccess: () => {
+            deleteOpen.value = false;
+        },
     });
 }
 </script>
 
 <template>
     <Card>
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
             <div>
                 <CardTitle class="text-base">{{ connection.name }}</CardTitle>
                 <CardDescription v-if="connection.workspace_id">
@@ -88,7 +99,12 @@ function deleteConnection() {
                 </CardDescription>
             </div>
             <div class="flex items-center gap-1">
-                <Button variant="ghost" size="icon" :disabled="testing" @click="testConnection">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    :disabled="testing"
+                    @click="testConnection"
+                >
                     <Plug class="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="icon" @click="editOpen = true">
@@ -102,9 +118,16 @@ function deleteConnection() {
 
         <CardContent>
             <div v-if="testResult" class="mb-4 flex items-center gap-2 text-sm">
-                <CheckCircle v-if="testResult.success" class="h-4 w-4 text-green-600" />
+                <CheckCircle
+                    v-if="testResult.success"
+                    class="h-4 w-4 text-green-600"
+                />
                 <XCircle v-else class="h-4 w-4 text-red-600" />
-                <span :class="testResult.success ? 'text-green-600' : 'text-red-600'">
+                <span
+                    :class="
+                        testResult.success ? 'text-green-600' : 'text-red-600'
+                    "
+                >
                     {{ testResult.message }}
                 </span>
             </div>
@@ -113,7 +136,11 @@ function deleteConnection() {
                 <CollapsibleTrigger as-child>
                     <Button variant="outline" size="sm" class="w-full gap-2">
                         <Settings class="h-4 w-4" />
-                        {{ configOpen ? t('Ukryj domyślne workspace') : t('Konfiguruj domyślne workspace') }}
+                        {{
+                            configOpen
+                                ? t('Ukryj domyślne workspace')
+                                : t('Konfiguruj domyślne workspace')
+                        }}
                     </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent class="pt-4">
@@ -130,7 +157,12 @@ function deleteConnection() {
             <DialogHeader>
                 <DialogTitle>{{ t('Usuń połączenie') }}</DialogTitle>
                 <DialogDescription>
-                    {{ t('Czy na pewno chcesz usunąć ":name"? Bloki rutyny korzystające z tego połączenia zostaną odłączone.', { name: connection.name }) }}
+                    {{
+                        t(
+                            'Czy na pewno chcesz usunąć ":name"? Bloki rutyny korzystające z tego połączenia zostaną odłączone.',
+                            { name: connection.name },
+                        )
+                    }}
                 </DialogDescription>
             </DialogHeader>
             <DialogFooter class="gap-2">

@@ -42,7 +42,9 @@ function connectorClasses(state: BlockTimerState | undefined): string {
                 class="flex shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors"
                 :class="[
                     dotClasses(blockStates.get(block.id)),
-                    blockStates.get(block.id) === 'completed' ? 'h-3.5 w-3.5' : 'h-2.5 w-2.5',
+                    blockStates.get(block.id) === 'completed'
+                        ? 'h-3.5 w-3.5'
+                        : 'h-2.5 w-2.5',
                 ]"
                 :title="block.name"
                 @click="emit('selectBlock', block.id)"

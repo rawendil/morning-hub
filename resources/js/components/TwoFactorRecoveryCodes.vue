@@ -47,7 +47,11 @@ onMounted(async () => {
                 <LockKeyhole class="size-4" />{{ t('Kody odzyskiwania 2FA') }}
             </CardTitle>
             <CardDescription>
-                {{ t('Kody odzyskiwania pozwalają odzyskać dostęp w przypadku utraty urządzenia 2FA. Przechowuj je w bezpiecznym menedżerze haseł.') }}
+                {{
+                    t(
+                        'Kody odzyskiwania pozwalają odzyskać dostęp w przypadku utraty urządzenia 2FA. Przechowuj je w bezpiecznym menedżerze haseł.',
+                    )
+                }}
             </CardDescription>
         </CardHeader>
         <CardContent>
@@ -59,7 +63,11 @@ onMounted(async () => {
                         :is="isRecoveryCodesVisible ? EyeOff : Eye"
                         class="size-4"
                     />
-                    {{ isRecoveryCodesVisible ? t('Ukryj kody odzyskiwania') : t('Pokaż kody odzyskiwania') }}
+                    {{
+                        isRecoveryCodesVisible
+                            ? t('Ukryj kody odzyskiwania')
+                            : t('Pokaż kody odzyskiwania')
+                    }}
                 </Button>
 
                 <Form
@@ -111,8 +119,15 @@ onMounted(async () => {
                         </div>
                     </div>
                     <p class="text-xs text-muted-foreground select-none">
-                        {{ t('Każdy kod odzyskiwania może być użyty tylko raz i po wykorzystaniu zostanie usunięty. Jeśli potrzebujesz nowych, kliknij') }}
-                        <span class="font-bold">{{ t('Wygeneruj nowe kody') }}</span> {{ t('powyżej.') }}
+                        {{
+                            t(
+                                'Każdy kod odzyskiwania może być użyty tylko raz i po wykorzystaniu zostanie usunięty. Jeśli potrzebujesz nowych, kliknij',
+                            )
+                        }}
+                        <span class="font-bold">{{
+                            t('Wygeneruj nowe kody')
+                        }}</span>
+                        {{ t('powyżej.') }}
                     </p>
                 </div>
             </div>

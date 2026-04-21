@@ -17,7 +17,12 @@ import { todaysTasks } from '@/routes';
 import { updateTask as updateTaskRoute } from '@/routes/morning-hub/clickup';
 import { index as googleCalendarIndex } from '@/routes/morning-hub/google-calendar';
 import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tasks';
-import type { BreadcrumbItem, BlockGoogleCalendarData, BlockTodaysTasksData, UpdateTaskPayload } from '@/types';
+import type {
+    BreadcrumbItem,
+    BlockGoogleCalendarData,
+    BlockTodaysTasksData,
+    UpdateTaskPayload,
+} from '@/types';
 
 const { t } = useTranslations();
 
@@ -55,14 +60,22 @@ function refresh() {
     refreshing.value = true;
     router.reload({
         only: ['todaysTasksData', 'calendarData'],
-        onFinish: () => { refreshing.value = false; },
+        onFinish: () => {
+            refreshing.value = false;
+        },
     });
 }
 
-async function handleUpdateTask(connectionId: number, taskId: string, payload: UpdateTaskPayload) {
+async function handleUpdateTask(
+    connectionId: number,
+    taskId: string,
+    payload: UpdateTaskPayload,
+) {
     if (!props.todaysTasksData) return;
 
-    const group = props.todaysTasksData.groups.find((g) => g.connectionId === connectionId);
+    const group = props.todaysTasksData.groups.find(
+        (g) => g.connectionId === connectionId,
+    );
     if (!group) return;
 
     const taskIndex = group.tasks.findIndex((t) => t.id === taskId);
@@ -71,10 +84,15 @@ async function handleUpdateTask(connectionId: number, taskId: string, payload: U
     const previousTask = { ...group.tasks[taskIndex] };
 
     if (payload.status) {
-        const statusObj = group.statuses.find((s) => s.status === payload.status);
+        const statusObj = group.statuses.find(
+            (s) => s.status === payload.status,
+        );
         group.tasks[taskIndex] = {
             ...group.tasks[taskIndex],
-            status: { status: payload.status, color: statusObj?.color ?? previousTask.status.color },
+            status: {
+                status: payload.status,
+                color: statusObj?.color ?? previousTask.status.color,
+            },
         };
     }
 
@@ -100,10 +118,14 @@ const deferredProps = computed(() => {
 const allEmpty = computed(() => {
     if (!props.todaysTasksData && !props.calendarData) return false;
 
-    const tasksEmpty = !props.todaysTasksData
-        || props.todaysTasksData.groups.every((g) => g.tasks.length === 0 && !g.error);
-    const eventsEmpty = !props.calendarData
-        || (props.calendarData.events.length === 0 && !props.calendarData.error);
+    const tasksEmpty =
+        !props.todaysTasksData ||
+        props.todaysTasksData.groups.every(
+            (g) => g.tasks.length === 0 && !g.error,
+        );
+    const eventsEmpty =
+        !props.calendarData ||
+        (props.calendarData.events.length === 0 && !props.calendarData.error);
 
     return tasksEmpty && eventsEmpty;
 });
@@ -114,7 +136,9 @@ const errorGroups = computed(() => {
 });
 
 function itemKey(item: (typeof timeline.value)[number]): string {
-    return item.type === 'task' ? `task-${item.task.id}` : `event-${item.event.id}`;
+    return item.type === 'task'
+        ? `task-${item.task.id}`
+        : `event-${item.event.id}`;
 }
 </script>
 
@@ -124,10 +148,22 @@ function itemKey(item: (typeof timeline.value)[number]): string {
 
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
-                <Heading :title="t('Zadania na dziś')" :description="t('Twoje zadania i wydarzenia na dziś.')" />
+                <Heading
+                    :title="t('Zadania na dziś')"
+                    :description="t('Twoje zadania i wydarzenia na dziś.')"
+                />
                 <div class="flex items-center gap-2">
-                    <Button v-if="hasAnySource" variant="ghost" size="icon" :disabled="refreshing" @click="refresh">
-                        <RefreshCw class="h-4 w-4" :class="{ 'animate-spin': refreshing }" />
+                    <Button
+                        v-if="hasAnySource"
+                        variant="ghost"
+                        size="icon"
+                        :disabled="refreshing"
+                        @click="refresh"
+                    >
+                        <RefreshCw
+                            class="h-4 w-4"
+                            :class="{ 'animate-spin': refreshing }"
+                        />
                     </Button>
                     <Button variant="outline" size="sm" as-child>
                         <Link :href="todaysTasksConfigIndex()">
@@ -138,12 +174,20 @@ function itemKey(item: (typeof timeline.value)[number]): string {
                 </div>
             </div>
 
-            <div v-if="!hasAnySource" class="rounded-lg border border-dashed p-8 text-center">
+            <div
+                v-if="!hasAnySource"
+                class="rounded-lg border border-dashed p-8 text-center"
+            >
                 <p class="text-muted-foreground">
                     {{ t('Nie skonfigurowano źródeł.') }}
-                    <Link :href="todaysTasksConfigIndex()" class="underline">{{ t('Skonfiguruj ClickUp') }}</Link>
+                    <Link :href="todaysTasksConfigIndex()" class="underline">{{
+                        t('Skonfiguruj ClickUp')
+                    }}</Link>
                     {{ t('lub') }}
-                    <Link :href="googleCalendarIndex.url()" class="underline">{{ t('połącz Google Calendar') }}</Link>.
+                    <Link :href="googleCalendarIndex.url()" class="underline">{{
+                        t('połącz Google Calendar')
+                    }}</Link
+                    >.
                 </p>
             </div>
 
@@ -154,31 +198,75 @@ function itemKey(item: (typeof timeline.value)[number]): string {
                     </template>
 
                     <div class="space-y-2">
-                        <Alert v-if="calendarData?.error === 'google_calendar_auth_expired'" variant="destructive">
+                        <Alert
+                            v-if="
+                                calendarData?.error ===
+                                'google_calendar_auth_expired'
+                            "
+                            variant="destructive"
+                        >
                             <AlertDescription>
                                 {{ t('Token Google Calendar wygasł.') }}
-                                <Link :href="googleCalendarIndex.url()" class="underline">{{ t('Połącz ponownie') }}</Link>
+                                <Link
+                                    :href="googleCalendarIndex.url()"
+                                    class="underline"
+                                    >{{ t('Połącz ponownie') }}</Link
+                                >
                             </AlertDescription>
                         </Alert>
 
-                        <Alert v-else-if="calendarData?.error" variant="destructive">
-                            <AlertDescription class="flex items-center justify-between">
-                                <span>{{ t('Nie udało się pobrać wydarzeń z kalendarza.') }}</span>
-                                <Button variant="outline" size="sm" @click="refresh">{{ t('Ponów') }}</Button>
+                        <Alert
+                            v-else-if="calendarData?.error"
+                            variant="destructive"
+                        >
+                            <AlertDescription
+                                class="flex items-center justify-between"
+                            >
+                                <span>{{
+                                    t(
+                                        'Nie udało się pobrać wydarzeń z kalendarza.',
+                                    )
+                                }}</span>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    @click="refresh"
+                                    >{{ t('Ponów') }}</Button
+                                >
                             </AlertDescription>
                         </Alert>
 
-                        <template v-for="group in errorGroups" :key="group.connectionId">
+                        <template
+                            v-for="group in errorGroups"
+                            :key="group.connectionId"
+                        >
                             <Alert variant="destructive">
-                                <AlertDescription class="flex items-center justify-between">
-                                    <span>{{ group.connectionName }}: {{ group.error }}</span>
-                                    <Button variant="outline" size="sm" @click="refresh">{{ t('Ponów') }}</Button>
+                                <AlertDescription
+                                    class="flex items-center justify-between"
+                                >
+                                    <span
+                                        >{{ group.connectionName }}:
+                                        {{ group.error }}</span
+                                    >
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        @click="refresh"
+                                        >{{ t('Ponów') }}</Button
+                                    >
                                 </AlertDescription>
                             </Alert>
                         </template>
 
-                        <p v-if="allEmpty" class="text-sm text-muted-foreground">
-                            {{ t('Brak zadań i wydarzeń na dziś. Dobra robota!') }}
+                        <p
+                            v-if="allEmpty"
+                            class="text-sm text-muted-foreground"
+                        >
+                            {{
+                                t(
+                                    'Brak zadań i wydarzeń na dziś. Dobra robota!',
+                                )
+                            }}
                         </p>
 
                         <template v-for="item in timeline" :key="itemKey(item)">
@@ -186,8 +274,21 @@ function itemKey(item: (typeof timeline.value)[number]): string {
                                 v-if="item.type === 'task'"
                                 :task="item.task"
                                 :statuses="item.statuses"
-                                @select="(taskId) => openTaskDetail(item.connectionId, taskId)"
-                                @update-task="(taskId, payload) => handleUpdateTask(item.connectionId, taskId, payload)"
+                                @select="
+                                    (taskId) =>
+                                        openTaskDetail(
+                                            item.connectionId,
+                                            taskId,
+                                        )
+                                "
+                                @update-task="
+                                    (taskId, payload) =>
+                                        handleUpdateTask(
+                                            item.connectionId,
+                                            taskId,
+                                            payload,
+                                        )
+                                "
                             />
                             <GoogleCalendarEventCard
                                 v-else

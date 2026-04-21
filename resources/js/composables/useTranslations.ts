@@ -8,10 +8,7 @@ export function useTranslations() {
     );
     const locale = computed(() => page.props.locale as string);
 
-    function t(
-        key: string,
-        replacements?: Record<string, string>,
-    ): string {
+    function t(key: string, replacements?: Record<string, string>): string {
         let value = translations.value[key] ?? key;
 
         if (replacements) {

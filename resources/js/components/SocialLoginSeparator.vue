@@ -8,7 +8,9 @@ const { t } = useTranslations();
 <template>
     <div class="flex items-center gap-4">
         <Separator class="flex-1" />
-        <span class="text-xs text-muted-foreground uppercase">{{ t('lub') }}</span>
+        <span class="text-xs text-muted-foreground uppercase">{{
+            t('lub')
+        }}</span>
         <Separator class="flex-1" />
     </div>
 </template>

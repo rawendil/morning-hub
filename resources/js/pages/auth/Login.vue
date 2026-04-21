@@ -111,7 +111,9 @@ const { t } = useTranslations();
                 v-if="canRegister"
             >
                 {{ t('Nie masz konta?') }}
-                <TextLink :href="register()" :tabindex="5">{{ t('Zarejestruj się') }}</TextLink>
+                <TextLink :href="register()" :tabindex="5">{{
+                    t('Zarejestruj się')
+                }}</TextLink>
             </div>
         </Form>
     </AuthBase>

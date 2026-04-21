@@ -34,8 +34,13 @@ const dueLabel = computed(() => {
     const dayAfter = new Date(tomorrow);
     dayAfter.setDate(dayAfter.getDate() + 1);
 
-    if (due < today) return { text: t('Po terminie'), class: 'text-destructive border-destructive' };
-    if (due < tomorrow) return { text: t('Dziś'), class: 'text-orange-600 border-orange-400' };
+    if (due < today)
+        return {
+            text: t('Po terminie'),
+            class: 'text-destructive border-destructive',
+        };
+    if (due < tomorrow)
+        return { text: t('Dziś'), class: 'text-orange-600 border-orange-400' };
     if (due < dayAfter) return { text: t('Jutro'), class: '' };
 
     return { text: due.toLocaleDateString(), class: '' };
@@ -47,7 +52,7 @@ const dueLabel = computed(() => {
         <DropdownMenu v-if="statuses.length">
             <DropdownMenuTrigger as-child>
                 <button
-                    class="h-2.5 w-2.5 shrink-0 cursor-pointer rounded-full ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+                    class="h-2.5 w-2.5 shrink-0 cursor-pointer rounded-full ring-offset-background focus:ring-2 focus:ring-ring focus:outline-none"
                     :style="{ backgroundColor: task.status.color }"
                     :title="task.status.status"
                 />
@@ -57,7 +62,9 @@ const dueLabel = computed(() => {
                     v-for="status in statuses"
                     :key="status.status"
                     class="gap-2"
-                    @click="emit('updateTask', task.id, { status: status.status })"
+                    @click="
+                        emit('updateTask', task.id, { status: status.status })
+                    "
                 >
                     <span
                         class="h-2 w-2 shrink-0 rounded-full"
@@ -78,7 +85,8 @@ const dueLabel = computed(() => {
             class="min-w-0 flex-1 truncate text-left hover:underline"
             @click="emit('select', task.id)"
         >
-            <span class="text-muted-foreground">{{ task.list.name }}: </span>{{ task.name }}
+            <span class="text-muted-foreground">{{ task.list.name }}: </span
+            >{{ task.name }}
         </button>
 
         <div class="flex shrink-0 items-center gap-1.5">
@@ -86,7 +94,10 @@ const dueLabel = computed(() => {
                 v-if="task.priority"
                 variant="outline"
                 class="gap-1 text-xs"
-                :style="{ borderColor: task.priority.color, color: task.priority.color }"
+                :style="{
+                    borderColor: task.priority.color,
+                    color: task.priority.color,
+                }"
             >
                 {{ task.priority.priority }}
             </Badge>

@@ -3,12 +3,7 @@ import { Check, Plus, SkipForward } from 'lucide-vue-next';
 import { ref } from 'vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useClickUpApi } from '@/composables/useClickUpApi';
 import { useTranslations } from '@/composables/useTranslations';
@@ -72,9 +67,14 @@ function handleKeydown(event: KeyboardEvent) {
 
 <template>
     <Card :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
+        <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 py-3"
+        >
             <div class="flex items-center gap-2">
-                <component :is="resolveBlockIcon(block)" class="h-4 w-4 text-muted-foreground" />
+                <component
+                    :is="resolveBlockIcon(block)"
+                    class="h-4 w-4 text-muted-foreground"
+                />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
                 <RoutineTimerBadge
                     v-if="block.timer_minutes"
@@ -91,7 +91,12 @@ function handleKeydown(event: KeyboardEvent) {
                 />
             </div>
             <div v-if="isActiveBlock" class="flex items-center gap-1">
-                <Button variant="ghost" size="icon" class="h-8 w-8" @click="emit('timerSkip')">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8"
+                    @click="emit('timerSkip')"
+                >
                     <SkipForward class="h-4 w-4" />
                 </Button>
             </div>
@@ -113,12 +118,16 @@ function handleKeydown(event: KeyboardEvent) {
                         @click="handleSubmit"
                     >
                         <Plus class="h-4 w-4" />
-                        {{ submitting ? t('Tworzenie...') : t('Utwórz zadanie') }}
+                        {{
+                            submitting ? t('Tworzenie...') : t('Utwórz zadanie')
+                        }}
                     </Button>
                 </div>
 
                 <div v-if="recentTasks.length" class="space-y-1">
-                    <p class="text-xs text-muted-foreground">{{ t('Ostatnio utworzone') }}</p>
+                    <p class="text-xs text-muted-foreground">
+                        {{ t('Ostatnio utworzone') }}
+                    </p>
                     <div
                         v-for="(task, i) in recentTasks"
                         :key="i"
@@ -131,7 +140,11 @@ function handleKeydown(event: KeyboardEvent) {
             </template>
 
             <p v-else class="text-sm text-muted-foreground">
-                {{ t('Skonfiguruj połączenie ClickUp, aby zacząć zapisywać myśli jako zadania.') }}
+                {{
+                    t(
+                        'Skonfiguruj połączenie ClickUp, aby zacząć zapisywać myśli jako zadania.',
+                    )
+                }}
             </p>
         </CardContent>
     </Card>

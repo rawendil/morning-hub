@@ -1,4 +1,5 @@
-import { computed, type Ref } from 'vue';
+import { computed } from 'vue';
+import type { Ref } from 'vue';
 import type {
     BlockGoogleCalendarData,
     BlockTodaysTasksData,
@@ -30,7 +31,9 @@ export function useTodaysTimeline(
             for (const event of calendarData.value.events) {
                 items.push({
                     type: 'event',
-                    sortTime: event.all_day ? 0 : new Date(event.start).getTime(),
+                    sortTime: event.all_day
+                        ? 0
+                        : new Date(event.start).getTime(),
                     event,
                 });
             }

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { store, update } from '@/actions/App/Http/Controllers/MorningHub/ClickUpConnectionController';
+import {
+    store,
+    update,
+} from '@/actions/App/Http/Controllers/MorningHub/ClickUpConnectionController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,7 +22,7 @@ import type { ClickUpConnection } from '@/types';
 
 const { t } = useTranslations();
 
-const props = defineProps<{
+defineProps<{
     connection?: ClickUpConnection;
 }>();
 
@@ -37,9 +39,19 @@ const isOpen = defineModel<boolean>('open', { default: false });
                 @success="isOpen = false"
             >
                 <DialogHeader>
-                    <DialogTitle>{{ connection ? t('Edytuj połączenie') : t('Dodaj połączenie') }}</DialogTitle>
+                    <DialogTitle>{{
+                        connection
+                            ? t('Edytuj połączenie')
+                            : t('Dodaj połączenie')
+                    }}</DialogTitle>
                     <DialogDescription>
-                        {{ connection ? t('Zaktualizuj połączenie ClickUp.') : t('Połącz workspace ClickUp za pomocą osobistego tokena API.') }}
+                        {{
+                            connection
+                                ? t('Zaktualizuj połączenie ClickUp.')
+                                : t(
+                                      'Połącz workspace ClickUp za pomocą osobistego tokena API.',
+                                  )
+                        }}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -63,7 +75,11 @@ const isOpen = defineModel<boolean>('open', { default: false });
                             name="api_token"
                             type="password"
                             :required="!connection"
-                            :placeholder="connection ? t('Pozostaw puste, aby zachować obecny') : 'pk_...'"
+                            :placeholder="
+                                connection
+                                    ? t('Pozostaw puste, aby zachować obecny')
+                                    : 'pk_...'
+                            "
                         />
                         <InputError :message="errors.api_token" />
                     </div>

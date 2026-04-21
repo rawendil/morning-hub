@@ -183,7 +183,13 @@ export type BlockGoogleCalendarData = {
 };
 
 export type TimelineItem =
-    | { type: 'task'; sortTime: number; connectionId: number; task: ClickUpTask; statuses: ClickUpStatus[] }
+    | {
+          type: 'task';
+          sortTime: number;
+          connectionId: number;
+          task: ClickUpTask;
+          statuses: ClickUpStatus[];
+      }
     | { type: 'event'; sortTime: number; event: GoogleCalendarEvent };
 
 export type GoogleCalendarListItem = {

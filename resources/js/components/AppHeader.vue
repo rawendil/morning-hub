@@ -53,7 +53,6 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
 ];
-
 </script>
 
 <template>
@@ -163,7 +162,6 @@ const mainNavItems: NavItem[] = [
                                 class="size-5 opacity-80 group-hover:opacity-100"
                             />
                         </Button>
-
                     </div>
 
                     <DropdownMenu>

@@ -30,15 +30,31 @@ const addOpen = ref(false);
 
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
-                <Heading :title="t('Połączenia ClickUp')" :description="t('Zarządzaj połączeniami API ClickUp i domyślnymi ustawieniami.')" />
+                <Heading
+                    :title="t('Połączenia ClickUp')"
+                    :description="
+                        t(
+                            'Zarządzaj połączeniami API ClickUp i domyślnymi ustawieniami.',
+                        )
+                    "
+                />
                 <Button class="gap-2" @click="addOpen = true">
                     <Plus class="h-4 w-4" />
                     {{ t('Dodaj połączenie') }}
                 </Button>
             </div>
 
-            <div v-if="connections.length === 0" class="rounded-lg border border-dashed p-8 text-center">
-                <p class="text-muted-foreground">{{ t('Brak połączeń. Dodaj pierwsze połączenie ClickUp, aby rozpocząć.') }}</p>
+            <div
+                v-if="connections.length === 0"
+                class="rounded-lg border border-dashed p-8 text-center"
+            >
+                <p class="text-muted-foreground">
+                    {{
+                        t(
+                            'Brak połączeń. Dodaj pierwsze połączenie ClickUp, aby rozpocząć.',
+                        )
+                    }}
+                </p>
             </div>
 
             <div v-else class="grid gap-4 md:grid-cols-2">

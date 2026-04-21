@@ -21,7 +21,9 @@ const { t } = useTranslations();
 <template>
     <AuthLayout
         :title="t('Zapomniałeś hasła')"
-        :description="t('Wprowadź adres e-mail, aby otrzymać link do resetowania hasła')"
+        :description="
+            t('Wprowadź adres e-mail, aby otrzymać link do resetowania hasła')
+        "
     >
         <Head :title="t('Zapomniałeś hasła')" />
 

@@ -1,5 +1,5 @@
-import { computed, onBeforeUnmount, ref   } from 'vue';
-import type {ComputedRef, Ref} from 'vue';
+import { computed, onBeforeUnmount, ref } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
 import type { RoutineBlock } from '@/types';
 
 export type BlockTimerState = 'pending' | 'active' | 'expired' | 'completed';
@@ -70,9 +70,16 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
     const activeBlockId = ref<number | null>(stored?.activeBlockId ?? null);
     const remainingSeconds = ref(stored?.remainingSeconds ?? 0);
     const isRunning = ref(false);
-    const completedBlockIds = ref(new Set<number>(stored?.completedBlockIds ?? []));
+    const completedBlockIds = ref(
+        new Set<number>(stored?.completedBlockIds ?? []),
+    );
     const elapsedSeconds = ref<Map<number, number>>(
-        new Map(Object.entries(stored?.elapsedSeconds ?? {}).map(([k, v]) => [Number(k), v])),
+        new Map(
+            Object.entries(stored?.elapsedSeconds ?? {}).map(([k, v]) => [
+                Number(k),
+                v,
+            ]),
+        ),
     );
 
     let intervalId: ReturnType<typeof setInterval> | null = null;

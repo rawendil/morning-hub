@@ -22,7 +22,10 @@ export function useClickUpApi() {
         return json.data;
     }
 
-    async function postJson<T>(url: string, body: Record<string, unknown>): Promise<T> {
+    async function postJson<T>(
+        url: string,
+        body: Record<string, unknown>,
+    ): Promise<T> {
         const response = await fetch(url, {
             method: 'POST',
             headers: { ...baseHeaders(), 'Content-Type': 'application/json' },
@@ -31,13 +34,18 @@ export function useClickUpApi() {
         });
         if (!response.ok) {
             const error = await response.json().catch(() => ({}));
-            throw new Error(error.message || `Request failed: ${response.status}`);
+            throw new Error(
+                error.message || `Request failed: ${response.status}`,
+            );
         }
         const json = await response.json();
         return json.data;
     }
 
-    async function putJson<T>(url: string, body: Record<string, unknown>): Promise<T> {
+    async function putJson<T>(
+        url: string,
+        body: Record<string, unknown>,
+    ): Promise<T> {
         const response = await fetch(url, {
             method: 'PUT',
             headers: { ...baseHeaders(), 'Content-Type': 'application/json' },
@@ -46,7 +54,9 @@ export function useClickUpApi() {
         });
         if (!response.ok) {
             const error = await response.json().catch(() => ({}));
-            throw new Error(error.message || `Request failed: ${response.status}`);
+            throw new Error(
+                error.message || `Request failed: ${response.status}`,
+            );
         }
         const json = await response.json();
         return json.data;

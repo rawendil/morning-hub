@@ -36,12 +36,16 @@ const passwordInput = useTemplateRef('passwordInput');
             <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
                 <p class="font-medium">{{ t('Uwaga') }}</p>
                 <p class="text-sm">
-                    {{ t('Zachowaj ostrożność, tej operacji nie można cofnąć.') }}
+                    {{
+                        t('Zachowaj ostrożność, tej operacji nie można cofnąć.')
+                    }}
                 </p>
             </div>
             <Dialog>
                 <DialogTrigger as-child>
-                    <Button variant="destructive" data-test="delete-user-button"
+                    <Button
+                        variant="destructive"
+                        data-test="delete-user-button"
                         >{{ t('Usuń konto') }}</Button
                     >
                 </DialogTrigger>
@@ -57,18 +61,22 @@ const passwordInput = useTemplateRef('passwordInput');
                         v-slot="{ errors, processing, reset, clearErrors }"
                     >
                         <DialogHeader class="space-y-3">
-                            <DialogTitle
-                                >{{ t('Czy na pewno chcesz usunąć swoje konto?') }}</DialogTitle
-                            >
+                            <DialogTitle>{{
+                                t('Czy na pewno chcesz usunąć swoje konto?')
+                            }}</DialogTitle>
                             <DialogDescription>
-                                {{ t('Po usunięciu konta wszystkie powiązane dane zostaną trwale usunięte. Wprowadź hasło, aby potwierdzić trwałe usunięcie konta.') }}
+                                {{
+                                    t(
+                                        'Po usunięciu konta wszystkie powiązane dane zostaną trwale usunięte. Wprowadź hasło, aby potwierdzić trwałe usunięcie konta.',
+                                    )
+                                }}
                             </DialogDescription>
                         </DialogHeader>
 
                         <div class="grid gap-2">
-                            <Label for="password" class="sr-only"
-                                >{{ t('Hasło') }}</Label
-                            >
+                            <Label for="password" class="sr-only">{{
+                                t('Hasło')
+                            }}</Label>
                             <Input
                                 id="password"
                                 type="password"

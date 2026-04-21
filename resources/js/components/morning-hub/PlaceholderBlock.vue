@@ -2,17 +2,12 @@
 import { SkipForward } from 'lucide-vue-next';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslations } from '@/composables/useTranslations';
 import { resolveBlockIcon } from '@/lib/block-icons';
 import type { RoutineBlock } from '@/types';
 
-const props = defineProps<{
+defineProps<{
     block: RoutineBlock;
     isActiveBlock: boolean;
     isTimerRunning: boolean;
@@ -33,10 +28,18 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <Card class="border-dashed" :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
+    <Card
+        class="border-dashed"
+        :class="{ 'ring-2 ring-primary/30': isActiveBlock }"
+    >
+        <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 py-3"
+        >
             <div class="flex items-center gap-2">
-                <component :is="resolveBlockIcon(block)" class="h-4 w-4 text-muted-foreground" />
+                <component
+                    :is="resolveBlockIcon(block)"
+                    class="h-4 w-4 text-muted-foreground"
+                />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
                 <RoutineTimerBadge
                     v-if="block.timer_minutes"
@@ -53,7 +56,12 @@ const emit = defineEmits<{
                 />
             </div>
             <div v-if="isActiveBlock" class="flex items-center gap-1">
-                <Button variant="ghost" size="icon" class="h-8 w-8" @click="emit('timerSkip')">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8"
+                    @click="emit('timerSkip')"
+                >
                     <SkipForward class="h-4 w-4" />
                 </Button>
             </div>
@@ -66,12 +74,20 @@ const emit = defineEmits<{
                 rel="noopener noreferrer"
                 class="text-sm text-primary hover:underline"
             >
-                {{ block.config?.placeholder_text || block.config.placeholder_url }}
+                {{
+                    block.config?.placeholder_text ||
+                    block.config.placeholder_url
+                }}
             </a>
-            <p v-else-if="block.config?.placeholder_text" class="text-sm text-muted-foreground">
+            <p
+                v-else-if="block.config?.placeholder_text"
+                class="text-sm text-muted-foreground"
+            >
                 {{ block.config.placeholder_text }}
             </p>
-            <p v-else class="text-sm text-muted-foreground">{{ t('Wkrótce') }}</p>
+            <p v-else class="text-sm text-muted-foreground">
+                {{ t('Wkrótce') }}
+            </p>
         </CardContent>
     </Card>
 </template>

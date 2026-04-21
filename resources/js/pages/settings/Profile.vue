@@ -92,7 +92,11 @@ const user = computed(() => page.props.auth.user);
                                 as="button"
                                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                             >
-                                {{ t('Kliknij tutaj, aby ponownie wysłać e-mail weryfikacyjny.') }}
+                                {{
+                                    t(
+                                        'Kliknij tutaj, aby ponownie wysłać e-mail weryfikacyjny.',
+                                    )
+                                }}
                             </Link>
                         </p>
 
@@ -100,7 +104,11 @@ const user = computed(() => page.props.auth.user);
                             v-if="status === 'verification-link-sent'"
                             class="mt-2 text-sm font-medium text-green-600"
                         >
-                            {{ t('Nowy link weryfikacyjny został wysłany na Twój adres e-mail.') }}
+                            {{
+                                t(
+                                    'Nowy link weryfikacyjny został wysłany na Twój adres e-mail.',
+                                )
+                            }}
                         </div>
                     </div>
 

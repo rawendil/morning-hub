@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Calendar, CalendarCheck, Cookie, Github, LayoutGrid, ListChecks, Plug } from 'lucide-vue-next';
+import {
+    BookOpen,
+    Calendar,
+    CalendarCheck,
+    Cookie,
+    Github,
+    LayoutGrid,
+    ListChecks,
+    Plug,
+} from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -70,7 +79,6 @@ const integrationNavItems = computed<NavItem[]>(() => [
         icon: Calendar,
     },
 ]);
-
 </script>
 
 <template>
@@ -103,7 +111,11 @@ const integrationNavItems = computed<NavItem[]>(() => [
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                     <SidebarMenuButton as-child>
-                        <a href="https://github.com/rawendil/morning-hub" target="_blank" rel="noopener noreferrer">
+                        <a
+                            href="https://github.com/rawendil/morning-hub"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
                             <Github />
                             <span>GitHub</span>
                         </a>
@@ -111,8 +123,16 @@ const integrationNavItems = computed<NavItem[]>(() => [
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                     <SidebarMenuButton as-child>
-                        <a href="https://rawcodestudio.net/" target="_blank" rel="noopener noreferrer">
-                            <img src="https://rawcodestudio.net/favicon.ico" class="h-4 w-4 shrink-0" alt="" />
+                        <a
+                            href="https://rawcodestudio.net/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <img
+                                src="https://rawcodestudio.net/favicon.ico"
+                                class="h-4 w-4 shrink-0"
+                                alt=""
+                            />
                             <span>RawCode Studio</span>
                         </a>
                     </SidebarMenuButton>

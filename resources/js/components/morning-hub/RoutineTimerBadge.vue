@@ -37,7 +37,9 @@ const displayText = computed(() => {
     <div class="flex items-center gap-1">
         <Badge :variant="badgeVariant" class="gap-1 px-2.5 py-0.5 text-sm">
             <Clock v-if="!isActive" class="h-3.5 w-3.5" />
-            <span :class="{ 'font-mono tabular-nums': isActive }">{{ displayText }}</span>
+            <span :class="{ 'font-mono tabular-nums': isActive }">{{
+                displayText
+            }}</span>
         </Badge>
 
         <Button

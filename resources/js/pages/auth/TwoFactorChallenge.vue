@@ -20,14 +20,18 @@ const authConfigContent = computed<TwoFactorConfigContent>(() => {
     if (showRecoveryInput.value) {
         return {
             title: t('Kod odzyskiwania'),
-            description: t('Potwierdź dostęp do swojego konta, wprowadzając jeden z kodów odzyskiwania.'),
+            description: t(
+                'Potwierdź dostęp do swojego konta, wprowadzając jeden z kodów odzyskiwania.',
+            ),
             buttonText: t('zaloguj się kodem uwierzytelniającym'),
         };
     }
 
     return {
         title: t('Kod uwierzytelniający'),
-        description: t('Wprowadź kod uwierzytelniający z aplikacji authenticator.'),
+        description: t(
+            'Wprowadź kod uwierzytelniający z aplikacji authenticator.',
+        ),
         buttonText: t('zaloguj się kodem odzyskiwania'),
     };
 });
@@ -82,7 +86,10 @@ const code = ref<string>('');
                         </div>
                         <InputError :message="errors.code" />
                     </div>
-                    <Button type="submit" class="w-full" :disabled="processing"
+                    <Button
+                        type="submit"
+                        class="w-full"
+                        :disabled="processing"
                         >{{ t('Kontynuuj') }}</Button
                     >
                     <div class="text-center text-sm text-muted-foreground">
@@ -113,7 +120,10 @@ const code = ref<string>('');
                         required
                     />
                     <InputError :message="errors.recovery_code" />
-                    <Button type="submit" class="w-full" :disabled="processing"
+                    <Button
+                        type="submit"
+                        class="w-full"
+                        :disabled="processing"
                         >{{ t('Kontynuuj') }}</Button
                     >
 

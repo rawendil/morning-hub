@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ArrowDown, ArrowUp, Clock, Pencil, Plug, Trash2 } from 'lucide-vue-next';
+import {
+    ArrowDown,
+    ArrowUp,
+    Clock,
+    Pencil,
+    Plug,
+    Trash2,
+} from 'lucide-vue-next';
 import { computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslations } from '@/composables/useTranslations';
 import type { RoutineBlock } from '@/types';
 
@@ -40,7 +42,9 @@ const typeLabels = computed<Record<string, string>>(() => ({
 
 <template>
     <Card>
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
+        <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 py-3"
+        >
             <div class="flex items-center gap-3">
                 <div class="flex flex-col gap-0.5">
                     <Button
@@ -65,12 +69,22 @@ const typeLabels = computed<Record<string, string>>(() => ({
                 <div>
                     <CardTitle class="text-base">{{ block.name }}</CardTitle>
                     <div class="mt-1 flex items-center gap-2">
-                        <Badge variant="secondary">{{ typeLabels[block.type] ?? block.type }}</Badge>
-                        <Badge v-if="block.timer_minutes" variant="outline" class="gap-1">
+                        <Badge variant="secondary">{{
+                            typeLabels[block.type] ?? block.type
+                        }}</Badge>
+                        <Badge
+                            v-if="block.timer_minutes"
+                            variant="outline"
+                            class="gap-1"
+                        >
                             <Clock class="h-3 w-3" />
                             {{ block.timer_minutes }}m
                         </Badge>
-                        <Badge v-if="block.clickup_connection" variant="outline" class="gap-1">
+                        <Badge
+                            v-if="block.clickup_connection"
+                            variant="outline"
+                            class="gap-1"
+                        >
                             <Plug class="h-3 w-3" />
                             {{ block.clickup_connection.name }}
                         </Badge>

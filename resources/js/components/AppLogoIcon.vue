@@ -32,9 +32,25 @@ defineProps<Props>();
         <circle cx="20" cy="36" r="1" fill="currentColor" />
         <circle cx="9" cy="24" r="1" fill="currentColor" />
         <!-- Minute hand (pointing to 12) -->
-        <line x1="20" y1="23" x2="20" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        <line
+            x1="20"
+            y1="23"
+            x2="20"
+            y2="11"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+        />
         <!-- Hour hand (pointing to ~7 o'clock — morning) -->
-        <line x1="20" y1="23" x2="15" y2="30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+        <line
+            x1="20"
+            y1="23"
+            x2="15"
+            y2="30"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+        />
         <!-- Center dot -->
         <circle cx="20" cy="23" r="2" fill="currentColor" />
     </svg>

@@ -1,5 +1,5 @@
-import * as Sentry from '@sentry/vue';
 import { createInertiaApp } from '@inertiajs/vue3';
+import * as Sentry from '@sentry/vue';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
@@ -31,8 +31,13 @@ createInertiaApp({
             app,
             dsn: import.meta.env.VITE_SENTRY_DSN,
             environment: import.meta.env.VITE_APP_ENV ?? 'production',
-            integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
-            tracesSampleRate: parseFloat(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? '0'),
+            integrations: [
+                Sentry.browserTracingIntegration(),
+                Sentry.replayIntegration(),
+            ],
+            tracesSampleRate: parseFloat(
+                import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? '0',
+            ),
             replaysSessionSampleRate: 0,
             replaysOnErrorSampleRate: 1.0,
             enabled: !!import.meta.env.VITE_SENTRY_DSN,

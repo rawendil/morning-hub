@@ -38,7 +38,8 @@ function formatEventTime(dateStr: string): string {
                 {{ t('Cały dzień') }}
             </Badge>
             <Badge v-else variant="outline" class="text-xs">
-                {{ formatEventTime(event.start) }} – {{ formatEventTime(event.end) }}
+                {{ formatEventTime(event.start) }} –
+                {{ formatEventTime(event.end) }}
             </Badge>
 
             <Badge

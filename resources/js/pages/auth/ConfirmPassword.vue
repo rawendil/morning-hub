@@ -15,7 +15,11 @@ const { t } = useTranslations();
 <template>
     <AuthLayout
         :title="t('Potwierdź hasło')"
-        :description="t('To jest bezpieczna strefa aplikacji. Potwierdź swoje hasło, aby kontynuować.')"
+        :description="
+            t(
+                'To jest bezpieczna strefa aplikacji. Potwierdź swoje hasło, aby kontynuować.',
+            )
+        "
     >
         <Head :title="t('Potwierdzenie hasła')" />
 

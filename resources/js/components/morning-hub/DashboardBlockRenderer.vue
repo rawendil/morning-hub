@@ -5,7 +5,12 @@ import FeedBlock from '@/components/morning-hub/FeedBlock.vue';
 import GoogleCalendarBlock from '@/components/morning-hub/GoogleCalendarBlock.vue';
 import HabitsBlock from '@/components/morning-hub/HabitsBlock.vue';
 import PlaceholderBlock from '@/components/morning-hub/PlaceholderBlock.vue';
-import type { BlockFeedData, BlockGoogleCalendarData, BlockTasksData, RoutineBlock } from '@/types';
+import type {
+    BlockFeedData,
+    BlockGoogleCalendarData,
+    BlockTasksData,
+    RoutineBlock,
+} from '@/types';
 
 defineProps<{
     block: RoutineBlock;

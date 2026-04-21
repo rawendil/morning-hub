@@ -116,11 +116,16 @@ export function getDefaultIconName(type: BlockType): string {
 }
 
 export function resolveBlockIcon(block: RoutineBlock): Component {
-    const iconName = (block.config?.icon as string) || DEFAULT_BLOCK_ICONS[block.type] || 'Wrench';
+    const iconName =
+        (block.config?.icon as string) ||
+        DEFAULT_BLOCK_ICONS[block.type] ||
+        'Wrench';
     return ICON_MAP[iconName] ?? ICON_MAP.Wrench;
 }
 
-export const AVAILABLE_ICONS = Object.entries(ICON_MAP).map(([name, component]) => ({
-    name,
-    component,
-}));
+export const AVAILABLE_ICONS = Object.entries(ICON_MAP).map(
+    ([name, component]) => ({
+        name,
+        component,
+    }),
+);

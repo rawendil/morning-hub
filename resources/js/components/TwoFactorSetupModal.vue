@@ -49,7 +49,9 @@ const modalConfig = computed<TwoFactorConfigContent>(() => {
     if (props.twoFactorEnabled) {
         return {
             title: t('Uwierzytelnianie dwuskładnikowe włączone'),
-            description: t('Uwierzytelnianie dwuskładnikowe jest teraz włączone. Zeskanuj kod QR lub wprowadź klucz konfiguracyjny w aplikacji authenticator.'),
+            description: t(
+                'Uwierzytelnianie dwuskładnikowe jest teraz włączone. Zeskanuj kod QR lub wprowadź klucz konfiguracyjny w aplikacji authenticator.',
+            ),
             buttonText: t('Zamknij'),
         };
     }
@@ -64,7 +66,9 @@ const modalConfig = computed<TwoFactorConfigContent>(() => {
 
     return {
         title: t('Włącz uwierzytelnianie dwuskładnikowe'),
-        description: t('Aby zakończyć włączanie uwierzytelniania dwuskładnikowego, zeskanuj kod QR lub wprowadź klucz konfiguracyjny w aplikacji authenticator'),
+        description: t(
+            'Aby zakończyć włączanie uwierzytelniania dwuskładnikowego, zeskanuj kod QR lub wprowadź klucz konfiguracyjny w aplikacji authenticator',
+        ),
         buttonText: t('Kontynuuj'),
     };
 });
@@ -195,9 +199,9 @@ watch(
                             <div
                                 class="absolute inset-0 top-1/2 h-px w-full bg-border"
                             />
-                            <span class="relative bg-card px-2 py-1"
-                                >{{ t('lub wprowadź kod ręcznie') }}</span
-                            >
+                            <span class="relative bg-card px-2 py-1">{{
+                                t('lub wprowadź kod ręcznie')
+                            }}</span>
                         </div>
 
                         <div

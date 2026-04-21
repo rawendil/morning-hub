@@ -25,7 +25,7 @@ const emit = defineEmits<{
 
 <template>
     <Dialog :open="props.open" @update:open="emit('update:open', $event)">
-        <DialogContent class="sm:max-w-md text-center">
+        <DialogContent class="text-center sm:max-w-md">
             <DialogHeader>
                 <DialogTitle class="text-2xl">
                     {{ t('Rutyna ukończona!') }} 🎉
@@ -37,10 +37,16 @@ const emit = defineEmits<{
 
             <div class="flex flex-col items-center gap-2 py-4">
                 <p class="text-sm text-muted-foreground">
-                    {{ t('Ukończone bloki') }}: <span class="font-semibold text-foreground">{{ totalBlocks }}</span>
+                    {{ t('Ukończone bloki') }}:
+                    <span class="font-semibold text-foreground">{{
+                        totalBlocks
+                    }}</span>
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    {{ t('Czas spędzony') }}: <span class="font-semibold text-foreground">{{ completedMinutes }} min</span>
+                    {{ t('Czas spędzony') }}:
+                    <span class="font-semibold text-foreground"
+                        >{{ completedMinutes }} min</span
+                    >
                 </p>
             </div>
 

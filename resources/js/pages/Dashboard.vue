@@ -16,7 +16,13 @@ import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { index as routineIndex } from '@/routes/morning-hub/routine';
-import type { BreadcrumbItem, BlockFeedData, BlockGoogleCalendarData, BlockTasksData, RoutineBlock } from '@/types';
+import type {
+    BreadcrumbItem,
+    BlockFeedData,
+    BlockGoogleCalendarData,
+    BlockTasksData,
+    RoutineBlock,
+} from '@/types';
 
 const { t } = useTranslations();
 
@@ -31,15 +37,21 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
 ]);
 
 function getTasksData(blockId: number): BlockTasksData | undefined {
-    return (page.props as Record<string, unknown>)[`tasks_${blockId}`] as BlockTasksData | undefined;
+    return (page.props as Record<string, unknown>)[`tasks_${blockId}`] as
+        | BlockTasksData
+        | undefined;
 }
 
 function getFeedData(blockId: number): BlockFeedData | undefined {
-    return (page.props as Record<string, unknown>)[`feed_${blockId}`] as BlockFeedData | undefined;
+    return (page.props as Record<string, unknown>)[`feed_${blockId}`] as
+        | BlockFeedData
+        | undefined;
 }
 
 function getEventsData(blockId: number): BlockGoogleCalendarData | undefined {
-    return (page.props as Record<string, unknown>)[`events_${blockId}`] as BlockGoogleCalendarData | undefined;
+    return (page.props as Record<string, unknown>)[`events_${blockId}`] as
+        | BlockGoogleCalendarData
+        | undefined;
 }
 
 const detailOpen = ref(false);
@@ -67,22 +79,31 @@ const {
     formatTime,
 } = useRoutineTimer(props.blocks);
 
-const completedElapsedMinutes = computed(() => Math.floor(completedElapsedSeconds.value / 60));
+const completedElapsedMinutes = computed(() =>
+    Math.floor(completedElapsedSeconds.value / 60),
+);
 
 const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
-const totalMinutes = computed(() => props.blocks.reduce((sum, b) => sum + (b.timer_minutes ?? 0), 0));
+const totalMinutes = computed(() =>
+    props.blocks.reduce((sum, b) => sum + (b.timer_minutes ?? 0), 0),
+);
 
 const routineCompleteOpen = ref(false);
 
 const allBlocksCompleted = computed(
-    () => props.blocks.length > 0 && [...blockStates.value.values()].every((s) => s === 'completed'),
+    () =>
+        props.blocks.length > 0 &&
+        [...blockStates.value.values()].every((s) => s === 'completed'),
 );
 
 watch(
     blockStates,
     (newStates, oldStates) => {
         for (const [blockId, state] of newStates) {
-            if (state === 'completed' && oldStates?.get(blockId) !== 'completed') {
+            if (
+                state === 'completed' &&
+                oldStates?.get(blockId) !== 'completed'
+            ) {
                 const block = props.blocks.find((b) => b.id === blockId);
                 if (block) {
                     toast.success(`${block.name} — ukończono! ✓`);
@@ -109,12 +130,21 @@ watch(
         <Head :title="t('Panel')" />
 
         <div class="space-y-6 p-6">
-            <Heading title="Morning Hub" :description="t('Twój codzienny panel rutyny.')" />
+            <Heading
+                title="Morning Hub"
+                :description="t('Twój codzienny panel rutyny.')"
+            />
 
-            <div v-if="blocks.length === 0" class="rounded-lg border border-dashed p-8 text-center">
+            <div
+                v-if="blocks.length === 0"
+                class="rounded-lg border border-dashed p-8 text-center"
+            >
                 <p class="text-muted-foreground">
                     {{ t('Brak skonfigurowanych bloków rutyny.') }}
-                    <Link :href="routineIndex.url()" class="underline">{{ t('Przejdź do Porannej Rutyny') }}</Link>,
+                    <Link :href="routineIndex.url()" class="underline">{{
+                        t('Przejdź do Porannej Rutyny')
+                    }}</Link
+                    >,
                     {{ t('aby skonfigurować bloki.') }}
                 </p>
             </div>
@@ -127,13 +157,19 @@ watch(
                         :active-block-id="activeBlockId"
                         @select-block="(id) => start(id)"
                     />
-                    <span class="text-sm text-muted-foreground">{{ completedElapsedMinutes }} / {{ totalMinutes }} min</span>
+                    <span class="text-sm text-muted-foreground"
+                        >{{ completedElapsedMinutes }} /
+                        {{ totalMinutes }} min</span
+                    >
                 </div>
 
                 <div class="grid gap-4">
                     <template v-for="block in blocks" :key="block.id">
                         <Deferred
-                            v-if="block.type === 'clickup' && block.clickup_connection_id"
+                            v-if="
+                                block.type === 'clickup' &&
+                                block.clickup_connection_id
+                            "
                             :data="`tasks_${block.id}`"
                         >
                             <template #fallback>
@@ -142,12 +178,23 @@ watch(
                             <DashboardBlockRenderer
                                 :block="block"
                                 :tasks-data="getTasksData(block.id)"
-
                                 :is-active-block="activeBlockId === block.id"
-                                :is-timer-running="activeBlockId === block.id && isRunning"
-                                :is-timer-expired="activeBlockId === block.id && isExpired"
-                                :remaining-seconds="activeBlockId === block.id ? remainingSeconds : 0"
-                                :formatted-time="activeBlockId === block.id ? formatTime(remainingSeconds) : ''"
+                                :is-timer-running="
+                                    activeBlockId === block.id && isRunning
+                                "
+                                :is-timer-expired="
+                                    activeBlockId === block.id && isExpired
+                                "
+                                :remaining-seconds="
+                                    activeBlockId === block.id
+                                        ? remainingSeconds
+                                        : 0
+                                "
+                                :formatted-time="
+                                    activeBlockId === block.id
+                                        ? formatTime(remainingSeconds)
+                                        : ''
+                                "
                                 @select-task="openTaskDetail"
                                 @timer-start="start(block.id)"
                                 @timer-pause="pause()"
@@ -157,7 +204,11 @@ watch(
                             />
                         </Deferred>
                         <Deferred
-                            v-else-if="block.type === 'feed' && (block.config?.sources as unknown[] | undefined)?.length"
+                            v-else-if="
+                                block.type === 'feed' &&
+                                (block.config?.sources as unknown[] | undefined)
+                                    ?.length
+                            "
                             :data="`feed_${block.id}`"
                         >
                             <template #fallback>
@@ -166,12 +217,23 @@ watch(
                             <DashboardBlockRenderer
                                 :block="block"
                                 :feed-data="getFeedData(block.id)"
-
                                 :is-active-block="activeBlockId === block.id"
-                                :is-timer-running="activeBlockId === block.id && isRunning"
-                                :is-timer-expired="activeBlockId === block.id && isExpired"
-                                :remaining-seconds="activeBlockId === block.id ? remainingSeconds : 0"
-                                :formatted-time="activeBlockId === block.id ? formatTime(remainingSeconds) : ''"
+                                :is-timer-running="
+                                    activeBlockId === block.id && isRunning
+                                "
+                                :is-timer-expired="
+                                    activeBlockId === block.id && isExpired
+                                "
+                                :remaining-seconds="
+                                    activeBlockId === block.id
+                                        ? remainingSeconds
+                                        : 0
+                                "
+                                :formatted-time="
+                                    activeBlockId === block.id
+                                        ? formatTime(remainingSeconds)
+                                        : ''
+                                "
                                 @select-task="openTaskDetail"
                                 @timer-start="start(block.id)"
                                 @timer-pause="pause()"
@@ -181,7 +243,10 @@ watch(
                             />
                         </Deferred>
                         <Deferred
-                            v-else-if="block.type === 'google_calendar' && block.google_calendar_connection_id"
+                            v-else-if="
+                                block.type === 'google_calendar' &&
+                                block.google_calendar_connection_id
+                            "
                             :data="`events_${block.id}`"
                         >
                             <template #fallback>
@@ -190,12 +255,23 @@ watch(
                             <DashboardBlockRenderer
                                 :block="block"
                                 :events-data="getEventsData(block.id)"
-
                                 :is-active-block="activeBlockId === block.id"
-                                :is-timer-running="activeBlockId === block.id && isRunning"
-                                :is-timer-expired="activeBlockId === block.id && isExpired"
-                                :remaining-seconds="activeBlockId === block.id ? remainingSeconds : 0"
-                                :formatted-time="activeBlockId === block.id ? formatTime(remainingSeconds) : ''"
+                                :is-timer-running="
+                                    activeBlockId === block.id && isRunning
+                                "
+                                :is-timer-expired="
+                                    activeBlockId === block.id && isExpired
+                                "
+                                :remaining-seconds="
+                                    activeBlockId === block.id
+                                        ? remainingSeconds
+                                        : 0
+                                "
+                                :formatted-time="
+                                    activeBlockId === block.id
+                                        ? formatTime(remainingSeconds)
+                                        : ''
+                                "
                                 @select-task="openTaskDetail"
                                 @timer-start="start(block.id)"
                                 @timer-pause="pause()"
@@ -209,10 +285,22 @@ watch(
                             :block="block"
                             :feed-data="getFeedData(block.id)"
                             :is-active-block="activeBlockId === block.id"
-                            :is-timer-running="activeBlockId === block.id && isRunning"
-                            :is-timer-expired="activeBlockId === block.id && isExpired"
-                            :remaining-seconds="activeBlockId === block.id ? remainingSeconds : 0"
-                            :formatted-time="activeBlockId === block.id ? formatTime(remainingSeconds) : ''"
+                            :is-timer-running="
+                                activeBlockId === block.id && isRunning
+                            "
+                            :is-timer-expired="
+                                activeBlockId === block.id && isExpired
+                            "
+                            :remaining-seconds="
+                                activeBlockId === block.id
+                                    ? remainingSeconds
+                                    : 0
+                            "
+                            :formatted-time="
+                                activeBlockId === block.id
+                                    ? formatTime(remainingSeconds)
+                                    : ''
+                            "
                             @select-task="openTaskDetail"
                             @timer-start="start(block.id)"
                             @timer-pause="pause()"
@@ -236,7 +324,11 @@ watch(
         <RoutineCompletionDialog
             v-model:open="routineCompleteOpen"
             :completed-minutes="completedElapsedMinutes"
-            :total-blocks="props.blocks.filter((b) => blockStates.get(b.id) === 'completed').length"
+            :total-blocks="
+                props.blocks.filter(
+                    (b) => blockStates.get(b.id) === 'completed',
+                ).length
+            "
         />
     </AppLayout>
 </template>

@@ -304,7 +304,10 @@ onMounted(() => {
                                     "
                                     @update:model-value="
                                         (checked: boolean | 'indeterminate') =>
-                                            toggleCalendar(calendar.id, checked === true)
+                                            toggleCalendar(
+                                                calendar.id,
+                                                checked === true,
+                                            )
                                     "
                                 />
                                 <span

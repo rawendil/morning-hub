@@ -33,7 +33,11 @@ onMounted(() => {
                 <Cookie class="mx-auto mb-2 size-10 text-primary" />
                 <DialogTitle>{{ t('Pliki cookies') }}</DialogTitle>
                 <DialogDescription>
-                    {{ t('Używamy plików cookies do analizy ruchu na stronie (Google Analytics). Dane są anonimowe i pomagają nam ulepszać aplikację. Możesz zmienić swoją decyzję w każdej chwili.') }}
+                    {{
+                        t(
+                            'Używamy plików cookies do analizy ruchu na stronie (Google Analytics). Dane są anonimowe i pomagają nam ulepszać aplikację. Możesz zmienić swoją decyzję w każdej chwili.',
+                        )
+                    }}
                 </DialogDescription>
             </DialogHeader>
 

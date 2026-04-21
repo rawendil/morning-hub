@@ -31,21 +31,29 @@ const steps = computed(() => [
     {
         icon: Sparkles,
         title: t('Witaj w Morning Hub'),
-        description: t('Twój osobisty panel porannej rutyny. Organizuj zadania, śledź nawyki i zachowaj skupienie — zanim zaczniesz dzień.'),
+        description: t(
+            'Twój osobisty panel porannej rutyny. Organizuj zadania, śledź nawyki i zachowaj skupienie — zanim zaczniesz dzień.',
+        ),
     },
     {
         icon: LayoutGrid,
         title: t('Jak to działa'),
         items: [
-            t('Skonfiguruj bloki w ustawieniach Rutyny — timery, zadania, nawyki, notatki.'),
-            t('Połącz ClickUp, aby automatycznie pobierać priorytetowe zadania.'),
+            t(
+                'Skonfiguruj bloki w ustawieniach Rutyny — timery, zadania, nawyki, notatki.',
+            ),
+            t(
+                'Połącz ClickUp, aby automatycznie pobierać priorytetowe zadania.',
+            ),
             t('Uruchom timer i pracuj przez kolejne bloki.'),
         ],
     },
     {
         icon: Rocket,
         title: t('Gotowy do startu'),
-        description: t('Skonfiguruj pierwszą rutynę lub przejdź od razu do panelu.'),
+        description: t(
+            'Skonfiguruj pierwszą rutynę lub przejdź od razu do panelu.',
+        ),
     },
 ]);
 
@@ -67,14 +75,22 @@ function complete() {
 
 <template>
     <Dialog v-model:open="isOpen">
-        <DialogContent class="sm:max-w-md" @escape-key-down.prevent @pointer-down-outside.prevent>
+        <DialogContent
+            class="sm:max-w-md"
+            @escape-key-down.prevent
+            @pointer-down-outside.prevent
+        >
             <!-- Step dots -->
             <div class="flex justify-center gap-1.5 pt-2">
                 <span
                     v-for="(_, i) in steps"
                     :key="i"
                     class="h-1.5 w-1.5 rounded-full transition-colors"
-                    :class="i === currentStep ? 'bg-primary' : 'bg-muted-foreground/30'"
+                    :class="
+                        i === currentStep
+                            ? 'bg-primary'
+                            : 'bg-muted-foreground/30'
+                    "
                 />
             </div>
 
@@ -91,30 +107,42 @@ function complete() {
 
             <!-- Step 2: list items -->
             <ul v-if="steps[currentStep].items" class="space-y-3 px-4">
-
                 <li
                     v-for="(item, i) in steps[currentStep].items ?? []"
                     :key="i"
                     class="flex items-start gap-3 text-sm text-muted-foreground"
                 >
-                    <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
+                    <span
+                        class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary"
+                    >
                         {{ i + 1 }}
                     </span>
                     {{ item }}
                 </li>
             </ul>
 
-            <DialogFooter class="flex-row justify-between gap-2 sm:justify-between">
-                <Button v-if="!isLastStep" variant="ghost" size="sm" @click="complete">
+            <DialogFooter
+                class="flex-row justify-between gap-2 sm:justify-between"
+            >
+                <Button
+                    v-if="!isLastStep"
+                    variant="ghost"
+                    size="sm"
+                    @click="complete"
+                >
                     {{ t('Pomiń') }}
                 </Button>
                 <span v-else />
 
                 <div v-if="isLastStep" class="flex gap-2">
                     <Link :href="routineIndex.url()" @click="complete">
-                        <Button variant="outline" size="sm">{{ t('Ustawienia rutyny') }}</Button>
+                        <Button variant="outline" size="sm">{{
+                            t('Ustawienia rutyny')
+                        }}</Button>
                     </Link>
-                    <Button size="sm" @click="complete">{{ t('Przejdź do panelu') }}</Button>
+                    <Button size="sm" @click="complete">{{
+                        t('Przejdź do panelu')
+                    }}</Button>
                 </div>
                 <Button v-else size="sm" @click="next">{{ t('Dalej') }}</Button>
             </DialogFooter>

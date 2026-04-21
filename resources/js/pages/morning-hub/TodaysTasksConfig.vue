@@ -25,10 +25,15 @@ const props = defineProps<{
 }>();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
-    { title: t('Zadania na dziś — Konfiguracja'), href: todaysTasksConfigIndex() },
+    {
+        title: t('Zadania na dziś — Konfiguracja'),
+        href: todaysTasksConfigIndex(),
+    },
 ]);
 
-const selectedConnectionIds = ref<number[]>((props.config?.connection_ids ?? []).map(Number));
+const selectedConnectionIds = ref<number[]>(
+    (props.config?.connection_ids ?? []).map(Number),
+);
 
 function toggleConnectionId(id: number) {
     const index = selectedConnectionIds.value.indexOf(id);
@@ -45,7 +50,14 @@ function toggleConnectionId(id: number) {
         <Head :title="t('Zadania na dziś — Konfiguracja')" />
 
         <div class="space-y-6 p-6">
-            <Heading :title="t('Zadania na dziś — Konfiguracja')" :description="t('Wybierz połączenia ClickUp, z których mają być pobierane zadania.')" />
+            <Heading
+                :title="t('Zadania na dziś — Konfiguracja')"
+                :description="
+                    t(
+                        'Wybierz połączenia ClickUp, z których mają być pobierane zadania.',
+                    )
+                "
+            />
 
             <Form
                 :action="update()"
@@ -55,14 +67,27 @@ function toggleConnectionId(id: number) {
                 <div class="max-w-xl space-y-6">
                     <div class="grid gap-2">
                         <Label>{{ t('Połączenia ClickUp') }}</Label>
-                        <p v-if="!connections.length" class="text-sm text-muted-foreground">
+                        <p
+                            v-if="!connections.length"
+                            class="text-sm text-muted-foreground"
+                        >
                             {{ t('Brak dostępnych połączeń ClickUp.') }}
-                            <Link :href="clickupIndex()" class="underline">{{ t('Dodaj połączenie') }}</Link>,
+                            <Link :href="clickupIndex()" class="underline">{{
+                                t('Dodaj połączenie')
+                            }}</Link
+                            >,
                             {{ t('aby rozpocząć.') }}
                         </p>
                         <div v-else class="space-y-2">
-                            <template v-for="id in selectedConnectionIds" :key="`hidden-${id}`">
-                                <input type="hidden" name="connection_ids[]" :value="id" />
+                            <template
+                                v-for="id in selectedConnectionIds"
+                                :key="`hidden-${id}`"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="connection_ids[]"
+                                    :value="id"
+                                />
                             </template>
                             <label
                                 v-for="conn in connections"
@@ -71,19 +96,31 @@ function toggleConnectionId(id: number) {
                                 @click="toggleConnectionId(conn.id)"
                             >
                                 <Checkbox
-                                    :model-value="selectedConnectionIds.includes(conn.id)"
+                                    :model-value="
+                                        selectedConnectionIds.includes(conn.id)
+                                    "
                                 />
                                 <span class="text-sm">{{ conn.name }}</span>
                             </label>
                         </div>
-                        <p v-if="errors['connection_ids']" class="text-sm text-destructive">{{ errors['connection_ids'] }}</p>
+                        <p
+                            v-if="errors['connection_ids']"
+                            class="text-sm text-destructive"
+                        >
+                            {{ errors['connection_ids'] }}
+                        </p>
                     </div>
 
                     <div class="flex items-center gap-4">
                         <Button type="submit" :disabled="processing">
                             {{ processing ? t('Zapisuję...') : t('Zapisz') }}
                         </Button>
-                        <p v-if="recentlySuccessful" class="text-sm text-muted-foreground">{{ t('Zapisano.') }}</p>
+                        <p
+                            v-if="recentlySuccessful"
+                            class="text-sm text-muted-foreground"
+                        >
+                            {{ t('Zapisano.') }}
+                        </p>
                     </div>
                 </div>
             </Form>

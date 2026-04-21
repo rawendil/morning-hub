@@ -45,14 +45,20 @@ onUnmounted(() => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <Head :title="t('Uwierzytelnianie dwuskładnikowe')" />
 
-        <h1 class="sr-only">{{ t('Ustawienia uwierzytelniania dwuskładnikowego') }}</h1>
+        <h1 class="sr-only">
+            {{ t('Ustawienia uwierzytelniania dwuskładnikowego') }}
+        </h1>
 
         <SettingsLayout>
             <div class="space-y-6">
                 <Heading
                     variant="small"
                     :title="t('Uwierzytelnianie dwuskładnikowe')"
-                    :description="t('Zarządzaj ustawieniami uwierzytelniania dwuskładnikowego')"
+                    :description="
+                        t(
+                            'Zarządzaj ustawieniami uwierzytelniania dwuskładnikowego',
+                        )
+                    "
                 />
 
                 <div
@@ -62,7 +68,11 @@ onUnmounted(() => {
                     <Badge variant="destructive">{{ t('Wyłączone') }}</Badge>
 
                     <p class="text-muted-foreground">
-                        {{ t('Po włączeniu uwierzytelniania dwuskładnikowego podczas logowania będzie wymagany bezpieczny kod PIN. Kod można uzyskać z aplikacji obsługującej TOTP na Twoim telefonie.') }}
+                        {{
+                            t(
+                                'Po włączeniu uwierzytelniania dwuskładnikowego podczas logowania będzie wymagany bezpieczny kod PIN. Kod można uzyskać z aplikacji obsługującej TOTP na Twoim telefonie.',
+                            )
+                        }}
                     </p>
 
                     <div>
@@ -92,7 +102,11 @@ onUnmounted(() => {
                     <Badge variant="default">{{ t('Włączone') }}</Badge>
 
                     <p class="text-muted-foreground">
-                        {{ t('Z włączonym uwierzytelnianiem dwuskładnikowym podczas logowania będzie wymagany bezpieczny kod PIN, który możesz uzyskać z aplikacji obsługującej TOTP na Twoim telefonie.') }}
+                        {{
+                            t(
+                                'Z włączonym uwierzytelnianiem dwuskładnikowym podczas logowania będzie wymagany bezpieczny kod PIN, który możesz uzyskać z aplikacji obsługującej TOTP na Twoim telefonie.',
+                            )
+                        }}
                     </p>
 
                     <TwoFactorRecoveryCodes />

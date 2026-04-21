@@ -27,7 +27,7 @@ withDefaults(defineProps<Props>(), {
                     src="/images/forest.jpg"
                     alt=""
                     loading="lazy"
-                    class="absolute inset-0 h-full w-full object-cover mask-[radial-gradient(ellipse_at_bottom_right,black_20%,transparent_70%)]"
+                    class="absolute inset-0 h-full w-full mask-[radial-gradient(ellipse_at_bottom_right,black_20%,transparent_70%)] object-cover"
                 />
             </footer>
         </AppContent>

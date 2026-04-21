@@ -35,7 +35,11 @@ function select(name: string) {
             class="flex h-9 w-full items-center justify-start gap-2"
             @click="isOpen = !isOpen"
         >
-            <component :is="currentIcon" v-if="currentIcon" class="h-4 w-4 text-muted-foreground" />
+            <component
+                :is="currentIcon"
+                v-if="currentIcon"
+                class="h-4 w-4 text-muted-foreground"
+            />
             <span class="text-sm">{{ model || t('Wybierz ikonę...') }}</span>
         </Button>
 
@@ -51,14 +55,19 @@ function select(name: string) {
                     :key="icon.name"
                     type="button"
                     class="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-accent"
-                    :class="{ 'bg-accent ring-1 ring-primary': model === icon.name }"
+                    :class="{
+                        'bg-accent ring-1 ring-primary': model === icon.name,
+                    }"
                     :title="icon.name"
                     @click="select(icon.name)"
                 >
                     <component :is="icon.component" class="h-4 w-4" />
                 </button>
             </div>
-            <p v-if="filteredIcons.length === 0" class="text-center text-xs text-muted-foreground">
+            <p
+                v-if="filteredIcons.length === 0"
+                class="text-center text-xs text-muted-foreground"
+            >
                 {{ t('Brak wyników') }}
             </p>
         </div>

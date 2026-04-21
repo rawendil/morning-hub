@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { linkRedirect, unlink } from '@/actions/App/Http/Controllers/Auth/GoogleAuthController';
+import {
+    linkRedirect,
+    unlink,
+} from '@/actions/App/Http/Controllers/Auth/GoogleAuthController';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,12 +25,18 @@ const hasPassword = computed(() => page.props.auth.hasPassword);
         <Heading
             variant="small"
             :title="t('Powiązane konta')"
-            :description="t('Zarządzaj zewnętrznymi kontami powiązanymi z Twoim profilem')"
+            :description="
+                t('Zarządzaj zewnętrznymi kontami powiązanymi z Twoim profilem')
+            "
         />
 
         <div class="flex items-center justify-between rounded-lg border p-4">
             <div class="flex items-center gap-3">
-                <svg class="size-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg
+                    class="size-5"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
                     <path
                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
                         fill="#4285F4"
@@ -46,8 +55,12 @@ const hasPassword = computed(() => page.props.auth.hasPassword);
                     />
                 </svg>
                 <span class="font-medium">Google</span>
-                <Badge v-if="hasGoogle" variant="default">{{ t('Powiązane') }}</Badge>
-                <Badge v-else variant="secondary">{{ t('Niepowiązane') }}</Badge>
+                <Badge v-if="hasGoogle" variant="default">{{
+                    t('Powiązane')
+                }}</Badge>
+                <Badge v-else variant="secondary">{{
+                    t('Niepowiązane')
+                }}</Badge>
             </div>
 
             <div>
@@ -62,7 +75,9 @@ const hasPassword = computed(() => page.props.auth.hasPassword);
                             variant="outline"
                             size="sm"
                             :disabled="!hasPassword"
-                            :title="!hasPassword ? t('Najpierw ustaw hasło') : ''"
+                            :title="
+                                !hasPassword ? t('Najpierw ustaw hasło') : ''
+                            "
                         >
                             {{ t('Odłącz') }}
                         </Button>
@@ -78,8 +93,15 @@ const hasPassword = computed(() => page.props.auth.hasPassword);
             </div>
         </div>
 
-        <p v-if="hasGoogle && !hasPassword" class="text-sm text-muted-foreground">
-            {{ t('Aby odłączyć konto Google, najpierw ustaw hasło w ustawieniach hasła.') }}
+        <p
+            v-if="hasGoogle && !hasPassword"
+            class="text-sm text-muted-foreground"
+        >
+            {{
+                t(
+                    'Aby odłączyć konto Google, najpierw ustaw hasło w ustawieniach hasła.',
+                )
+            }}
         </p>
     </div>
 </template>

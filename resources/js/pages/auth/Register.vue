@@ -74,7 +74,9 @@ const { t } = useTranslations();
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password_confirmation">{{ t('Potwierdź hasło') }}</Label>
+                    <Label for="password_confirmation">{{
+                        t('Potwierdź hasło')
+                    }}</Label>
                     <Input
                         id="password_confirmation"
                         type="password"

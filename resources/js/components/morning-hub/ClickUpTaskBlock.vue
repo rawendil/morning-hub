@@ -7,18 +7,22 @@ import ClickUpTaskCard from '@/components/morning-hub/ClickUpTaskCard.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useClickUpApi } from '@/composables/useClickUpApi';
 import { useTranslations } from '@/composables/useTranslations';
 import { resolveBlockIcon } from '@/lib/block-icons';
-import { createTask as createTaskRoute, statuses as statusesRoute, updateTask as updateTaskRoute } from '@/routes/morning-hub/clickup';
-import type { BlockTasksData, ClickUpStatus, RoutineBlock, UpdateTaskPayload } from '@/types';
+import {
+    createTask as createTaskRoute,
+    statuses as statusesRoute,
+    updateTask as updateTaskRoute,
+} from '@/routes/morning-hub/clickup';
+import type {
+    BlockTasksData,
+    ClickUpStatus,
+    RoutineBlock,
+    UpdateTaskPayload,
+} from '@/types';
 
 const props = defineProps<{
     block: RoutineBlock;
@@ -49,11 +53,17 @@ const newTaskName = ref('');
 const creating = ref(false);
 
 onMounted(async () => {
-    if (!props.block.clickup_connection_id || !props.block.clickup_connection?.default_list_id) return;
+    if (
+        !props.block.clickup_connection_id ||
+        !props.block.clickup_connection?.default_list_id
+    )
+        return;
     try {
         availableStatuses.value = await fetchJson<ClickUpStatus[]>(
             statusesRoute.url(props.block.clickup_connection_id, {
-                query: { list_id: props.block.clickup_connection.default_list_id },
+                query: {
+                    list_id: props.block.clickup_connection.default_list_id,
+                },
             }),
         );
     } catch {
@@ -65,7 +75,9 @@ function refresh() {
     refreshing.value = true;
     router.reload({
         only: [`tasks_${props.block.id}`],
-        onFinish: () => { refreshing.value = false; },
+        onFinish: () => {
+            refreshing.value = false;
+        },
     });
 }
 
@@ -79,20 +91,30 @@ async function handleUpdateTask(taskId: string, payload: UpdateTaskPayload) {
 
     // Optimistic update
     if (payload.status) {
-        const statusObj = availableStatuses.value.find((s) => s.status === payload.status);
+        const statusObj = availableStatuses.value.find(
+            (s) => s.status === payload.status,
+        );
+        // eslint-disable-next-line vue/no-mutating-props
         props.tasksData.tasks[taskIndex] = {
             ...props.tasksData.tasks[taskIndex],
-            status: { status: payload.status, color: statusObj?.color ?? previousTask.status.color },
+            status: {
+                status: payload.status,
+                color: statusObj?.color ?? previousTask.status.color,
+            },
         };
     }
 
     try {
         await putJson(
-            updateTaskRoute.url({ connection: props.block.clickup_connection_id, taskId }),
+            updateTaskRoute.url({
+                connection: props.block.clickup_connection_id,
+                taskId,
+            }),
             payload as Record<string, unknown>,
         );
     } catch {
         // Rollback on error
+        // eslint-disable-next-line vue/no-mutating-props
         props.tasksData.tasks[taskIndex] = previousTask;
     }
 }
@@ -120,24 +142,39 @@ async function handleCreateTask() {
 </script>
 
 <template>
-    <Card v-if="!block.clickup_connection_id" :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
+    <Card
+        v-if="!block.clickup_connection_id"
+        :class="{ 'ring-2 ring-primary/30': isActiveBlock }"
+    >
+        <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 py-3"
+        >
             <div class="flex items-center gap-2">
-                <component :is="resolveBlockIcon(block)" class="h-4 w-4 text-muted-foreground" />
+                <component
+                    :is="resolveBlockIcon(block)"
+                    class="h-4 w-4 text-muted-foreground"
+                />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
             </div>
         </CardHeader>
         <CardContent class="pt-0">
-            <p class="text-sm text-muted-foreground">{{ t('Skonfiguruj połączenie ClickUp, aby zobaczyć zadania.') }}</p>
+            <p class="text-sm text-muted-foreground">
+                {{ t('Skonfiguruj połączenie ClickUp, aby zobaczyć zadania.') }}
+            </p>
         </CardContent>
     </Card>
 
     <ClickUpTaskBlockSkeleton v-else-if="!tasksData" />
 
     <Card v-else :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
-        <CardHeader class="flex flex-row items-center justify-between space-y-0 py-3">
+        <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 py-3"
+        >
             <div class="flex items-center gap-2">
-                <component :is="resolveBlockIcon(block)" class="h-4 w-4 text-muted-foreground" />
+                <component
+                    :is="resolveBlockIcon(block)"
+                    class="h-4 w-4 text-muted-foreground"
+                />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
                 <RoutineTimerBadge
                     v-if="block.timer_minutes"
@@ -154,14 +191,34 @@ async function handleCreateTask() {
                 />
             </div>
             <div class="flex items-center gap-1">
-                <Button v-if="isActiveBlock" variant="ghost" size="icon" class="h-8 w-8" @click="emit('timerSkip')">
+                <Button
+                    v-if="isActiveBlock"
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8"
+                    @click="emit('timerSkip')"
+                >
                     <SkipForward class="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-8 w-8" @click="showCreateForm = !showCreateForm">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8"
+                    @click="showCreateForm = !showCreateForm"
+                >
                     <Plus class="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" class="h-8 w-8" :disabled="refreshing" @click="refresh">
-                    <RefreshCw class="h-4 w-4" :class="{ 'animate-spin': refreshing }" />
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8"
+                    :disabled="refreshing"
+                    @click="refresh"
+                >
+                    <RefreshCw
+                        class="h-4 w-4"
+                        :class="{ 'animate-spin': refreshing }"
+                    />
                 </Button>
             </div>
         </CardHeader>
@@ -174,8 +231,17 @@ async function handleCreateTask() {
                 @keyup.enter="handleCreateTask"
             />
             <div class="flex justify-end gap-2">
-                <Button variant="ghost" size="sm" @click="showCreateForm = false">{{ t('Anuluj') }}</Button>
-                <Button size="sm" :disabled="!newTaskName.trim() || creating" @click="handleCreateTask">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    @click="showCreateForm = false"
+                    >{{ t('Anuluj') }}</Button
+                >
+                <Button
+                    size="sm"
+                    :disabled="!newTaskName.trim() || creating"
+                    @click="handleCreateTask"
+                >
                     {{ creating ? t('Tworzenie...') : t('Utwórz') }}
                 </Button>
             </div>
@@ -185,11 +251,16 @@ async function handleCreateTask() {
             <Alert v-if="tasksData.error" variant="destructive">
                 <AlertDescription class="flex items-center justify-between">
                     <span>{{ tasksData.error }}</span>
-                    <Button variant="outline" size="sm" @click="refresh">{{ t('Ponów') }}</Button>
+                    <Button variant="outline" size="sm" @click="refresh">{{
+                        t('Ponów')
+                    }}</Button>
                 </AlertDescription>
             </Alert>
 
-            <p v-else-if="tasksData.tasks.length === 0" class="text-sm text-muted-foreground">
+            <p
+                v-else-if="tasksData.tasks.length === 0"
+                class="text-sm text-muted-foreground"
+            >
                 {{ t('Brak zadań na dziś.') }}
             </p>
 
@@ -199,7 +270,10 @@ async function handleCreateTask() {
                 :key="task.id"
                 :task="task"
                 :statuses="availableStatuses"
-                @select="(taskId) => emit('selectTask', block.clickup_connection_id!, taskId)"
+                @select="
+                    (taskId) =>
+                        emit('selectTask', block.clickup_connection_id!, taskId)
+                "
                 @update-task="handleUpdateTask"
             />
         </CardContent>

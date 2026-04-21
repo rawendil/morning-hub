@@ -2,6 +2,7 @@
 import { Form } from '@inertiajs/vue3';
 import { Plus, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
+import { index as googleCalendarIndex } from '@/actions/App/Http/Controllers/MorningHub/GoogleCalendarConnectionController';
 import {
     store,
     update,
@@ -29,7 +30,6 @@ import {
 } from '@/components/ui/select';
 import { useTranslations } from '@/composables/useTranslations';
 import { getDefaultIconName } from '@/lib/block-icons';
-import { index as googleCalendarIndex } from '@/actions/App/Http/Controllers/MorningHub/GoogleCalendarConnectionController';
 import type { BlockType, ClickUpConnection, RoutineBlock } from '@/types';
 
 const { t } = useTranslations();

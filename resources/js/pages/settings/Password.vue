@@ -37,7 +37,13 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 <Heading
                     variant="small"
                     :title="hasPassword ? t('Zmiana hasła') : t('Ustaw hasło')"
-                    :description="hasPassword ? t('Upewnij się, że Twoje konto używa długiego, losowego hasła') : t('Ustaw hasło, aby móc logować się tradycyjnie')"
+                    :description="
+                        hasPassword
+                            ? t(
+                                  'Upewnij się, że Twoje konto używa długiego, losowego hasła',
+                              )
+                            : t('Ustaw hasło, aby móc logować się tradycyjnie')
+                    "
                 />
 
                 <Form
@@ -55,7 +61,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
                     <div v-if="hasPassword" class="grid gap-2">
-                        <Label for="current_password">{{ t('Aktualne hasło') }}</Label>
+                        <Label for="current_password">{{
+                            t('Aktualne hasło')
+                        }}</Label>
                         <Input
                             id="current_password"
                             name="current_password"
@@ -68,7 +76,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password">{{ hasPassword ? t('Nowe hasło') : t('Hasło') }}</Label>
+                        <Label for="password">{{
+                            hasPassword ? t('Nowe hasło') : t('Hasło')
+                        }}</Label>
                         <Input
                             id="password"
                             name="password"
@@ -81,9 +91,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation"
-                            >{{ t('Potwierdź hasło') }}</Label
-                        >
+                        <Label for="password_confirmation">{{
+                            t('Potwierdź hasło')
+                        }}</Label>
                         <Input
                             id="password_confirmation"
                             name="password_confirmation"
@@ -99,7 +109,11 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                         <Button
                             :disabled="processing"
                             data-test="update-password-button"
-                            >{{ hasPassword ? t('Zapisz hasło') : t('Ustaw hasło') }}</Button
+                            >{{
+                                hasPassword
+                                    ? t('Zapisz hasło')
+                                    : t('Ustaw hasło')
+                            }}</Button
                         >
 
                         <Transition

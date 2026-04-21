@@ -18,7 +18,11 @@ const { t } = useTranslations();
 <template>
     <AuthLayout
         :title="t('Weryfikacja e-mail')"
-        :description="t('Zweryfikuj swój adres e-mail, klikając w link, który wysłaliśmy na Twój adres.')"
+        :description="
+            t(
+                'Zweryfikuj swój adres e-mail, klikając w link, który wysłaliśmy na Twój adres.',
+            )
+        "
     >
         <Head :title="t('Weryfikacja e-mail')" />
 
@@ -26,7 +30,11 @@ const { t } = useTranslations();
             v-if="status === 'verification-link-sent'"
             class="mb-4 text-center text-sm font-medium text-green-600"
         >
-            {{ t('Nowy link weryfikacyjny został wysłany na adres e-mail podany podczas rejestracji.') }}
+            {{
+                t(
+                    'Nowy link weryfikacyjny został wysłany na adres e-mail podany podczas rejestracji.',
+                )
+            }}
         </div>
 
         <Form
