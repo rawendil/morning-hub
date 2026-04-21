@@ -17,7 +17,7 @@ class TodaysTasksController extends Controller
     {
         $config = $request->user()->todaysTasksConfig;
         /** @var array<int, int> $connectionIds */
-        $connectionIds = $config?->connection_ids ?? []; // @phpstan-ignore nullsafe.neverNull
+        $connectionIds = $config !== null ? ($config->connection_ids ?? []) : [];
 
         $user = $request->user();
 
