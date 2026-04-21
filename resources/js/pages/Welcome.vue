@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { ClipboardList, Repeat, Lightbulb } from 'lucide-vue-next';
+import { ClipboardList, Repeat, Lightbulb, Github } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
@@ -50,6 +50,9 @@ const features = computed(() => [
                 <span class="text-lg font-semibold tracking-tight">Morning Hub</span>
             </div>
             <nav class="flex items-center gap-3">
+                <a href="https://github.com/rawendil/morning-hub" target="_blank" rel="noopener noreferrer" class="text-muted-foreground transition-colors hover:text-foreground">
+                    <Github class="h-5 w-5" />
+                </a>
                 <LanguageSwitcher />
                 <template v-if="$page.props.auth.user">
                     <Link :href="dashboard()">
