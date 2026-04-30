@@ -1,27 +1,46 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
-import InputError from '@/components/InputError.vue';
-import SocialLoginButton from '@/components/SocialLoginButton.vue';
-import SocialLoginSeparator from '@/components/SocialLoginSeparator.vue';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import { useTranslations } from '@/composables/useTranslations';
-import AuthBase from '@/layouts/AuthLayout.vue';
-import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import InputError from '@/components/InputError.vue'
+import SocialLoginButton from '@/components/SocialLoginButton.vue'
+import SocialLoginSeparator from '@/components/SocialLoginSeparator.vue'
+import TextLink from '@/components/TextLink.vue'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Spinner } from '@/components/ui/spinner'
+import { useTranslations } from '@/composables/useTranslations'
+import AuthBase from '@/layouts/AuthLayout.vue'
+import { useAuthStore } from '@/stores/auth'
 
-defineProps<{
-    status?: string;
-    canResetPassword: boolean;
-    canRegister: boolean;
-}>();
+const { t } = useTranslations()
+const router = useRouter()
+const auth = useAuthStore()
+const email = ref('')
+const password = ref('')
+const errors = ref<Record<string, string[]>>({})
+const isLoading = ref(false)
 
-const { t } = useTranslations();
+async function submit() {
+    isLoading.value = true
+    errors.value = {}
+    try {
+        const result = await auth.login({ email: email.value, password: password.value })
+        if (result.requires_2fa) {
+            sessionStorage.setItem('2fa_temp_token', result.temp_token!)
+            router.push('/two-factor')
+        } else {
+            router.push('/dashboard')
+        }
+    } catch (error: any) {
+        if (error.response?.status === 422) {
+            errors.value = error.response.data.errors
+        }
+    } finally {
+        isLoading.value = false
+    }
+}
 </script>
 
 <template>
@@ -29,21 +48,7 @@ const { t } = useTranslations();
         :title="t('Zaloguj się na swoje konto')"
         :description="t('Wprowadź adres e-mail i hasło, aby się zalogować')"
     >
-        <Head :title="t('Logowanie')" />
-
-        <div
-            v-if="status"
-            class="mb-4 text-center text-sm font-medium text-green-600"
-        >
-            {{ status }}
-        </div>
-
-        <Form
-            v-bind="store.form()"
-            :reset-on-success="['password']"
-            v-slot="{ errors, processing }"
-            class="flex flex-col gap-6"
-        >
+        <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="grid gap-6">
                 <div class="grid gap-2">
                     <Label for="email">{{ t('Adres e-mail') }}</Label>
@@ -56,16 +61,16 @@ const { t } = useTranslations();
                         :tabindex="1"
                         autocomplete="email"
                         placeholder="email@example.com"
+                        v-model="email"
                     />
-                    <InputError :message="errors.email" />
+                    <InputError :message="errors['email']?.[0]" />
                 </div>
 
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
                         <Label for="password">{{ t('Hasło') }}</Label>
                         <TextLink
-                            v-if="canResetPassword"
-                            :href="request()"
+                            href="/forgot-password"
                             class="text-sm"
                             :tabindex="5"
                         >
@@ -80,8 +85,9 @@ const { t } = useTranslations();
                         :tabindex="2"
                         autocomplete="current-password"
                         :placeholder="t('Hasło')"
+                        v-model="password"
                     />
-                    <InputError :message="errors.password" />
+                    <InputError :message="errors['password']?.[0]" />
                 </div>
 
                 <div class="flex items-center justify-between">
@@ -95,10 +101,10 @@ const { t } = useTranslations();
                     type="submit"
                     class="mt-4 w-full"
                     :tabindex="4"
-                    :disabled="processing"
+                    :disabled="isLoading"
                     data-test="login-button"
                 >
-                    <Spinner v-if="processing" />
+                    <Spinner v-if="isLoading" />
                     {{ t('Zaloguj się') }}
                 </Button>
             </div>
@@ -106,15 +112,12 @@ const { t } = useTranslations();
             <SocialLoginSeparator />
             <SocialLoginButton />
 
-            <div
-                class="text-center text-sm text-muted-foreground"
-                v-if="canRegister"
-            >
+            <div class="text-center text-sm text-muted-foreground">
                 {{ t('Nie masz konta?') }}
-                <TextLink :href="register()" :tabindex="5">{{
+                <TextLink href="/register" :tabindex="5">{{
                     t('Zarejestruj się')
                 }}</TextLink>
             </div>
-        </Form>
+        </form>
     </AuthBase>
 </template>

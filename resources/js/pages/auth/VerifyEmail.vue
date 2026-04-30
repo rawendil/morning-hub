@@ -1,18 +1,34 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
-import { useTranslations } from '@/composables/useTranslations';
-import AuthLayout from '@/layouts/AuthLayout.vue';
-import { logout } from '@/routes';
-import { send } from '@/routes/verification';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import TextLink from '@/components/TextLink.vue'
+import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
+import { useTranslations } from '@/composables/useTranslations'
+import AuthLayout from '@/layouts/AuthLayout.vue'
+import axiosInstance from '@/lib/axios'
+import { useAuthStore } from '@/stores/auth'
 
-defineProps<{
-    status?: string;
-}>();
+const { t } = useTranslations()
+const router = useRouter()
+const auth = useAuthStore()
+const status = ref<string | null>(null)
+const isLoading = ref(false)
 
-const { t } = useTranslations();
+async function resend() {
+    isLoading.value = true
+    try {
+        await axiosInstance.post('/email/verification-notification')
+        status.value = 'verification-link-sent'
+    } finally {
+        isLoading.value = false
+    }
+}
+
+async function handleLogout() {
+    await auth.logout()
+    router.push('/login')
+}
 </script>
 
 <template>
@@ -24,8 +40,6 @@ const { t } = useTranslations();
             )
         "
     >
-        <Head :title="t('Weryfikacja e-mail')" />
-
         <div
             v-if="status === 'verification-link-sent'"
             class="mb-4 text-center text-sm font-medium text-green-600"
@@ -37,23 +51,20 @@ const { t } = useTranslations();
             }}
         </div>
 
-        <Form
-            v-bind="send.form()"
-            class="space-y-6 text-center"
-            v-slot="{ processing }"
-        >
-            <Button :disabled="processing" variant="secondary">
-                <Spinner v-if="processing" />
+        <form @submit.prevent="resend" class="space-y-6 text-center">
+            <Button :disabled="isLoading" variant="secondary">
+                <Spinner v-if="isLoading" />
                 {{ t('Wyślij ponownie e-mail weryfikacyjny') }}
             </Button>
 
             <TextLink
-                :href="logout()"
+                href="/login"
                 as="button"
                 class="mx-auto block text-sm"
+                @click.prevent="handleLogout"
             >
                 {{ t('Wyloguj się') }}
             </TextLink>
-        </Form>
+        </form>
     </AuthLayout>
 </template>

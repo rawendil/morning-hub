@@ -1,21 +1,35 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
-import InputError from '@/components/InputError.vue';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import { useTranslations } from '@/composables/useTranslations';
-import AuthLayout from '@/layouts/AuthLayout.vue';
-import { login } from '@/routes';
-import { email } from '@/routes/password';
+import { ref } from 'vue'
+import InputError from '@/components/InputError.vue'
+import TextLink from '@/components/TextLink.vue'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Spinner } from '@/components/ui/spinner'
+import { useTranslations } from '@/composables/useTranslations'
+import AuthLayout from '@/layouts/AuthLayout.vue'
+import axiosInstance from '@/lib/axios'
 
-defineProps<{
-    status?: string;
-}>();
+const { t } = useTranslations()
+const emailValue = ref('')
+const status = ref<string | null>(null)
+const errors = ref<Record<string, string[]>>({})
+const isLoading = ref(false)
 
-const { t } = useTranslations();
+async function submit() {
+    isLoading.value = true
+    errors.value = {}
+    try {
+        await axiosInstance.post('/auth/forgot-password', { email: emailValue.value })
+        status.value = 'Password reset link sent.'
+    } catch (error: any) {
+        if (error.response?.status === 422) {
+            errors.value = error.response.data.errors
+        }
+    } finally {
+        isLoading.value = false
+    }
+}
 </script>
 
 <template>
@@ -25,8 +39,6 @@ const { t } = useTranslations();
             t('Wprowadź adres e-mail, aby otrzymać link do resetowania hasła')
         "
     >
-        <Head :title="t('Zapomniałeś hasła')" />
-
         <div
             v-if="status"
             class="mb-4 text-center text-sm font-medium text-green-600"
@@ -35,7 +47,7 @@ const { t } = useTranslations();
         </div>
 
         <div class="space-y-6">
-            <Form v-bind="email.form()" v-slot="{ errors, processing }">
+            <form @submit.prevent="submit">
                 <div class="grid gap-2">
                     <Label for="email">{{ t('Adres e-mail') }}</Label>
                     <Input
@@ -45,25 +57,26 @@ const { t } = useTranslations();
                         autocomplete="off"
                         autofocus
                         placeholder="email@example.com"
+                        v-model="emailValue"
                     />
-                    <InputError :message="errors.email" />
+                    <InputError :message="errors['email']?.[0]" />
                 </div>
 
                 <div class="my-6 flex items-center justify-start">
                     <Button
                         class="w-full"
-                        :disabled="processing"
+                        :disabled="isLoading"
                         data-test="email-password-reset-link-button"
                     >
-                        <Spinner v-if="processing" />
+                        <Spinner v-if="isLoading" />
                         {{ t('Wyślij link do resetowania hasła') }}
                     </Button>
                 </div>
-            </Form>
+            </form>
 
             <div class="space-x-1 text-center text-sm text-muted-foreground">
                 <span>{{ t('Lub wróć do') }}</span>
-                <TextLink :href="login()">{{ t('logowania') }}</TextLink>
+                <TextLink href="/login">{{ t('logowania') }}</TextLink>
             </div>
         </div>
     </AuthLayout>
