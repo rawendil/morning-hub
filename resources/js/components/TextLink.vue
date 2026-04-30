@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router';
 
 type Props = {
-    href: string
-    tabindex?: number
-    as?: string
-}
+    href: string;
+    tabindex?: number;
+    as?: string;
+};
 
-defineProps<Props>()
+defineProps<Props>();
 </script>
 
 <template>

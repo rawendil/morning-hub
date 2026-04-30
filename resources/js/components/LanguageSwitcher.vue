@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useTranslations } from '@/composables/useTranslations';
-import axiosInstance from '@/lib/axios';
 
 const { locale } = useTranslations();
 
@@ -9,13 +8,11 @@ const locales = [
     { value: 'en', label: 'EN' },
 ] as const;
 
-async function switchLocale(value: string) {
+function switchLocale(value: string) {
     if (value === locale.value) return;
 
     localStorage.setItem('locale', value);
     document.cookie = `locale=${value};path=/;max-age=${365 * 24 * 60 * 60};SameSite=Lax`;
-
-    await axiosInstance.post('/locale', { locale: value }).catch(() => {});
     window.location.reload();
 }
 </script>

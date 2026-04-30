@@ -1,33 +1,35 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import InputError from '@/components/InputError.vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Spinner } from '@/components/ui/spinner'
-import { useTranslations } from '@/composables/useTranslations'
-import AuthLayout from '@/layouts/AuthLayout.vue'
-import axiosInstance from '@/lib/axios'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import InputError from '@/components/InputError.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/composables/useTranslations';
+import AuthLayout from '@/layouts/AuthLayout.vue';
+import axiosInstance from '@/lib/axios';
 
-const { t } = useTranslations()
-const router = useRouter()
-const password = ref('')
-const errors = ref<Record<string, string[]>>({})
-const isLoading = ref(false)
+const { t } = useTranslations();
+const router = useRouter();
+const password = ref('');
+const errors = ref<Record<string, string[]>>({});
+const isLoading = ref(false);
 
 async function submit() {
-    isLoading.value = true
-    errors.value = {}
+    isLoading.value = true;
+    errors.value = {};
     try {
-        await axiosInstance.post('/user/confirm-password', { password: password.value })
-        router.back()
+        await axiosInstance.post('/user/confirm-password', {
+            password: password.value,
+        });
+        router.back();
     } catch (error: any) {
         if (error.response?.status === 422) {
-            errors.value = error.response.data.errors
+            errors.value = error.response.data.errors;
         }
     } finally {
-        isLoading.value = false
+        isLoading.value = false;
     }
 }
 </script>

@@ -1,44 +1,57 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import InputError from '@/components/InputError.vue'
-import SocialLoginButton from '@/components/SocialLoginButton.vue'
-import SocialLoginSeparator from '@/components/SocialLoginSeparator.vue'
-import TextLink from '@/components/TextLink.vue'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Spinner } from '@/components/ui/spinner'
-import { useTranslations } from '@/composables/useTranslations'
-import AuthBase from '@/layouts/AuthLayout.vue'
-import { useAuthStore } from '@/stores/auth'
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import InputError from '@/components/InputError.vue';
+import SocialLoginButton from '@/components/SocialLoginButton.vue';
+import SocialLoginSeparator from '@/components/SocialLoginSeparator.vue';
+import TextLink from '@/components/TextLink.vue';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/composables/useTranslations';
+import AuthBase from '@/layouts/AuthLayout.vue';
+import { useAuthStore } from '@/stores/auth';
 
-const { t } = useTranslations()
-const router = useRouter()
-const auth = useAuthStore()
-const email = ref('')
-const password = ref('')
-const errors = ref<Record<string, string[]>>({})
-const isLoading = ref(false)
+const { t } = useTranslations();
+const route = useRoute();
+const router = useRouter();
+const auth = useAuthStore();
+const email = ref('');
+const password = ref('');
+const errors = ref<Record<string, string[]>>({});
+const isLoading = ref(false);
+
+onMounted(async () => {
+    const googleToken = route.query.google_token as string | undefined;
+    if (googleToken) {
+        localStorage.setItem('token', googleToken);
+        await auth.initialize();
+        router.replace('/dashboard');
+    }
+});
 
 async function submit() {
-    isLoading.value = true
-    errors.value = {}
+    isLoading.value = true;
+    errors.value = {};
     try {
-        const result = await auth.login({ email: email.value, password: password.value })
+        const result = await auth.login({
+            email: email.value,
+            password: password.value,
+        });
         if (result.requires_2fa) {
-            sessionStorage.setItem('2fa_temp_token', result.temp_token!)
-            router.push('/two-factor')
+            sessionStorage.setItem('2fa_temp_token', result.temp_token!);
+            router.push('/two-factor');
         } else {
-            router.push('/dashboard')
+            router.push('/dashboard');
         }
     } catch (error: any) {
         if (error.response?.status === 422) {
-            errors.value = error.response.data.errors
+            errors.value = error.response.data.errors;
         }
     } finally {
-        isLoading.value = false
+        isLoading.value = false;
     }
 }
 </script>

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import MockAdapter from 'axios-mock-adapter'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 const mockPush = vi.hoisted(() => vi.fn())
 vi.mock('@/router/index', () => ({

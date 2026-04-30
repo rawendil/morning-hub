@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Plus, RefreshCw, SkipForward } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
-import axiosInstance from '@/lib/axios';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskCard from '@/components/morning-hub/ClickUpTaskCard.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
@@ -10,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useTranslations } from '@/composables/useTranslations';
+import axiosInstance from '@/lib/axios';
 import { resolveBlockIcon } from '@/lib/block-icons';
 import type {
     BlockTasksData,

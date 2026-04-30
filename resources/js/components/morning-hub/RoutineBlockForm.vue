@@ -23,8 +23,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useTranslations } from '@/composables/useTranslations';
-import { getDefaultIconName } from '@/lib/block-icons';
 import axiosInstance from '@/lib/axios';
+import { getDefaultIconName } from '@/lib/block-icons';
 import type { BlockType, ClickUpConnection, RoutineBlock } from '@/types';
 
 const { t } = useTranslations();
@@ -144,11 +144,13 @@ async function submit() {
         name: blockName.value,
         config: buildConfig(),
         timer_minutes: timerMinutes.value ? Number(timerMinutes.value) : null,
-        clickup_connection_id: needsConnection.value && clickupConnectionId.value
-            ? Number(clickupConnectionId.value)
-            : null,
+        clickup_connection_id:
+            needsConnection.value && clickupConnectionId.value
+                ? Number(clickupConnectionId.value)
+                : null,
         google_calendar_connection_id:
-            selectedType.value === 'google_calendar' && props.googleCalendarConnectionId
+            selectedType.value === 'google_calendar' &&
+            props.googleCalendarConnectionId
                 ? props.googleCalendarConnectionId
                 : null,
     };
@@ -166,7 +168,9 @@ async function submit() {
         emit('success');
         isOpen.value = false;
     } catch (err: unknown) {
-        const axiosErr = err as { response?: { data?: { errors?: Record<string, string[]> } } };
+        const axiosErr = err as {
+            response?: { data?: { errors?: Record<string, string[]> } };
+        };
         if (axiosErr.response?.data?.errors) {
             const rawErrors = axiosErr.response.data.errors;
             errors.value = Object.fromEntries(

@@ -1,6 +1,6 @@
+import { setActivePinia, createPinia } from 'pinia'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
-import { setActivePinia, createPinia } from 'pinia'
 
 const StubComponent = { template: '<div />' }
 
@@ -10,8 +10,8 @@ vi.mock('@/stores/auth', () => ({
     })),
 }))
 
-import { useAuthStore } from '@/stores/auth'
 import { applyGuards } from '@/router/index'
+import { useAuthStore } from '@/stores/auth'
 
 function buildRouter(authenticated: boolean) {
     vi.mocked(useAuthStore).mockReturnValue({

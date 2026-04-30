@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ShieldBan, ShieldCheck } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import axiosInstance from '@/lib/axios';
 import Heading from '@/components/Heading.vue';
 import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
 import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
@@ -11,6 +10,7 @@ import { useTranslations } from '@/composables/useTranslations';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
+import axiosInstance from '@/lib/axios';
 import type { BreadcrumbItem } from '@/types';
 
 const { t } = useTranslations();

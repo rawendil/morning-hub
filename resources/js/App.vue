@@ -5,6 +5,6 @@
 </template>
 
 <script setup lang="ts">
-import { Toaster } from 'vue-sonner'
-import CookieConsentModal from '@/components/CookieConsentModal.vue'
+import { Toaster } from 'vue-sonner';
+import CookieConsentModal from '@/components/CookieConsentModal.vue';
 </script>

@@ -19,8 +19,8 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import axiosInstance from '@/lib/axios';
 import { useTranslations } from '@/composables/useTranslations';
+import axiosInstance from '@/lib/axios';
 import type {
     ClickUpComment,
     ClickUpTaskDetail,
@@ -120,7 +120,9 @@ async function handleAddComment() {
             comment_text: newComment.value.trim(),
         });
         newComment.value = '';
-        const r = await axiosInstance.get<{ data: ClickUpComment[] }>(`${base}/comments`);
+        const r = await axiosInstance.get<{ data: ClickUpComment[] }>(
+            `${base}/comments`,
+        );
         taskComments.value = r.data.data;
     } catch (e) {
         error.value = e instanceof Error ? e.message : 'Failed to add comment';

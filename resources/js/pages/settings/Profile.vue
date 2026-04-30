@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import axiosInstance from '@/lib/axios';
 import DeleteUser from '@/components/DeleteUser.vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -8,10 +7,11 @@ import LinkedAccounts from '@/components/LinkedAccounts.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuthStore } from '@/stores/auth';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
+import axiosInstance from '@/lib/axios';
+import { useAuthStore } from '@/stores/auth';
 import type { BreadcrumbItem } from '@/types';
 
 const { t } = useTranslations();
@@ -37,10 +37,15 @@ async function updateProfile() {
     errors.value = {};
     recentlySuccessful.value = false;
     try {
-        await axiosInstance.patch('/settings/profile', { name: name.value, email: email.value });
+        await axiosInstance.patch('/settings/profile', {
+            name: name.value,
+            email: email.value,
+        });
         recentlySuccessful.value = true;
         await auth.initialize();
-        setTimeout(() => { recentlySuccessful.value = false; }, 2000);
+        setTimeout(() => {
+            recentlySuccessful.value = false;
+        }, 2000);
     } catch (error: any) {
         if (error.response?.status === 422) {
             errors.value = error.response.data.errors;
@@ -79,7 +84,10 @@ async function resendVerification() {
                             autocomplete="name"
                             :placeholder="t('Imię i nazwisko')"
                         />
-                        <InputError class="mt-2" :message="errors['name']?.[0]" />
+                        <InputError
+                            class="mt-2"
+                            :message="errors['name']?.[0]"
+                        />
                     </div>
 
                     <div class="grid gap-2">
@@ -93,7 +101,10 @@ async function resendVerification() {
                             autocomplete="username"
                             :placeholder="t('Adres e-mail')"
                         />
-                        <InputError class="mt-2" :message="errors['email']?.[0]" />
+                        <InputError
+                            class="mt-2"
+                            :message="errors['email']?.[0]"
+                        />
                     </div>
 
                     <div v-if="user && !user.email_verified_at">
@@ -113,7 +124,9 @@ async function resendVerification() {
                         </p>
 
                         <div
-                            v-if="verificationStatus === 'verification-link-sent'"
+                            v-if="
+                                verificationStatus === 'verification-link-sent'
+                            "
                             class="mt-2 text-sm font-medium text-green-600"
                         >
                             {{

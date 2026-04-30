@@ -2,7 +2,6 @@
 import { useClipboard } from '@vueuse/core';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
-import axiosInstance from '@/lib/axios';
 import AlertError from '@/components/AlertError.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -22,6 +21,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
 import { useTranslations } from '@/composables/useTranslations';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
+import axiosInstance from '@/lib/axios';
 import type { TwoFactorConfigContent } from '@/types';
 
 type Props = {
@@ -48,7 +48,9 @@ async function submitConfirmation() {
     confirmProcessing.value = true;
     confirmErrors.value = [];
     try {
-        await axiosInstance.post('/user/confirmed-two-factor-authentication', { code: code.value });
+        await axiosInstance.post('/user/confirmed-two-factor-authentication', {
+            code: code.value,
+        });
         code.value = '';
         isOpen.value = false;
     } catch (error: any) {
@@ -298,7 +300,9 @@ watch(
                                 <Button
                                     type="submit"
                                     class="w-auto flex-1"
-                                    :disabled="confirmProcessing || code.length < 6"
+                                    :disabled="
+                                        confirmProcessing || code.length < 6
+                                    "
                                 >
                                     {{ t('Potwierdź') }}
                                 </Button>

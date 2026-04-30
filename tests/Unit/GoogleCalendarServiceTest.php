@@ -189,6 +189,42 @@ test('refreshTokenIfNeeded handles refresh failure gracefully', function () {
     expect(fn () => $service->testConnection())->toThrow(\App\Exceptions\GoogleCalendarAuthException::class);
 });
 
+test('getEventsForDashboard returns events and null error on success', function () {
+    $this->connection->update(['calendar_ids' => ['primary']]);
+
+    Http::fake([
+        'www.googleapis.com/calendar/v3/calendars/primary/events*' => Http::response([
+            'items' => [
+                ['id' => 'e1', 'summary' => 'Standup', 'start' => ['dateTime' => now()->toIso8601String()], 'end' => ['dateTime' => now()->addHour()->toIso8601String()]],
+            ],
+            'summary' => 'Primary',
+            'backgroundColor' => '#4285f4',
+        ]),
+    ]);
+
+    $result = $this->service->getEventsForDashboard();
+
+    expect($result)->toHaveKeys(['events', 'error']);
+    expect($result['error'])->toBeNull();
+    expect($result['events'])->toHaveCount(1);
+});
+
+test('getEventsForDashboard returns auth error on GoogleCalendarAuthException', function () {
+    $this->connection->update(['token_expires_at' => now()->subMinute()]);
+
+    $mockDriver = Mockery::mock();
+    $mockDriver->shouldReceive('refreshToken')
+        ->once()
+        ->andThrow(new \Exception('Token revoked'));
+    Socialite::shouldReceive('driver')->with('google')->andReturn($mockDriver);
+
+    $service = new GoogleCalendarService($this->connection->fresh());
+    $result = $service->getEventsForDashboard();
+
+    expect($result['events'])->toBe([]);
+    expect($result['error'])->toBe('google_calendar_auth_expired');
+});
+
 test('listEventsForDate fetches from multiple calendars', function () {
     Http::fake([
         'www.googleapis.com/calendar/v3/calendars/primary/events*' => Http::response([

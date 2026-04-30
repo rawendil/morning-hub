@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from 'lucide-vue-next';
 import { nextTick, onMounted, ref, useTemplateRef } from 'vue';
-import axiosInstance from '@/lib/axios';
 import AlertError from '@/components/AlertError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +12,7 @@ import {
 } from '@/components/ui/card';
 import { useTranslations } from '@/composables/useTranslations';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
+import axiosInstance from '@/lib/axios';
 
 const { t } = useTranslations();
 const { recoveryCodesList, fetchRecoveryCodes, errors } = useTwoFactorAuth();

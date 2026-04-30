@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { useTemplateRef } from 'vue';
-import axiosInstance from '@/lib/axios';
+import { useRouter } from 'vue-router';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -19,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTranslations } from '@/composables/useTranslations';
+import axiosInstance from '@/lib/axios';
 
 const { t } = useTranslations();
 const router = useRouter();
@@ -32,7 +32,9 @@ async function submit() {
     isLoading.value = true;
     errors.value = {};
     try {
-        await axiosInstance.delete('/settings/profile', { data: { password: password.value } });
+        await axiosInstance.delete('/settings/profile', {
+            data: { password: password.value },
+        });
         localStorage.removeItem('token');
         router.push('/');
     } catch (error: any) {

@@ -1,33 +1,33 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import TextLink from '@/components/TextLink.vue'
-import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
-import { useTranslations } from '@/composables/useTranslations'
-import AuthLayout from '@/layouts/AuthLayout.vue'
-import axiosInstance from '@/lib/axios'
-import { useAuthStore } from '@/stores/auth'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import TextLink from '@/components/TextLink.vue';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/composables/useTranslations';
+import AuthLayout from '@/layouts/AuthLayout.vue';
+import axiosInstance from '@/lib/axios';
+import { useAuthStore } from '@/stores/auth';
 
-const { t } = useTranslations()
-const router = useRouter()
-const auth = useAuthStore()
-const status = ref<string | null>(null)
-const isLoading = ref(false)
+const { t } = useTranslations();
+const router = useRouter();
+const auth = useAuthStore();
+const status = ref<string | null>(null);
+const isLoading = ref(false);
 
 async function resend() {
-    isLoading.value = true
+    isLoading.value = true;
     try {
-        await axiosInstance.post('/email/verification-notification')
-        status.value = 'verification-link-sent'
+        await axiosInstance.post('/email/verification-notification');
+        status.value = 'verification-link-sent';
     } finally {
-        isLoading.value = false
+        isLoading.value = false;
     }
 }
 
 async function handleLogout() {
-    await auth.logout()
-    router.push('/login')
+    await auth.logout();
+    router.push('/login');
 }
 </script>
 

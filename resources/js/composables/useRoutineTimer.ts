@@ -64,7 +64,9 @@ function persistState(state: StoredTimerState): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-export function useRoutineTimer(blocks: RoutineBlock[] | Ref<RoutineBlock[]>): UseRoutineTimerReturn {
+export function useRoutineTimer(
+    blocks: RoutineBlock[] | Ref<RoutineBlock[]>,
+): UseRoutineTimerReturn {
     const stored = loadState();
 
     const activeBlockId = ref<number | null>(stored?.activeBlockId ?? null);

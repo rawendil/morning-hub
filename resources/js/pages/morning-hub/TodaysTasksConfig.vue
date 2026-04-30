@@ -34,7 +34,9 @@ async function loadConfig() {
     const { data } = await axiosInstance.get('/morning-hub/todays-tasks');
     config.value = data.config ?? null;
     connections.value = data.connections ?? [];
-    selectedConnectionIds.value = (config.value?.connection_ids ?? []).map(Number);
+    selectedConnectionIds.value = (config.value?.connection_ids ?? []).map(
+        Number,
+    );
 }
 
 onMounted(loadConfig);

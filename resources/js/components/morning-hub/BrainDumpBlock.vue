@@ -5,8 +5,8 @@ import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import axiosInstance from '@/lib/axios';
 import { useTranslations } from '@/composables/useTranslations';
+import axiosInstance from '@/lib/axios';
 import { resolveBlockIcon } from '@/lib/block-icons';
 import type { RoutineBlock } from '@/types';
 

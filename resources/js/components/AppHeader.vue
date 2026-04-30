@@ -53,7 +53,16 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const userForMenu = computed(() => auth.user ?? { id: 0, name: '', email: '', google_avatar: null, email_verified_at: null });
+const userForMenu = computed(
+    () =>
+        auth.user ?? {
+            id: 0,
+            name: '',
+            email: '',
+            google_avatar: null,
+            email_verified_at: null,
+        },
+);
 </script>
 
 <template>

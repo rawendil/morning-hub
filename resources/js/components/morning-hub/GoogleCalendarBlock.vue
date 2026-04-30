@@ -100,9 +100,11 @@ function formatEventTime(dateStr: string): string {
                 class="text-sm text-destructive"
             >
                 {{ t('Token wygasł.') }}
-                <RouterLink to="/morning-hub/google-calendar" class="underline">{{
-                    t('Połącz ponownie')
-                }}</RouterLink>
+                <RouterLink
+                    to="/morning-hub/google-calendar"
+                    class="underline"
+                    >{{ t('Połącz ponownie') }}</RouterLink
+                >
             </p>
 
             <p v-else-if="eventsData.error" class="text-sm text-destructive">

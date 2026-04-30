@@ -3,7 +3,6 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import { toast } from 'vue-sonner';
 import Heading from '@/components/Heading.vue';
-import { Skeleton } from '@/components/ui/skeleton';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
 import DashboardBlockRenderer from '@/components/morning-hub/DashboardBlockRenderer.vue';
@@ -12,6 +11,7 @@ import GoogleCalendarBlockSkeleton from '@/components/morning-hub/GoogleCalendar
 import OnboardingModal from '@/components/morning-hub/OnboardingModal.vue';
 import RoutineCompletionDialog from '@/components/morning-hub/RoutineCompletionDialog.vue';
 import RoutineProgress from '@/components/morning-hub/RoutineProgress.vue';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRoutineTimer } from '@/composables/useRoutineTimer';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -57,17 +57,20 @@ onMounted(async () => {
             for (const [key, value] of Object.entries(data.blocks_data)) {
                 const match = key.match(/^tasks_(\d+)$/);
                 if (match) {
-                    blockTasksData.value[Number(match[1])] = value as BlockTasksData;
+                    blockTasksData.value[Number(match[1])] =
+                        value as BlockTasksData;
                     continue;
                 }
                 const feedMatch = key.match(/^feed_(\d+)$/);
                 if (feedMatch) {
-                    blockFeedData.value[Number(feedMatch[1])] = value as BlockFeedData;
+                    blockFeedData.value[Number(feedMatch[1])] =
+                        value as BlockFeedData;
                     continue;
                 }
                 const eventsMatch = key.match(/^events_(\d+)$/);
                 if (eventsMatch) {
-                    blockEventsData.value[Number(eventsMatch[1])] = value as BlockGoogleCalendarData;
+                    blockEventsData.value[Number(eventsMatch[1])] =
+                        value as BlockGoogleCalendarData;
                 }
             }
         }
@@ -349,9 +352,8 @@ watch(
             v-model:open="routineCompleteOpen"
             :completed-minutes="completedElapsedMinutes"
             :total-blocks="
-                blocks.filter(
-                    (b) => blockStates.get(b.id) === 'completed',
-                ).length
+                blocks.filter((b) => blockStates.get(b.id) === 'completed')
+                    .length
             "
         />
     </AppLayout>

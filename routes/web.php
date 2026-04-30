@@ -15,6 +15,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('morning-hub.google-calendar.disconnect');
 });
 
+// Google login — server-side redirect (OAuth state requires session)
+Route::middleware('guest')->group(function () {
+    Route::get('auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirect'])->name('google.redirect');
+    Route::get('auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'callback'])->name('google.callback');
+});
+
 // Google account linking — server-side redirect (same reason)
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('auth/google/link', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'linkRedirect'])->name('google.link');

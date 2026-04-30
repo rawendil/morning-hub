@@ -222,9 +222,7 @@ function itemKey(item: (typeof timeline.value)[number]): string {
                             class="flex items-center justify-between"
                         >
                             <span>{{
-                                t(
-                                    'Nie udało się pobrać wydarzeń z kalendarza.',
-                                )
+                                t('Nie udało się pobrać wydarzeń z kalendarza.')
                             }}</span>
                             <Button
                                 variant="outline"
@@ -257,15 +255,8 @@ function itemKey(item: (typeof timeline.value)[number]): string {
                         </Alert>
                     </template>
 
-                    <p
-                        v-if="allEmpty"
-                        class="text-sm text-muted-foreground"
-                    >
-                        {{
-                            t(
-                                'Brak zadań i wydarzeń na dziś. Dobra robota!',
-                            )
-                        }}
+                    <p v-if="allEmpty" class="text-sm text-muted-foreground">
+                        {{ t('Brak zadań i wydarzeń na dziś. Dobra robota!') }}
                     </p>
 
                     <template v-for="item in timeline" :key="itemKey(item)">
@@ -286,10 +277,7 @@ function itemKey(item: (typeof timeline.value)[number]): string {
                                     )
                             "
                         />
-                        <GoogleCalendarEventCard
-                            v-else
-                            :event="item.event"
-                        />
+                        <GoogleCalendarEventCard v-else :event="item.event" />
                     </template>
                 </div>
             </template>

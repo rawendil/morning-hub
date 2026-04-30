@@ -19,7 +19,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-
         <h1 class="sr-only">{{ t('Ustawienia wyglądu') }}</h1>
 
         <SettingsLayout>

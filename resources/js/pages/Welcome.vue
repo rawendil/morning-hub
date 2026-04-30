@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router';
 import { ClipboardList, Github, Lightbulb, Repeat } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { RouterLink } from 'vue-router';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuthStore } from '@/stores/auth';
 import { useTranslations } from '@/composables/useTranslations';
+import { useAuthStore } from '@/stores/auth';
 
 const { t } = useTranslations();
 const auth = useAuthStore();

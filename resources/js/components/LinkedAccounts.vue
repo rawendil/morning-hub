@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import axiosInstance from '@/lib/axios';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { useAuthStore } from '@/stores/auth';
 import { useTranslations } from '@/composables/useTranslations';
+import axiosInstance from '@/lib/axios';
+import { useAuthStore } from '@/stores/auth';
 
 const { t } = useTranslations();
 const auth = useAuthStore();

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import axiosInstance from '@/lib/axios';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
+import axiosInstance from '@/lib/axios';
 import type { BreadcrumbItem } from '@/types';
 
 const { t } = useTranslations();
@@ -43,7 +43,9 @@ async function updatePassword() {
         currentPassword.value = '';
         password.value = '';
         passwordConfirmation.value = '';
-        setTimeout(() => { recentlySuccessful.value = false; }, 2000);
+        setTimeout(() => {
+            recentlySuccessful.value = false;
+        }, 2000);
     } catch (error: any) {
         if (error.response?.status === 422) {
             errors.value = error.response.data.errors;
@@ -72,10 +74,7 @@ async function updatePassword() {
                     "
                 />
 
-                <form
-                    @submit.prevent="updatePassword"
-                    class="space-y-6"
-                >
+                <form @submit.prevent="updatePassword" class="space-y-6">
                     <div v-if="hasPassword" class="grid gap-2">
                         <Label for="current_password">{{
                             t('Aktualne hasło')
@@ -88,7 +87,9 @@ async function updatePassword() {
                             autocomplete="current-password"
                             :placeholder="t('Aktualne hasło')"
                         />
-                        <InputError :message="errors['current_password']?.[0]" />
+                        <InputError
+                            :message="errors['current_password']?.[0]"
+                        />
                     </div>
 
                     <div class="grid gap-2">
@@ -118,7 +119,9 @@ async function updatePassword() {
                             autocomplete="new-password"
                             :placeholder="t('Potwierdź hasło')"
                         />
-                        <InputError :message="errors['password_confirmation']?.[0]" />
+                        <InputError
+                            :message="errors['password_confirmation']?.[0]"
+                        />
                     </div>
 
                     <div class="flex items-center gap-4">

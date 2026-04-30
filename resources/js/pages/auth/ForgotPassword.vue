@@ -1,33 +1,35 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import InputError from '@/components/InputError.vue'
-import TextLink from '@/components/TextLink.vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Spinner } from '@/components/ui/spinner'
-import { useTranslations } from '@/composables/useTranslations'
-import AuthLayout from '@/layouts/AuthLayout.vue'
-import axiosInstance from '@/lib/axios'
+import { ref } from 'vue';
+import InputError from '@/components/InputError.vue';
+import TextLink from '@/components/TextLink.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/composables/useTranslations';
+import AuthLayout from '@/layouts/AuthLayout.vue';
+import axiosInstance from '@/lib/axios';
 
-const { t } = useTranslations()
-const emailValue = ref('')
-const status = ref<string | null>(null)
-const errors = ref<Record<string, string[]>>({})
-const isLoading = ref(false)
+const { t } = useTranslations();
+const emailValue = ref('');
+const status = ref<string | null>(null);
+const errors = ref<Record<string, string[]>>({});
+const isLoading = ref(false);
 
 async function submit() {
-    isLoading.value = true
-    errors.value = {}
+    isLoading.value = true;
+    errors.value = {};
     try {
-        await axiosInstance.post('/auth/forgot-password', { email: emailValue.value })
-        status.value = 'Password reset link sent.'
+        await axiosInstance.post('/auth/forgot-password', {
+            email: emailValue.value,
+        });
+        status.value = 'Password reset link sent.';
     } catch (error: any) {
         if (error.response?.status === 422) {
-            errors.value = error.response.data.errors
+            errors.value = error.response.data.errors;
         }
     } finally {
-        isLoading.value = false
+        isLoading.value = false;
     }
 }
 </script>

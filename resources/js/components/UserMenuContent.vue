@@ -34,7 +34,10 @@ async function handleLogout() {
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <RouterLink to="/settings/profile" class="block w-full cursor-pointer">
+            <RouterLink
+                to="/settings/profile"
+                class="block w-full cursor-pointer"
+            >
                 <Settings class="mr-2 h-4 w-4" />
                 {{ t('Ustawienia') }}
             </RouterLink>

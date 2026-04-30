@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Services\GoogleAuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Two\InvalidStateException;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
 
@@ -26,27 +25,28 @@ class GoogleAuthController extends Controller
 
     /**
      * Handle Google callback (guest login/register).
+     *
+     * Issues a Sanctum token and redirects to the SPA.
      */
     public function callback(Request $request): RedirectResponse
     {
         try {
             $result = $this->googleAuthService->handleCallback();
         } catch (InvalidStateException) {
-            return redirect()->route('login')->with('status', __('Logowanie przez Google nie powiodło się. Spróbuj ponownie.'));
+            return redirect('/login?error=google_failed');
         }
 
         $user = $result['user'];
 
         if ($result['needs_2fa']) {
-            $request->session()->put('login.id', $user->getKey());
+            $tempToken = $user->createToken('google-2fa-temp')->plainTextToken;
 
-            return redirect()->route('two-factor.login');
+            return redirect('/two-factor?temp_token='.urlencode($tempToken));
         }
 
-        Auth::login($user, remember: true);
-        $request->session()->regenerate();
+        $token = $user->createToken('google-auth')->plainTextToken;
 
-        return redirect()->intended(config('fortify.home'));
+        return redirect('/login?google_token='.urlencode($token));
     }
 
     /**

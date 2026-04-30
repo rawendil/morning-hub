@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { redirect } from '@/actions/App/Http/Controllers/Auth/GoogleAuthController';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/composables/useTranslations';
 
@@ -11,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-    <a :href="href ?? redirect.url()" class="block">
+    <a :href="href ?? '/auth/google'" class="block">
         <Button variant="outline" class="w-full" type="button">
             <svg
                 class="mr-2 size-4"

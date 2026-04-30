@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import axiosInstance from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth'
 
 vi.mock('@/lib/axios', () => ({
@@ -8,8 +9,6 @@ vi.mock('@/lib/axios', () => ({
         post: vi.fn(),
     },
 }))
-
-import axiosInstance from '@/lib/axios'
 
 beforeEach(() => {
     setActivePinia(createPinia())
@@ -24,7 +23,7 @@ describe('useAuthStore', () => {
         expect(store.user).toBeNull()
     })
 
-    it('login stores token in localStorage and fetches user', async () => {
+    it('login posts to /auth/login and stores token', async () => {
         vi.mocked(axiosInstance.post).mockResolvedValueOnce({
             data: { token: 'test-token', user: { id: 1, name: 'Jan', email: 'jan@example.com' } },
         })
@@ -32,12 +31,16 @@ describe('useAuthStore', () => {
         const store = useAuthStore()
         await store.login({ email: 'jan@example.com', password: 'password' })
 
+        expect(axiosInstance.post).toHaveBeenCalledWith('/auth/login', {
+            email: 'jan@example.com',
+            password: 'password',
+        })
         expect(localStorage.getItem('token')).toBe('test-token')
         expect(store.isAuthenticated).toBe(true)
         expect(store.user?.name).toBe('Jan')
     })
 
-    it('logout removes token and clears user', async () => {
+    it('logout posts to /auth/logout and clears state', async () => {
         vi.mocked(axiosInstance.post).mockResolvedValueOnce({ data: {} })
 
         const store = useAuthStore()
@@ -46,22 +49,23 @@ describe('useAuthStore', () => {
 
         await store.logout()
 
+        expect(axiosInstance.post).toHaveBeenCalledWith('/auth/logout')
         expect(localStorage.getItem('token')).toBeNull()
         expect(store.user).toBeNull()
         expect(store.isAuthenticated).toBe(false)
     })
 
-    it('initialize fetches user when token exists', async () => {
+    it('initialize fetches user from /user when token exists', async () => {
         localStorage.setItem('token', 'existing-token')
         vi.mocked(axiosInstance.get).mockResolvedValueOnce({
-            data: { user: { id: 1, name: 'Jan', email: 'jan@example.com' }, locale: 'pl', appearance: 'system' },
+            data: { user: { id: 1, name: 'Jan', email: 'jan@example.com' }, appearance: 'system' },
         })
 
         const store = useAuthStore()
         await store.initialize()
 
+        expect(axiosInstance.get).toHaveBeenCalledWith('/user')
         expect(store.user?.name).toBe('Jan')
-        expect(store.locale).toBe('pl')
     })
 
     it('initialize does nothing when no token', async () => {

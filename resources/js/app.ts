@@ -1,19 +1,19 @@
-import '../css/app.css'
-import 'vue-sonner/style.css'
+import '../css/app.css';
+import 'vue-sonner/style.css';
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import * as Sentry from '@sentry/vue'
+import * as Sentry from '@sentry/vue';
+import { createPinia } from 'pinia';
+import { createApp } from 'vue';
 
-import App from './App.vue'
-import router from './router/index'
-import { useAuthStore } from './stores/auth'
-import { initializeTheme } from './composables/useAppearance'
+import App from './App.vue';
+import { initializeTheme } from './composables/useAppearance';
+import router from './router/index';
+import { useAuthStore } from './stores/auth';
 
-const app = createApp(App)
-const pinia = createPinia()
+const app = createApp(App);
+const pinia = createPinia();
 
-app.use(pinia)
+app.use(pinia);
 
 Sentry.init({
     app,
@@ -23,17 +23,19 @@ Sentry.init({
         Sentry.browserTracingIntegration({ router }),
         Sentry.replayIntegration(),
     ],
-    tracesSampleRate: parseFloat(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? '0'),
+    tracesSampleRate: parseFloat(
+        import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? '0',
+    ),
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 1.0,
     enabled: !!import.meta.env.VITE_SENTRY_DSN,
-})
+});
 
-initializeTheme()
+initializeTheme();
 
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
 authStore.initialize().then(() => {
-    app.use(router)
-    app.mount('#app')
-})
+    app.use(router);
+    app.mount('#app');
+});

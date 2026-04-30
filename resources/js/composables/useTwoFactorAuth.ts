@@ -29,9 +29,10 @@ const hasSetupData = computed<boolean>(
 export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     const fetchQrCode = async (): Promise<void> => {
         try {
-            const { data } = await axiosInstance.get<{ svg: string; url: string }>(
-                '/user/two-factor-qr-code',
-            );
+            const { data } = await axiosInstance.get<{
+                svg: string;
+                url: string;
+            }>('/user/two-factor-qr-code');
             qrCodeSvg.value = data.svg;
         } catch {
             errors.value.push('Failed to fetch QR code');
@@ -70,7 +71,9 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     const fetchRecoveryCodes = async (): Promise<void> => {
         try {
             clearErrors();
-            const { data } = await axiosInstance.get<string[]>('/user/two-factor-recovery-codes');
+            const { data } = await axiosInstance.get<string[]>(
+                '/user/two-factor-recovery-codes',
+            );
             recoveryCodesList.value = data;
         } catch {
             errors.value.push('Failed to fetch recovery codes');

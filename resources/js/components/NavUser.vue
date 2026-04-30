@@ -17,7 +17,16 @@ import UserMenuContent from '@/components/UserMenuContent.vue';
 import { useAuthStore } from '@/stores/auth';
 
 const auth = useAuthStore();
-const user = computed(() => auth.user ?? { id: 0, name: '', email: '', google_avatar: null, email_verified_at: null });
+const user = computed(
+    () =>
+        auth.user ?? {
+            id: 0,
+            name: '',
+            email: '',
+            google_avatar: null,
+            email_verified_at: null,
+        },
+);
 const { isMobile, state } = useSidebar();
 </script>
 

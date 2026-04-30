@@ -1,42 +1,42 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import InputError from '@/components/InputError.vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Spinner } from '@/components/ui/spinner'
-import { useTranslations } from '@/composables/useTranslations'
-import AuthLayout from '@/layouts/AuthLayout.vue'
-import axiosInstance from '@/lib/axios'
+import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import InputError from '@/components/InputError.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/composables/useTranslations';
+import AuthLayout from '@/layouts/AuthLayout.vue';
+import axiosInstance from '@/lib/axios';
 
-const { t } = useTranslations()
-const route = useRoute()
-const router = useRouter()
-const token = route.query.token as string
-const email = ref((route.query.email as string) ?? '')
-const password = ref('')
-const passwordConfirmation = ref('')
-const errors = ref<Record<string, string[]>>({})
-const isLoading = ref(false)
+const { t } = useTranslations();
+const route = useRoute();
+const router = useRouter();
+const token = route.query.token as string;
+const email = ref((route.query.email as string) ?? '');
+const password = ref('');
+const passwordConfirmation = ref('');
+const errors = ref<Record<string, string[]>>({});
+const isLoading = ref(false);
 
 async function submit() {
-    isLoading.value = true
-    errors.value = {}
+    isLoading.value = true;
+    errors.value = {};
     try {
         await axiosInstance.post('/auth/reset-password', {
             token,
             email: email.value,
             password: password.value,
             password_confirmation: passwordConfirmation.value,
-        })
-        router.push('/login')
+        });
+        router.push('/login');
     } catch (error: any) {
         if (error.response?.status === 422) {
-            errors.value = error.response.data.errors
+            errors.value = error.response.data.errors;
         }
     } finally {
-        isLoading.value = false
+        isLoading.value = false;
     }
 }
 </script>
@@ -90,7 +90,9 @@ async function submit() {
                         :placeholder="t('Potwierdź hasło')"
                         v-model="passwordConfirmation"
                     />
-                    <InputError :message="errors['password_confirmation']?.[0]" />
+                    <InputError
+                        :message="errors['password_confirmation']?.[0]"
+                    />
                 </div>
 
                 <Button
