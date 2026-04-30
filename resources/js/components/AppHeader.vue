@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
 import { LayoutGrid, Menu, Search } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { RouterLink } from 'vue-router';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
@@ -28,7 +28,7 @@ import {
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { getInitials } from '@/composables/useInitials';
-import { dashboard } from '@/routes';
+import { useAuthStore } from '@/stores/auth';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
@@ -39,8 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
 
-const page = usePage();
-const auth = computed(() => page.props.auth);
+const auth = useAuthStore();
 const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
 
 const activeItemStyles =
@@ -49,10 +48,12 @@ const activeItemStyles =
 const mainNavItems: NavItem[] = [
     {
         title: 'Panel',
-        href: dashboard(),
+        href: '/dashboard',
         icon: LayoutGrid,
     },
 ];
+
+const userForMenu = computed(() => auth.user ?? { id: 0, name: '', email: '', google_avatar: null, email_verified_at: null });
 </script>
 
 <template>
@@ -84,10 +85,10 @@ const mainNavItems: NavItem[] = [
                                 class="flex h-full flex-1 flex-col justify-between space-y-4 py-6"
                             >
                                 <nav class="-mx-3 space-y-1">
-                                    <Link
+                                    <RouterLink
                                         v-for="item in mainNavItems"
                                         :key="item.title"
-                                        :href="item.href"
+                                        :to="item.href"
                                         class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent"
                                         :class="
                                             whenCurrentUrl(
@@ -102,16 +103,16 @@ const mainNavItems: NavItem[] = [
                                             class="h-5 w-5"
                                         />
                                         {{ item.title }}
-                                    </Link>
+                                    </RouterLink>
                                 </nav>
                             </div>
                         </SheetContent>
                     </Sheet>
                 </div>
 
-                <Link :href="dashboard()" class="flex items-center gap-x-2">
+                <RouterLink to="/dashboard" class="flex items-center gap-x-2">
                     <AppLogo />
-                </Link>
+                </RouterLink>
 
                 <!-- Desktop Menu -->
                 <div class="hidden h-full lg:flex lg:flex-1">
@@ -124,7 +125,7 @@ const mainNavItems: NavItem[] = [
                                 :key="index"
                                 class="relative flex h-full items-center"
                             >
-                                <Link
+                                <RouterLink
                                     :class="[
                                         navigationMenuTriggerStyle(),
                                         whenCurrentUrl(
@@ -133,7 +134,7 @@ const mainNavItems: NavItem[] = [
                                         ),
                                         'h-9 cursor-pointer px-3',
                                     ]"
-                                    :href="item.href"
+                                    :to="item.href"
                                 >
                                     <component
                                         v-if="item.icon"
@@ -141,7 +142,7 @@ const mainNavItems: NavItem[] = [
                                         class="mr-2 h-4 w-4"
                                     />
                                     {{ item.title }}
-                                </Link>
+                                </RouterLink>
                                 <div
                                     v-if="isCurrentUrl(item.href)"
                                     class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"
@@ -175,20 +176,20 @@ const mainNavItems: NavItem[] = [
                                     class="size-8 overflow-hidden rounded-full"
                                 >
                                     <AvatarImage
-                                        v-if="auth.user.avatar"
-                                        :src="auth.user.avatar"
-                                        :alt="auth.user.name"
+                                        v-if="auth.user?.google_avatar"
+                                        :src="auth.user.google_avatar"
+                                        :alt="auth.user?.name ?? ''"
                                     />
                                     <AvatarFallback
                                         class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white"
                                     >
-                                        {{ getInitials(auth.user?.name) }}
+                                        {{ getInitials(auth.user?.name ?? '') }}
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" class="w-56">
-                            <UserMenuContent :user="auth.user" />
+                            <UserMenuContent :user="userForMenu" />
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

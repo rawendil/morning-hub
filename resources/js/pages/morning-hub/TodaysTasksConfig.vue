@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { Form, Head, Link } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { RouterLink } from 'vue-router';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { index as clickupIndex } from '@/routes/morning-hub/clickup';
-import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tasks';
-import { update } from '@/routes/morning-hub/todays-tasks';
+import axiosInstance from '@/lib/axios';
 import type { BreadcrumbItem, ClickUpConnection } from '@/types';
 
 const { t } = useTranslations();
@@ -19,21 +17,27 @@ type TodaysTasksConfig = {
     connection_ids: number[] | null;
 } | null;
 
-const props = defineProps<{
-    config: TodaysTasksConfig;
-    connections: ClickUpConnection[];
-}>();
+const config = ref<TodaysTasksConfig>(null);
+const connections = ref<ClickUpConnection[]>([]);
+const selectedConnectionIds = ref<number[]>([]);
+const processing = ref(false);
+const recentlySuccessful = ref(false);
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
         title: t('Zadania na dziś — Konfiguracja'),
-        href: todaysTasksConfigIndex(),
+        href: '/morning-hub/todays-tasks',
     },
 ]);
 
-const selectedConnectionIds = ref<number[]>(
-    (props.config?.connection_ids ?? []).map(Number),
-);
+async function loadConfig() {
+    const { data } = await axiosInstance.get('/morning-hub/todays-tasks');
+    config.value = data.config ?? null;
+    connections.value = data.connections ?? [];
+    selectedConnectionIds.value = (config.value?.connection_ids ?? []).map(Number);
+}
+
+onMounted(loadConfig);
 
 function toggleConnectionId(id: number) {
     const index = selectedConnectionIds.value.indexOf(id);
@@ -43,12 +47,27 @@ function toggleConnectionId(id: number) {
         selectedConnectionIds.value.splice(index, 1);
     }
 }
+
+async function submit() {
+    processing.value = true;
+    recentlySuccessful.value = false;
+
+    try {
+        await axiosInstance.put('/morning-hub/todays-tasks', {
+            connection_ids: selectedConnectionIds.value,
+        });
+        recentlySuccessful.value = true;
+        setTimeout(() => {
+            recentlySuccessful.value = false;
+        }, 3000);
+    } finally {
+        processing.value = false;
+    }
+}
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head :title="t('Zadania na dziś — Konfiguracja')" />
-
         <div class="space-y-6 p-6">
             <Heading
                 :title="t('Zadania na dziś — Konfiguracja')"
@@ -59,11 +78,7 @@ function toggleConnectionId(id: number) {
                 "
             />
 
-            <Form
-                :action="update()"
-                method="put"
-                #default="{ errors, processing, recentlySuccessful }"
-            >
+            <form @submit.prevent="submit">
                 <div class="max-w-xl space-y-6">
                     <div class="grid gap-2">
                         <Label>{{ t('Połączenia ClickUp') }}</Label>
@@ -72,23 +87,14 @@ function toggleConnectionId(id: number) {
                             class="text-sm text-muted-foreground"
                         >
                             {{ t('Brak dostępnych połączeń ClickUp.') }}
-                            <Link :href="clickupIndex()" class="underline">{{
-                                t('Dodaj połączenie')
-                            }}</Link
+                            <RouterLink
+                                to="/morning-hub/clickup"
+                                class="underline"
+                                >{{ t('Dodaj połączenie') }}</RouterLink
                             >,
                             {{ t('aby rozpocząć.') }}
                         </p>
                         <div v-else class="space-y-2">
-                            <template
-                                v-for="id in selectedConnectionIds"
-                                :key="`hidden-${id}`"
-                            >
-                                <input
-                                    type="hidden"
-                                    name="connection_ids[]"
-                                    :value="id"
-                                />
-                            </template>
                             <label
                                 v-for="conn in connections"
                                 :key="conn.id"
@@ -103,12 +109,6 @@ function toggleConnectionId(id: number) {
                                 <span class="text-sm">{{ conn.name }}</span>
                             </label>
                         </div>
-                        <p
-                            v-if="errors['connection_ids']"
-                            class="text-sm text-destructive"
-                        >
-                            {{ errors['connection_ids'] }}
-                        </p>
                     </div>
 
                     <div class="flex items-center gap-4">
@@ -123,7 +123,7 @@ function toggleConnectionId(id: number) {
                         </p>
                     </div>
                 </div>
-            </Form>
+            </form>
         </div>
     </AppLayout>
 </template>

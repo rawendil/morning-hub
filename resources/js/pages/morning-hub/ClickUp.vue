@@ -1,33 +1,35 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import ClickUpConnectionCard from '@/components/morning-hub/ClickUpConnectionCard.vue';
 import ClickUpConnectionForm from '@/components/morning-hub/ClickUpConnectionForm.vue';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { index } from '@/routes/morning-hub/clickup';
+import axiosInstance from '@/lib/axios';
 import type { BreadcrumbItem, ClickUpConnection } from '@/types';
 
 const { t } = useTranslations();
 
-defineProps<{
-    connections: ClickUpConnection[];
-}>();
+const connections = ref<ClickUpConnection[]>([]);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-    { title: t('Połączenia ClickUp'), href: index() },
+    { title: t('Połączenia ClickUp'), href: '/morning-hub/clickup' },
 ]);
 
 const addOpen = ref(false);
+
+async function loadConnections() {
+    const { data } = await axiosInstance.get('/morning-hub/clickup');
+    connections.value = data.connections ?? [];
+}
+
+onMounted(loadConnections);
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head :title="t('Połączenia ClickUp')" />
-
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
                 <Heading
@@ -62,10 +64,14 @@ const addOpen = ref(false);
                     v-for="connection in connections"
                     :key="connection.id"
                     :connection="connection"
+                    @deleted="loadConnections"
                 />
             </div>
         </div>
 
-        <ClickUpConnectionForm v-model:open="addOpen" />
+        <ClickUpConnectionForm
+            v-model:open="addOpen"
+            @success="loadConnections"
+        />
     </AppLayout>
 </template>

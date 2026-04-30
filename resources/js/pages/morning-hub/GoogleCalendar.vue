@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Head, router, Link } from '@inertiajs/vue3';
 import { CheckCircle, Info, Plug, Trash2, XCircle } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
+import { RouterLink } from 'vue-router';
 import { toast } from 'vue-sonner';
 import Heading from '@/components/Heading.vue';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -27,15 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
-import {
-    connect,
-    disconnect,
-    index,
-    update,
-    test,
-    calendars,
-} from '@/routes/morning-hub/google-calendar';
-import { edit as profileEdit } from '@/routes/profile';
+import axiosInstance from '@/lib/axios';
 import type {
     BreadcrumbItem,
     GoogleCalendarConnection,
@@ -44,13 +36,11 @@ import type {
 
 const { t } = useTranslations();
 
-const props = defineProps<{
-    connection: GoogleCalendarConnection | null;
-    hasGoogleAccount: boolean;
-}>();
+const connection = ref<GoogleCalendarConnection | null>(null);
+const hasGoogleAccount = ref(false);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-    { title: t('Google Calendar'), href: index() },
+    { title: t('Google Calendar'), href: '/morning-hub/google-calendar' },
 ]);
 
 const disconnectOpen = ref(false);
@@ -58,77 +48,57 @@ const testing = ref(false);
 const testResult = ref<{ success: boolean; message: string } | null>(null);
 const loadingCalendars = ref(false);
 const availableCalendars = ref<GoogleCalendarListItem[]>([]);
-const selectedCalendarIds = ref<string[]>(props.connection?.calendar_ids ?? []);
+const selectedCalendarIds = ref<string[]>([]);
 
-function getCsrfToken(): string {
-    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
+async function loadConnection() {
+    const { data } = await axiosInstance.get('/morning-hub/google-calendar');
+    connection.value = data.connection ?? null;
+    hasGoogleAccount.value = data.hasGoogleAccount ?? false;
+    selectedCalendarIds.value = connection.value?.calendar_ids ?? [];
 }
 
 async function testConnection() {
     testing.value = true;
     testResult.value = null;
+
     try {
-        const response = await fetch(test.url(), {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-XSRF-TOKEN': getCsrfToken(),
-            },
-            credentials: 'same-origin',
-        });
-        testResult.value = await response.json();
+        const { data } = await axiosInstance.post(
+            '/morning-hub/google-calendar/test',
+        );
+        testResult.value = data;
     } catch {
         testResult.value = { success: false, message: t('Blad sieci.') };
     }
+
     testing.value = false;
 }
 
 async function fetchCalendars() {
     loadingCalendars.value = true;
+
     try {
-        const response = await fetch(calendars.url(), {
-            headers: {
-                Accept: 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-XSRF-TOKEN': getCsrfToken(),
-            },
-            credentials: 'same-origin',
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
+        const { data } = await axiosInstance.get(
+            '/morning-hub/google-calendar/calendars',
+        );
         availableCalendars.value = data.calendars ?? [];
     } catch {
         toast.error(t('Nie udalo sie pobrac listy kalendarzy.'));
     }
+
     loadingCalendars.value = false;
 }
 
-function saveCalendars() {
-    router.put(
-        update.url(),
-        {
-            calendar_ids: selectedCalendarIds.value,
-        },
-        {
-            preserveScroll: true,
-            onSuccess: () => toast.success(t('Kalendarze zostaly zapisane.')),
-        },
-    );
+async function saveCalendars() {
+    await axiosInstance.put('/morning-hub/google-calendar', {
+        calendar_ids: selectedCalendarIds.value,
+    });
+    toast.success(t('Kalendarze zostaly zapisane.'));
 }
 
-function disconnectCalendar() {
-    router.delete(disconnect.url(), {
-        preserveScroll: true,
-        onSuccess: () => {
-            disconnectOpen.value = false;
-        },
-    });
+async function disconnectCalendar() {
+    await axiosInstance.delete('/morning-hub/google-calendar');
+    disconnectOpen.value = false;
+    await loadConnection();
 }
 
 function toggleCalendar(calendarId: string, checked: boolean) {
@@ -141,8 +111,9 @@ function toggleCalendar(calendarId: string, checked: boolean) {
     }
 }
 
-onMounted(() => {
-    if (props.connection) {
+onMounted(async () => {
+    await loadConnection();
+    if (connection.value) {
         fetchCalendars();
     }
 });
@@ -150,8 +121,6 @@ onMounted(() => {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head :title="t('Google Calendar')" />
-
         <div class="space-y-6 p-6">
             <Heading
                 :title="t('Google Calendar')"
@@ -174,12 +143,12 @@ onMounted(() => {
                             'Aby korzystac z Google Calendar, najpierw polacz swoje konto Google w ustawieniach profilu.',
                         )
                     }}
-                    <Link
-                        :href="profileEdit.url()"
+                    <RouterLink
+                        to="/settings/profile"
                         class="font-medium underline underline-offset-4"
                     >
                         {{ t('Przejdz do ustawien profilu') }}
-                    </Link>
+                    </RouterLink>
                 </AlertDescription>
             </Alert>
 
@@ -197,7 +166,7 @@ onMounted(() => {
                 </CardHeader>
                 <CardContent>
                     <Button as-child>
-                        <a :href="connect.url()">
+                        <a href="/morning-hub/google-calendar/connect">
                             {{ t('Polacz Google Calendar') }}
                         </a>
                     </Button>

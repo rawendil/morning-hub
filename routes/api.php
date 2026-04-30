@@ -8,9 +8,8 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\TwoFactorController;
 use App\Http\Controllers\Api\ClickUpApiController;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\TodaysTasksController;
 use App\Http\Controllers\Api\ClickUpConnectionController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\GoogleCalendarApiController;
 use App\Http\Controllers\Api\GoogleCalendarConnectionController;
 use App\Http\Controllers\Api\RoutineBlockController;
@@ -19,6 +18,7 @@ use App\Http\Controllers\Api\Settings\PasswordController;
 use App\Http\Controllers\Api\Settings\ProfileController;
 use App\Http\Controllers\Api\Settings\TwoFactorAuthenticationController;
 use App\Http\Controllers\Api\TodaysTasksConfigController;
+use App\Http\Controllers\Api\TodaysTasksController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Google Calendar connection
     Route::get('/morning-hub/google-calendar', [GoogleCalendarConnectionController::class, 'index']);
     Route::put('/morning-hub/google-calendar', [GoogleCalendarConnectionController::class, 'update']);
+    Route::delete('/morning-hub/google-calendar', [GoogleCalendarConnectionController::class, 'destroy']);
     Route::post('/morning-hub/google-calendar/test', [GoogleCalendarConnectionController::class, 'test'])->middleware('throttle:5,1');
 
     // Google Calendar API proxy

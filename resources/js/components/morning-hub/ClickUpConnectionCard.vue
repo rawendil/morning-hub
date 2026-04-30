@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
 import {
     CheckCircle,
     Pencil,
@@ -34,7 +33,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useTranslations } from '@/composables/useTranslations';
-import { destroy, test } from '@/routes/morning-hub/clickup';
+import axiosInstance from '@/lib/axios';
 import type { ClickUpConnection } from '@/types';
 
 const { t } = useTranslations();
@@ -43,44 +42,43 @@ const props = defineProps<{
     connection: ClickUpConnection;
 }>();
 
+const emit = defineEmits<{ deleted: [] }>();
+
 const editOpen = ref(false);
 const deleteOpen = ref(false);
 const configOpen = ref(false);
 const testResult = ref<{ success: boolean; message: string } | null>(null);
 const testing = ref(false);
-
-function getCsrfToken(): string {
-    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
-}
+const deleting = ref(false);
 
 async function testConnection() {
     testing.value = true;
     testResult.value = null;
+
     try {
-        const response = await fetch(test.url(props.connection), {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-XSRF-TOKEN': getCsrfToken(),
-            },
-            credentials: 'same-origin',
-        });
-        testResult.value = await response.json();
+        const { data } = await axiosInstance.post(
+            `/morning-hub/clickup/connections/${props.connection.id}/test`,
+        );
+        testResult.value = data;
     } catch {
         testResult.value = { success: false, message: t('Błąd sieci.') };
     }
+
     testing.value = false;
 }
 
-function deleteConnection() {
-    router.delete(destroy.url(props.connection), {
-        preserveScroll: true,
-        onSuccess: () => {
-            deleteOpen.value = false;
-        },
-    });
+async function deleteConnection() {
+    deleting.value = true;
+
+    try {
+        await axiosInstance.delete(
+            `/morning-hub/clickup/connections/${props.connection.id}`,
+        );
+        deleteOpen.value = false;
+        emit('deleted');
+    } finally {
+        deleting.value = false;
+    }
 }
 </script>
 
@@ -150,7 +148,11 @@ function deleteConnection() {
         </CardContent>
     </Card>
 
-    <ClickUpConnectionForm v-model:open="editOpen" :connection="connection" />
+    <ClickUpConnectionForm
+        v-model:open="editOpen"
+        :connection="connection"
+        @success="emit('deleted')"
+    />
 
     <Dialog v-model:open="deleteOpen">
         <DialogContent>
@@ -169,7 +171,11 @@ function deleteConnection() {
                 <DialogClose as-child>
                     <Button variant="secondary">{{ t('Anuluj') }}</Button>
                 </DialogClose>
-                <Button variant="destructive" @click="deleteConnection">
+                <Button
+                    variant="destructive"
+                    :disabled="deleting"
+                    @click="deleteConnection"
+                >
                     {{ t('Usuń') }}
                 </Button>
             </DialogFooter>

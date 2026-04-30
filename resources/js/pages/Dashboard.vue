@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Deferred, Head, Link, usePage } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { RouterLink } from 'vue-router';
 import { toast } from 'vue-sonner';
 import Heading from '@/components/Heading.vue';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
@@ -14,8 +14,7 @@ import RoutineProgress from '@/components/morning-hub/RoutineProgress.vue';
 import { useRoutineTimer } from '@/composables/useRoutineTimer';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
-import { index as routineIndex } from '@/routes/morning-hub/routine';
+import axiosInstance from '@/lib/axios';
 import type {
     BreadcrumbItem,
     BlockFeedData,
@@ -26,33 +25,50 @@ import type {
 
 const { t } = useTranslations();
 
-const props = defineProps<{
-    blocks: RoutineBlock[];
-}>();
-
-const page = usePage();
+const blocks = ref<RoutineBlock[]>([]);
+const blockTasksData = ref<Record<number, BlockTasksData>>({});
+const blockFeedData = ref<Record<number, BlockFeedData>>({});
+const blockEventsData = ref<Record<number, BlockGoogleCalendarData>>({});
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
-    { title: t('Panel'), href: dashboard() },
+    { title: t('Panel'), href: '/dashboard' },
 ]);
 
 function getTasksData(blockId: number): BlockTasksData | undefined {
-    return (page.props as Record<string, unknown>)[`tasks_${blockId}`] as
-        | BlockTasksData
-        | undefined;
+    return blockTasksData.value[blockId];
 }
 
 function getFeedData(blockId: number): BlockFeedData | undefined {
-    return (page.props as Record<string, unknown>)[`feed_${blockId}`] as
-        | BlockFeedData
-        | undefined;
+    return blockFeedData.value[blockId];
 }
 
 function getEventsData(blockId: number): BlockGoogleCalendarData | undefined {
-    return (page.props as Record<string, unknown>)[`events_${blockId}`] as
-        | BlockGoogleCalendarData
-        | undefined;
+    return blockEventsData.value[blockId];
 }
+
+onMounted(async () => {
+    const { data } = await axiosInstance.get('/dashboard');
+    blocks.value = data.blocks ?? [];
+
+    if (data.blocks_data) {
+        for (const [key, value] of Object.entries(data.blocks_data)) {
+            const match = key.match(/^tasks_(\d+)$/);
+            if (match) {
+                blockTasksData.value[Number(match[1])] = value as BlockTasksData;
+                continue;
+            }
+            const feedMatch = key.match(/^feed_(\d+)$/);
+            if (feedMatch) {
+                blockFeedData.value[Number(feedMatch[1])] = value as BlockFeedData;
+                continue;
+            }
+            const eventsMatch = key.match(/^events_(\d+)$/);
+            if (eventsMatch) {
+                blockEventsData.value[Number(eventsMatch[1])] = value as BlockGoogleCalendarData;
+            }
+        }
+    }
+});
 
 const detailOpen = ref(false);
 const detailConnectionId = ref<number | null>(null);
@@ -77,22 +93,22 @@ const {
     reset,
     skip,
     formatTime,
-} = useRoutineTimer(props.blocks);
+} = useRoutineTimer(blocks);
 
 const completedElapsedMinutes = computed(() =>
     Math.floor(completedElapsedSeconds.value / 60),
 );
 
-const hasTimers = computed(() => props.blocks.some((b) => b.timer_minutes));
+const hasTimers = computed(() => blocks.value.some((b) => b.timer_minutes));
 const totalMinutes = computed(() =>
-    props.blocks.reduce((sum, b) => sum + (b.timer_minutes ?? 0), 0),
+    blocks.value.reduce((sum, b) => sum + (b.timer_minutes ?? 0), 0),
 );
 
 const routineCompleteOpen = ref(false);
 
 const allBlocksCompleted = computed(
     () =>
-        props.blocks.length > 0 &&
+        blocks.value.length > 0 &&
         [...blockStates.value.values()].every((s) => s === 'completed'),
 );
 
@@ -104,7 +120,7 @@ watch(
                 state === 'completed' &&
                 oldStates?.get(blockId) !== 'completed'
             ) {
-                const block = props.blocks.find((b) => b.id === blockId);
+                const block = blocks.value.find((b) => b.id === blockId);
                 if (block) {
                     toast.success(`${block.name} — ukończono! ✓`);
                 }
@@ -127,8 +143,6 @@ watch(
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head :title="t('Panel')" />
-
         <div class="space-y-6 p-6">
             <Heading
                 title="Morning Hub"
@@ -141,9 +155,9 @@ watch(
             >
                 <p class="text-muted-foreground">
                     {{ t('Brak skonfigurowanych bloków rutyny.') }}
-                    <Link :href="routineIndex.url()" class="underline">{{
+                    <RouterLink to="/morning-hub/routine" class="underline">{{
                         t('Przejdź do Porannej Rutyny')
-                    }}</Link
+                    }}</RouterLink
                     >,
                     {{ t('aby skonfigurować bloki.') }}
                 </p>
@@ -165,17 +179,17 @@ watch(
 
                 <div class="grid gap-4">
                     <template v-for="block in blocks" :key="block.id">
-                        <Deferred
+                        <template
                             v-if="
                                 block.type === 'clickup' &&
                                 block.clickup_connection_id
                             "
-                            :data="`tasks_${block.id}`"
                         >
-                            <template #fallback>
-                                <ClickUpTaskBlockSkeleton />
-                            </template>
+                            <ClickUpTaskBlockSkeleton
+                                v-if="!getTasksData(block.id)"
+                            />
                             <DashboardBlockRenderer
+                                v-else
                                 :block="block"
                                 :tasks-data="getTasksData(block.id)"
                                 :is-active-block="activeBlockId === block.id"
@@ -202,19 +216,17 @@ watch(
                                 @timer-reset="reset()"
                                 @timer-skip="skip()"
                             />
-                        </Deferred>
-                        <Deferred
+                        </template>
+                        <template
                             v-else-if="
                                 block.type === 'feed' &&
                                 (block.config?.sources as unknown[] | undefined)
                                     ?.length
                             "
-                            :data="`feed_${block.id}`"
                         >
-                            <template #fallback>
-                                <FeedBlockSkeleton />
-                            </template>
+                            <FeedBlockSkeleton v-if="!getFeedData(block.id)" />
                             <DashboardBlockRenderer
+                                v-else
                                 :block="block"
                                 :feed-data="getFeedData(block.id)"
                                 :is-active-block="activeBlockId === block.id"
@@ -241,18 +253,18 @@ watch(
                                 @timer-reset="reset()"
                                 @timer-skip="skip()"
                             />
-                        </Deferred>
-                        <Deferred
+                        </template>
+                        <template
                             v-else-if="
                                 block.type === 'google_calendar' &&
                                 block.google_calendar_connection_id
                             "
-                            :data="`events_${block.id}`"
                         >
-                            <template #fallback>
-                                <GoogleCalendarBlockSkeleton />
-                            </template>
+                            <GoogleCalendarBlockSkeleton
+                                v-if="!getEventsData(block.id)"
+                            />
                             <DashboardBlockRenderer
+                                v-else
                                 :block="block"
                                 :events-data="getEventsData(block.id)"
                                 :is-active-block="activeBlockId === block.id"
@@ -279,7 +291,7 @@ watch(
                                 @timer-reset="reset()"
                                 @timer-skip="skip()"
                             />
-                        </Deferred>
+                        </template>
                         <DashboardBlockRenderer
                             v-else
                             :block="block"
@@ -325,7 +337,7 @@ watch(
             v-model:open="routineCompleteOpen"
             :completed-minutes="completedElapsedMinutes"
             :total-blocks="
-                props.blocks.filter(
+                blocks.filter(
                     (b) => blockStates.get(b.id) === 'completed',
                 ).length
             "

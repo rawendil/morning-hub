@@ -1,12 +1,6 @@
 <script setup lang="ts">
-import { Form } from '@inertiajs/vue3';
 import { Plus, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
-import { index as googleCalendarIndex } from '@/actions/App/Http/Controllers/MorningHub/GoogleCalendarConnectionController';
-import {
-    store,
-    update,
-} from '@/actions/App/Http/Controllers/MorningHub/RoutineBlockController';
 import InputError from '@/components/InputError.vue';
 import BlockIconPicker from '@/components/morning-hub/BlockIconPicker.vue';
 import { Button } from '@/components/ui/button';
@@ -30,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { useTranslations } from '@/composables/useTranslations';
 import { getDefaultIconName } from '@/lib/block-icons';
+import axiosInstance from '@/lib/axios';
 import type { BlockType, ClickUpConnection, RoutineBlock } from '@/types';
 
 const { t } = useTranslations();
@@ -39,6 +34,8 @@ const props = defineProps<{
     connections: ClickUpConnection[];
     googleCalendarConnectionId: number | null;
 }>();
+
+const emit = defineEmits<{ success: [] }>();
 
 const isOpen = defineModel<boolean>('open', { default: false });
 
@@ -71,6 +68,14 @@ const placeholderText = ref<string>(
 const placeholderUrl = ref<string>(
     (props.block?.config?.placeholder_url as string) ?? '',
 );
+const blockName = ref<string>(props.block?.name ?? '');
+const timerMinutes = ref<string>(props.block?.timer_minutes?.toString() ?? '');
+const clickupConnectionId = ref<string>(
+    props.block?.clickup_connection_id?.toString() ?? '',
+);
+
+const processing = ref(false);
+const errors = ref<Record<string, string>>({});
 
 watch(
     () => props.block,
@@ -89,6 +94,10 @@ watch(
             (newBlock?.config?.placeholder_text as string) ?? '';
         placeholderUrl.value =
             (newBlock?.config?.placeholder_url as string) ?? '';
+        blockName.value = newBlock?.name ?? '';
+        timerMinutes.value = newBlock?.timer_minutes?.toString() ?? '';
+        clickupConnectionId.value =
+            newBlock?.clickup_connection_id?.toString() ?? '';
     },
 );
 
@@ -105,17 +114,75 @@ const needsConnection = computed(
 const usesPlaceholder = computed(() =>
     ['notes', 'plan', 'custom'].includes(selectedType.value),
 );
+
+function buildConfig(): Record<string, unknown> {
+    const config: Record<string, unknown> = { icon: selectedIcon.value };
+
+    if (selectedType.value === 'habits') {
+        config.habits = habits.value;
+    }
+
+    if (selectedType.value === 'feed') {
+        config.sources = feedSources.value;
+        config.days = feedDays.value;
+    }
+
+    if (usesPlaceholder.value) {
+        config.placeholder_text = placeholderText.value;
+        config.placeholder_url = placeholderUrl.value;
+    }
+
+    return config;
+}
+
+async function submit() {
+    processing.value = true;
+    errors.value = {};
+
+    const payload: Record<string, unknown> = {
+        type: selectedType.value,
+        name: blockName.value,
+        config: buildConfig(),
+        timer_minutes: timerMinutes.value ? Number(timerMinutes.value) : null,
+        clickup_connection_id: needsConnection.value && clickupConnectionId.value
+            ? Number(clickupConnectionId.value)
+            : null,
+        google_calendar_connection_id:
+            selectedType.value === 'google_calendar' && props.googleCalendarConnectionId
+                ? props.googleCalendarConnectionId
+                : null,
+    };
+
+    try {
+        if (props.block) {
+            await axiosInstance.put(
+                `/morning-hub/routine/blocks/${props.block.id}`,
+                payload,
+            );
+        } else {
+            await axiosInstance.post('/morning-hub/routine/blocks', payload);
+        }
+
+        emit('success');
+        isOpen.value = false;
+    } catch (err: unknown) {
+        const axiosErr = err as { response?: { data?: { errors?: Record<string, string[]> } } };
+        if (axiosErr.response?.data?.errors) {
+            const rawErrors = axiosErr.response.data.errors;
+            errors.value = Object.fromEntries(
+                Object.entries(rawErrors).map(([k, v]) => [k, v[0]]),
+            );
+        }
+    } finally {
+        processing.value = false;
+    }
+}
 </script>
 
 <template>
     <Dialog v-model:open="isOpen">
         <DialogContent>
-            <Form
-                v-bind="block ? update.form(block) : store.form()"
-                class="space-y-6"
-                v-slot="{ errors, processing }"
-                @success="isOpen = false"
-            >
+            <form class="space-y-6" @submit.prevent="submit">
                 <DialogHeader>
                     <DialogTitle>{{
                         block ? t('Edytuj blok') : t('Dodaj blok')
@@ -132,11 +199,6 @@ const usesPlaceholder = computed(() =>
                 <div class="grid gap-4">
                     <div class="grid gap-2">
                         <Label>{{ t('Typ') }}</Label>
-                        <input
-                            type="hidden"
-                            name="type"
-                            :value="selectedType"
-                        />
                         <Select v-model="selectedType">
                             <SelectTrigger>
                                 <SelectValue
@@ -160,8 +222,7 @@ const usesPlaceholder = computed(() =>
                         <Label for="block-name">{{ t('Nazwa') }}</Label>
                         <Input
                             id="block-name"
-                            name="name"
-                            :default-value="block?.name"
+                            v-model="blockName"
                             required
                             :placeholder="
                                 t('np. Przegląd zadań, Szybkie notatki')
@@ -172,11 +233,6 @@ const usesPlaceholder = computed(() =>
 
                     <div v-if="selectedType" class="grid gap-2">
                         <Label>{{ t('Ikona') }}</Label>
-                        <input
-                            type="hidden"
-                            name="config[icon]"
-                            :value="selectedIcon"
-                        />
                         <BlockIconPicker v-model="selectedIcon" />
                         <InputError :message="errors['config.icon']" />
                     </div>
@@ -187,11 +243,10 @@ const usesPlaceholder = computed(() =>
                         }}</Label>
                         <Input
                             id="block-timer"
-                            name="timer_minutes"
+                            v-model="timerMinutes"
                             type="number"
                             min="1"
                             max="120"
-                            :default-value="block?.timer_minutes?.toString()"
                             :placeholder="t('Opcjonalnie')"
                         />
                         <InputError :message="errors.timer_minutes" />
@@ -199,18 +254,9 @@ const usesPlaceholder = computed(() =>
 
                     <div v-if="needsConnection" class="grid gap-2">
                         <Label>{{ t('Połączenie ClickUp') }}</Label>
-                        <input
-                            v-if="!connections.length"
-                            type="hidden"
-                            name="clickup_connection_id"
-                            value=""
-                        />
                         <Select
-                            v-else
-                            name="clickup_connection_id"
-                            :default-value="
-                                block?.clickup_connection_id?.toString()
-                            "
+                            v-if="connections.length"
+                            v-model="clickupConnectionId"
                         >
                             <SelectTrigger>
                                 <SelectValue
@@ -245,19 +291,13 @@ const usesPlaceholder = computed(() =>
                         class="grid gap-2"
                     >
                         <Label>{{ t('Połączenie Google Calendar') }}</Label>
-                        <input
-                            v-if="googleCalendarConnectionId"
-                            type="hidden"
-                            name="google_calendar_connection_id"
-                            :value="googleCalendarConnectionId"
-                        />
                         <p
                             v-if="googleCalendarConnectionId"
                             class="text-sm text-muted-foreground"
                         >
                             {{ t('Połączenie Google Calendar jest aktywne.') }}
                             <a
-                                :href="googleCalendarIndex.url()"
+                                href="/morning-hub/google-calendar"
                                 class="underline"
                             >
                                 {{ t('Konfiguruj kalendarze') }}
@@ -266,7 +306,7 @@ const usesPlaceholder = computed(() =>
                         <p v-else class="text-sm text-muted-foreground">
                             {{ t('Brak połączenia Google Calendar.') }}
                             <a
-                                :href="googleCalendarIndex.url()"
+                                href="/morning-hub/google-calendar"
                                 class="underline"
                             >
                                 {{ t('Połącz Google Calendar') }}
@@ -284,11 +324,6 @@ const usesPlaceholder = computed(() =>
                             :key="index"
                             class="flex items-center gap-2"
                         >
-                            <input
-                                type="hidden"
-                                :name="`config[habits][${index}]`"
-                                :value="habits[index]"
-                            />
                             <Input
                                 v-model="habits[index]"
                                 :placeholder="
@@ -321,11 +356,6 @@ const usesPlaceholder = computed(() =>
                     <div v-if="selectedType === 'feed'" class="grid gap-4">
                         <div class="grid gap-2">
                             <Label for="feed-days">{{ t('Liczba dni') }}</Label>
-                            <input
-                                type="hidden"
-                                name="config[days]"
-                                :value="feedDays"
-                            />
                             <Input
                                 id="feed-days"
                                 v-model.number="feedDays"
@@ -344,16 +374,6 @@ const usesPlaceholder = computed(() =>
                                 :key="index"
                                 class="flex items-start gap-2"
                             >
-                                <input
-                                    type="hidden"
-                                    :name="`config[sources][${index}][name]`"
-                                    :value="feedSources[index].name"
-                                />
-                                <input
-                                    type="hidden"
-                                    :name="`config[sources][${index}][url]`"
-                                    :value="feedSources[index].url"
-                                />
                                 <div class="grid flex-1 gap-1">
                                     <Input
                                         v-model="feedSources[index].name"
@@ -393,11 +413,6 @@ const usesPlaceholder = computed(() =>
                             <Label for="placeholder-text">{{
                                 t('Treść bloku')
                             }}</Label>
-                            <input
-                                type="hidden"
-                                name="config[placeholder_text]"
-                                :value="placeholderText"
-                            />
                             <Input
                                 id="placeholder-text"
                                 v-model="placeholderText"
@@ -411,11 +426,6 @@ const usesPlaceholder = computed(() =>
                             <Label for="placeholder-url">{{
                                 t('Link (opcjonalnie)')
                             }}</Label>
-                            <input
-                                type="hidden"
-                                name="config[placeholder_url]"
-                                :value="placeholderUrl"
-                            />
                             <Input
                                 id="placeholder-url"
                                 v-model="placeholderUrl"
@@ -437,7 +447,7 @@ const usesPlaceholder = computed(() =>
                         {{ block ? t('Zapisz') : t('Dodaj blok') }}
                     </Button>
                 </DialogFooter>
-            </Form>
+            </form>
         </DialogContent>
     </Dialog>
 </template>

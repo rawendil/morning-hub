@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
 import { useTranslations } from '@/composables/useTranslations';
-import { update } from '@/routes/locale';
+import axiosInstance from '@/lib/axios';
 
 const { locale } = useTranslations();
 
@@ -10,13 +9,14 @@ const locales = [
     { value: 'en', label: 'EN' },
 ] as const;
 
-function switchLocale(value: string) {
+async function switchLocale(value: string) {
     if (value === locale.value) return;
 
     localStorage.setItem('locale', value);
     document.cookie = `locale=${value};path=/;max-age=${365 * 24 * 60 * 60};SameSite=Lax`;
 
-    router.post(update.url(), { locale: value }, { preserveScroll: true });
+    await axiosInstance.post('/locale', { locale: value }).catch(() => {});
+    window.location.reload();
 }
 </script>
 

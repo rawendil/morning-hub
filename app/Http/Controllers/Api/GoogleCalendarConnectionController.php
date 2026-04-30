@@ -39,6 +39,15 @@ class GoogleCalendarConnectionController extends Controller
         return response()->json(['connection' => $connection->fresh()]);
     }
 
+    public function destroy(Request $request): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $user->googleCalendarConnection?->delete();
+
+        return response()->json(['message' => 'Disconnected.']);
+    }
+
     public function test(Request $request): JsonResponse
     {
         /** @var \App\Models\User $user */

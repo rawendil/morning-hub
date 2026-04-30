@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
 import {
     BookOpen,
     Calendar,
@@ -11,6 +10,7 @@ import {
     Plug,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { RouterLink } from 'vue-router';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -25,12 +25,6 @@ import {
 } from '@/components/ui/sidebar';
 import { useCookieConsent } from '@/composables/useCookieConsent';
 import { useTranslations } from '@/composables/useTranslations';
-import { dashboard, todaysTasks } from '@/routes';
-import { guide } from '@/routes/morning-hub';
-import { index as clickupIndex } from '@/routes/morning-hub/clickup';
-import { index as googleCalendarIndex } from '@/routes/morning-hub/google-calendar';
-import { index as routineIndex } from '@/routes/morning-hub/routine';
-import { index as todaysTasksConfigIndex } from '@/routes/morning-hub/todays-tasks';
 import type { NavItem } from '@/types';
 
 const { t } = useTranslations();
@@ -39,12 +33,12 @@ const { openSettings } = useCookieConsent();
 const morningHubNavItems = computed<NavItem[]>(() => [
     {
         title: t('Poranna rutyna'),
-        href: dashboard(),
+        href: '/dashboard',
         icon: LayoutGrid,
     },
     {
         title: t('Zadania na dziś'),
-        href: todaysTasks(),
+        href: '/todays-tasks',
         icon: CalendarCheck,
     },
 ]);
@@ -52,17 +46,17 @@ const morningHubNavItems = computed<NavItem[]>(() => [
 const configNavItems = computed<NavItem[]>(() => [
     {
         title: t('Bloki rutyny'),
-        href: routineIndex(),
+        href: '/morning-hub/routine',
         icon: ListChecks,
     },
     {
         title: t('Źródła zadań'),
-        href: todaysTasksConfigIndex(),
+        href: '/morning-hub/todays-tasks',
         icon: CalendarCheck,
     },
     {
         title: t('Przewodnik'),
-        href: guide(),
+        href: '/morning-hub/guide',
         icon: BookOpen,
     },
 ]);
@@ -70,12 +64,12 @@ const configNavItems = computed<NavItem[]>(() => [
 const integrationNavItems = computed<NavItem[]>(() => [
     {
         title: 'ClickUp',
-        href: clickupIndex(),
+        href: '/morning-hub/clickup',
         icon: Plug,
     },
     {
         title: t('Google Calendar'),
-        href: googleCalendarIndex(),
+        href: '/morning-hub/google-calendar',
         icon: Calendar,
     },
 ]);
@@ -87,9 +81,9 @@ const integrationNavItems = computed<NavItem[]>(() => [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <RouterLink to="/dashboard">
                             <AppLogo />
-                        </Link>
+                        </RouterLink>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>

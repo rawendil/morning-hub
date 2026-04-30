@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
 import { LayoutGrid, Rocket, Sparkles } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
+import { RouterLink } from 'vue-router';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -12,7 +12,6 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useTranslations } from '@/composables/useTranslations';
-import { index as routineIndex } from '@/routes/morning-hub/routine';
 
 const { t } = useTranslations();
 
@@ -135,11 +134,11 @@ function complete() {
                 <span v-else />
 
                 <div v-if="isLastStep" class="flex gap-2">
-                    <Link :href="routineIndex.url()" @click="complete">
+                    <RouterLink to="/morning-hub/routine" @click="complete">
                         <Button variant="outline" size="sm">{{
                             t('Ustawienia rutyny')
                         }}</Button>
-                    </Link>
+                    </RouterLink>
                     <Button size="sm" @click="complete">{{
                         t('Przejdź do panelu')
                     }}</Button>

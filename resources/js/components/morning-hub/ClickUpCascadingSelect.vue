@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
 import { ref, watch, onMounted } from 'vue';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -13,14 +12,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { useTranslations } from '@/composables/useTranslations';
-import {
-    update,
-    workspaces,
-    spaces,
-    allLists,
-    me,
-    statuses as statusesRoute,
-} from '@/routes/morning-hub/clickup';
+import axiosInstance from '@/lib/axios';
 import type {
     ClickUpConnection,
     ClickUpConnectionFilters,
@@ -61,42 +53,27 @@ const selectedStatusNames = ref<string[]>(
 );
 const loadingStatuses = ref(false);
 
-function getCsrfToken(): string {
-    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
-}
-
-async function fetchJson<T>(url: string): Promise<T[]> {
-    const response = await fetch(url, {
-        headers: {
-            Accept: 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-XSRF-TOKEN': getCsrfToken(),
-        },
-        credentials: 'same-origin',
-    });
-    if (!response.ok) return [];
-    const json = await response.json();
-    return json.data ?? [];
+async function fetchJsonData<T>(url: string): Promise<T[]> {
+    try {
+        const { data } = await axiosInstance.get(url);
+        return data.data ?? [];
+    } catch {
+        return [];
+    }
 }
 
 async function fetchAllLists(
     spaceId: string,
 ): Promise<ClickUpAllListsResponse | null> {
-    const url = allLists.url(props.connection, {
-        query: { space_id: spaceId },
-    });
-    const response = await fetch(url, {
-        headers: {
-            Accept: 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-XSRF-TOKEN': getCsrfToken(),
-        },
-        credentials: 'same-origin',
-    });
-    if (!response.ok) return null;
-    const json = await response.json();
-    return json.data ?? null;
+    try {
+        const { data } = await axiosInstance.get(
+            `/morning-hub/clickup/${props.connection.id}/all-lists`,
+            { params: { space_id: spaceId } },
+        );
+        return data.data ?? null;
+    } catch {
+        return null;
+    }
 }
 
 function buildFilters(overrides: {
@@ -120,30 +97,32 @@ function buildFilters(overrides: {
 }
 
 function saveDefaults(data: Record<string, unknown>, onSuccess?: () => void) {
-    router.put(
-        update.url(props.connection),
-        {
+    axiosInstance
+        .put(`/morning-hub/clickup/connections/${props.connection.id}`, {
             name: props.connection.name,
             workspace_id: selectedWorkspace.value || null,
             default_space_id: selectedSpace.value || null,
             default_list_ids:
                 selectedListIds.value.length > 0 ? selectedListIds.value : null,
             ...data,
-        },
-        { preserveScroll: true, onSuccess },
-    );
+        })
+        .then(() => {
+            onSuccess?.();
+        });
 }
 
 async function loadWorkspaces() {
     loadingWorkspaces.value = true;
-    workspaceList.value = await fetchJson(workspaces.url(props.connection));
+    workspaceList.value = await fetchJsonData(
+        `/morning-hub/clickup/${props.connection.id}/workspaces`,
+    );
     loadingWorkspaces.value = false;
 }
 
 async function loadSpaces(workspaceId: string) {
     loadingSpaces.value = true;
-    spaceList.value = await fetchJson(
-        spaces.url(props.connection, { query: { workspace_id: workspaceId } }),
+    spaceList.value = await fetchJsonData(
+        `/morning-hub/clickup/${props.connection.id}/spaces?workspace_id=${workspaceId}`,
     );
     loadingSpaces.value = false;
 }
@@ -161,8 +140,8 @@ async function loadStatuses() {
     }
     loadingStatuses.value = true;
     try {
-        availableStatuses.value = await fetchJson<ClickUpStatus>(
-            statusesRoute.url(props.connection),
+        availableStatuses.value = await fetchJsonData<ClickUpStatus>(
+            `/morning-hub/clickup/${props.connection.id}/statuses`,
         );
     } finally {
         loadingStatuses.value = false;
@@ -207,22 +186,14 @@ async function toggleOnlyMyTasks(value: boolean) {
     if (value) {
         loadingMe.value = true;
         try {
-            const response = await fetch(me.url(props.connection), {
-                headers: {
-                    Accept: 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-XSRF-TOKEN': getCsrfToken(),
-                },
-                credentials: 'same-origin',
-            });
-            if (response.ok) {
-                const json = await response.json();
-                const userId = json.data?.id;
-                if (userId) {
-                    saveDefaults({
-                        default_filters: buildFilters({ assignees: [userId] }),
-                    });
-                }
+            const { data } = await axiosInstance.get(
+                `/morning-hub/clickup/${props.connection.id}/me`,
+            );
+            const userId = data.data?.id;
+            if (userId) {
+                saveDefaults({
+                    default_filters: buildFilters({ assignees: [userId] }),
+                });
             }
         } finally {
             loadingMe.value = false;

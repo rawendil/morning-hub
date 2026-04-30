@@ -1,24 +1,20 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import Heading from '@/components/Heading.vue';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { guide } from '@/routes/morning-hub';
 import type { BreadcrumbItem } from '@/types';
 
 const { t } = useTranslations();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-    { title: t('Przewodnik'), href: guide() },
+    { title: t('Przewodnik'), href: '/morning-hub/guide' },
 ]);
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head :title="t('Przewodnik')" />
-
         <div class="mx-auto max-w-3xl space-y-6 p-6">
             <Heading
                 :title="t('Przewodnik')"

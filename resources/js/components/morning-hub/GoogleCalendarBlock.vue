@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
 import { CalendarX, ExternalLink, SkipForward } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { RouterLink } from 'vue-router';
 import GoogleCalendarBlockSkeleton from '@/components/morning-hub/GoogleCalendarBlockSkeleton.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslations } from '@/composables/useTranslations';
 import { resolveBlockIcon } from '@/lib/block-icons';
-import { index as googleCalendarIndex } from '@/routes/morning-hub/google-calendar';
 import type { BlockGoogleCalendarData, RoutineBlock } from '@/types';
 
 const props = defineProps<{
@@ -101,9 +100,9 @@ function formatEventTime(dateStr: string): string {
                 class="text-sm text-destructive"
             >
                 {{ t('Token wygasł.') }}
-                <Link :href="googleCalendarIndex.url()" class="underline">{{
+                <RouterLink to="/morning-hub/google-calendar" class="underline">{{
                     t('Połącz ponownie')
-                }}</Link>
+                }}</RouterLink>
             </p>
 
             <p v-else-if="eventsData.error" class="text-sm text-destructive">

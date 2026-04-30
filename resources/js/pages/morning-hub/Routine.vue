@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { Head, router } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import RoutineBlockCard from '@/components/morning-hub/RoutineBlockCard.vue';
 import RoutineBlockForm from '@/components/morning-hub/RoutineBlockForm.vue';
@@ -17,19 +16,17 @@ import {
 } from '@/components/ui/dialog';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { destroy, index, reorder } from '@/routes/morning-hub/routine';
+import axiosInstance from '@/lib/axios';
 import type { BreadcrumbItem, ClickUpConnection, RoutineBlock } from '@/types';
 
 const { t } = useTranslations();
 
-const props = defineProps<{
-    blocks: RoutineBlock[];
-    connections: ClickUpConnection[];
-    googleCalendarConnectionId: number | null;
-}>();
+const blocks = ref<RoutineBlock[]>([]);
+const connections = ref<ClickUpConnection[]>([]);
+const googleCalendarConnectionId = ref<number | null>(null);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-    { title: t('Poranna rutyna'), href: index() },
+    { title: t('Poranna rutyna'), href: '/morning-hub/routine' },
 ]);
 
 const addOpen = ref(false);
@@ -37,6 +34,15 @@ const editingBlock = ref<RoutineBlock | undefined>();
 const editOpen = ref(false);
 const deleteBlock = ref<RoutineBlock | undefined>();
 const deleteOpen = ref(false);
+
+async function loadBlocks() {
+    const { data } = await axiosInstance.get('/morning-hub/routine');
+    blocks.value = data.blocks ?? [];
+    connections.value = data.connections ?? [];
+    googleCalendarConnectionId.value = data.googleCalendarConnectionId ?? null;
+}
+
+onMounted(loadBlocks);
 
 function openEdit(block: RoutineBlock) {
     editingBlock.value = block;
@@ -48,18 +54,18 @@ function openDelete(block: RoutineBlock) {
     deleteOpen.value = true;
 }
 
-function confirmDelete() {
+async function confirmDelete() {
     if (!deleteBlock.value) return;
-    router.delete(destroy.url(deleteBlock.value), {
-        preserveScroll: true,
-        onSuccess: () => {
-            deleteOpen.value = false;
-        },
-    });
+
+    await axiosInstance.delete(
+        `/morning-hub/routine/blocks/${deleteBlock.value.id}`,
+    );
+    deleteOpen.value = false;
+    await loadBlocks();
 }
 
-function moveBlock(blockIndex: number, direction: -1 | 1) {
-    const ordered = [...props.blocks];
+async function moveBlock(blockIndex: number, direction: -1 | 1) {
+    const ordered = [...blocks.value];
     const targetIndex = blockIndex + direction;
     if (targetIndex < 0 || targetIndex >= ordered.length) return;
 
@@ -68,20 +74,15 @@ function moveBlock(blockIndex: number, direction: -1 | 1) {
         ordered[blockIndex],
     ];
 
-    router.patch(
-        reorder.url(),
-        {
-            blocks: ordered.map((b) => b.id),
-        },
-        { preserveScroll: true },
-    );
+    await axiosInstance.patch('/morning-hub/routine/blocks/reorder', {
+        blocks: ordered.map((b) => b.id),
+    });
+    await loadBlocks();
 }
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head :title="t('Poranna rutyna')" />
-
         <div class="space-y-6 p-6">
             <div class="flex items-center justify-between">
                 <Heading
@@ -126,12 +127,14 @@ function moveBlock(blockIndex: number, direction: -1 | 1) {
             v-model:open="addOpen"
             :connections="connections"
             :google-calendar-connection-id="googleCalendarConnectionId"
+            @success="loadBlocks"
         />
         <RoutineBlockForm
             v-model:open="editOpen"
             :block="editingBlock"
             :connections="connections"
             :google-calendar-connection-id="googleCalendarConnectionId"
+            @success="loadBlocks"
         />
 
         <Dialog v-model:open="deleteOpen">

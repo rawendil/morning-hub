@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { RouterLink } from 'vue-router';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -27,7 +27,7 @@ defineProps<Props>();
                     </template>
                     <template v-else>
                         <BreadcrumbLink as-child>
-                            <Link :href="item.href">{{ item.title }}</Link>
+                            <RouterLink :to="item.href">{{ item.title }}</RouterLink>
                         </BreadcrumbLink>
                     </template>
                 </BreadcrumbItem>

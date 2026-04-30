@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Link, router } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
+import { RouterLink, useRouter } from 'vue-router';
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import {
     DropdownMenuGroup,
@@ -10,21 +10,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import UserInfo from '@/components/UserInfo.vue';
 import { useTranslations } from '@/composables/useTranslations';
-import { logout } from '@/routes';
-import { edit } from '@/routes/profile';
+import { useAuthStore } from '@/stores/auth';
 import type { User } from '@/types';
 
-type Props = {
-    user: User;
-};
+defineProps<{ user: User }>();
 
 const { t } = useTranslations();
+const router = useRouter();
+const auth = useAuthStore();
 
-const handleLogout = () => {
-    router.flushAll();
-};
-
-defineProps<Props>();
+async function handleLogout() {
+    await auth.logout();
+    router.push('/login');
+}
 </script>
 
 <template>
@@ -36,10 +34,10 @@ defineProps<Props>();
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full cursor-pointer" :href="edit()" prefetch>
+            <RouterLink to="/settings/profile" class="block w-full cursor-pointer">
                 <Settings class="mr-2 h-4 w-4" />
                 {{ t('Ustawienia') }}
-            </Link>
+            </RouterLink>
         </DropdownMenuItem>
     </DropdownMenuGroup>
     <DropdownMenuSeparator />
@@ -48,15 +46,13 @@ defineProps<Props>();
     </div>
     <DropdownMenuSeparator />
     <DropdownMenuItem :as-child="true">
-        <Link
+        <button
             class="block w-full cursor-pointer"
-            :href="logout()"
-            @click="handleLogout"
-            as="button"
             data-test="logout-button"
+            @click="handleLogout"
         >
             <LogOut class="mr-2 h-4 w-4" />
             {{ t('Wyloguj się') }}
-        </Link>
+        </button>
     </DropdownMenuItem>
 </template>
