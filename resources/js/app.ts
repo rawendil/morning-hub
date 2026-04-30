@@ -14,7 +14,6 @@ const app = createApp(App)
 const pinia = createPinia()
 
 app.use(pinia)
-app.use(router)
 
 Sentry.init({
     app,
@@ -35,5 +34,6 @@ initializeTheme()
 const authStore = useAuthStore()
 
 authStore.initialize().then(() => {
+    app.use(router)
     app.mount('#app')
 })
