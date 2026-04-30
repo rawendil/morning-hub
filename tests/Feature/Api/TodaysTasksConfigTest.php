@@ -4,6 +4,10 @@ use App\Models\ClickUpConnection;
 use App\Models\TodaysTasksConfig;
 use App\Models\User;
 
+test('guest cannot access todays tasks config', function () {
+    $this->getJson('/api/morning-hub/todays-tasks')->assertUnauthorized();
+});
+
 test('user can fetch todays tasks config', function () {
     $user = User::factory()->create();
     TodaysTasksConfig::factory()->for($user)->create();

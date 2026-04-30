@@ -20,6 +20,6 @@ class AppearanceController extends Controller
     {
         $request->validate(['appearance' => ['required', 'in:light,dark,system']]);
 
-        return response()->noContent()->cookie('appearance', $request->appearance, 60 * 24 * 365);
+        return response()->noContent()->cookie('appearance', $request->input('appearance'), 60 * 24 * 365);
     }
 }
