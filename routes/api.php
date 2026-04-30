@@ -7,7 +7,10 @@ use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\TwoFactorController;
+use App\Http\Controllers\Api\ClickUpApiController;
 use App\Http\Controllers\Api\ClickUpConnectionController;
+use App\Http\Controllers\Api\GoogleCalendarApiController;
+use App\Http\Controllers\Api\GoogleCalendarConnectionController;
 use App\Http\Controllers\Api\RoutineBlockController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -34,4 +37,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/morning-hub/clickup/connections/{connection}', [ClickUpConnectionController::class, 'update']);
     Route::delete('/morning-hub/clickup/connections/{connection}', [ClickUpConnectionController::class, 'destroy']);
     Route::post('/morning-hub/clickup/connections/{connection}/test', [ClickUpConnectionController::class, 'test'])->middleware('throttle:5,1');
+
+    // Google Calendar connection
+    Route::get('/morning-hub/google-calendar', [GoogleCalendarConnectionController::class, 'index']);
+    Route::put('/morning-hub/google-calendar', [GoogleCalendarConnectionController::class, 'update']);
+    Route::post('/morning-hub/google-calendar/test', [GoogleCalendarConnectionController::class, 'test'])->middleware('throttle:5,1');
+
+    // Google Calendar API proxy
+    Route::get('/morning-hub/google-calendar/calendars', [GoogleCalendarApiController::class, 'calendars'])->middleware('throttle:60,1');
+
+    // ClickUp API proxy
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::get('/morning-hub/clickup/{connection}/workspaces', [ClickUpApiController::class, 'workspaces']);
+        Route::get('/morning-hub/clickup/{connection}/spaces', [ClickUpApiController::class, 'spaces']);
+        Route::get('/morning-hub/clickup/{connection}/folders', [ClickUpApiController::class, 'folders']);
+        Route::get('/morning-hub/clickup/{connection}/lists', [ClickUpApiController::class, 'lists']);
+        Route::get('/morning-hub/clickup/{connection}/all-lists', [ClickUpApiController::class, 'allLists']);
+        Route::get('/morning-hub/clickup/{connection}/me', [ClickUpApiController::class, 'me']);
+        Route::get('/morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'task']);
+        Route::put('/morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'updateTask']);
+        Route::post('/morning-hub/clickup/{connection}/tasks', [ClickUpApiController::class, 'createTask']);
+        Route::post('/morning-hub/clickup/{connection}/tasks/{taskId}/comments', [ClickUpApiController::class, 'createComment']);
+        Route::get('/morning-hub/clickup/{connection}/tasks/{taskId}/comments', [ClickUpApiController::class, 'comments']);
+        Route::get('/morning-hub/clickup/{connection}/statuses', [ClickUpApiController::class, 'statuses']);
+    });
 });
