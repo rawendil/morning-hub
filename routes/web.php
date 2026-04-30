@@ -1,34 +1,28 @@
 <?php
 
-use App\Http\Controllers\Auth\GoogleAuthController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\SetLocaleController;
-use App\Http\Controllers\TodaysTasksController;
+use App\Http\Controllers\MorningHub\GoogleCalendarOAuthController;
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
 
-Route::inertia('/', 'Welcome', [
-    'canRegister' => Features::enabled(Features::registration()),
-])->name('home');
-
+// Google Calendar OAuth — server-side redirect (Google requires HTTPS callback URL)
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', DashboardController::class)->name('dashboard');
-    Route::get('todays-tasks', TodaysTasksController::class)->name('todays-tasks');
+    Route::get('morning-hub/google-calendar/connect', [GoogleCalendarOAuthController::class, 'redirect'])
+        ->middleware('throttle:5,1')
+        ->name('morning-hub.google-calendar.connect');
+    Route::get('morning-hub/google-calendar/callback', [GoogleCalendarOAuthController::class, 'callback'])
+        ->name('morning-hub.google-calendar.callback');
+    Route::delete('morning-hub/google-calendar/disconnect', [GoogleCalendarOAuthController::class, 'disconnect'])
+        ->middleware('throttle:5,1')
+        ->name('morning-hub.google-calendar.disconnect');
 });
 
-Route::post('locale', SetLocaleController::class)->name('locale.update');
-
-// Google OAuth - guest routes
-Route::middleware('guest')->group(function () {
-    Route::get('auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
-    Route::get('auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
-});
-
-// Google OAuth - authenticated routes
+// Google account linking — server-side redirect (same reason)
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('auth/google/link', [GoogleAuthController::class, 'linkRedirect'])->name('google.link');
-    Route::get('auth/google/link/callback', [GoogleAuthController::class, 'linkCallback'])->name('google.link.callback');
-    Route::delete('auth/google/unlink', [GoogleAuthController::class, 'unlink'])->name('google.unlink');
+    Route::get('auth/google/link', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'linkRedirect'])->name('google.link');
+    Route::get('auth/google/link/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'linkCallback'])->name('google.link.callback');
+    Route::delete('auth/google/unlink', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'unlink'])->name('google.unlink');
 });
 
-require __DIR__.'/settings.php';
+// SPA catch-all — all other paths handled by Vue Router
+Route::get('/{any}', function () {
+    return view('app');
+})->where('any', '.*')->name('spa');
