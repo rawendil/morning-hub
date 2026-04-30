@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\TwoFactorController;
 use App\Http\Controllers\Api\ClickUpApiController;
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\TodaysTasksController;
 use App\Http\Controllers\Api\ClickUpConnectionController;
 use App\Http\Controllers\Api\GoogleCalendarApiController;
 use App\Http\Controllers\Api\GoogleCalendarConnectionController;
@@ -80,4 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/settings/appearance', [AppearanceController::class, 'show']);
     Route::patch('/settings/appearance', [AppearanceController::class, 'update']);
+
+    Route::get('/dashboard', DashboardController::class);
+    Route::get('/todays-tasks', TodaysTasksController::class);
 });
