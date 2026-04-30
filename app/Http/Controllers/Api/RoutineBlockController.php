@@ -31,7 +31,7 @@ class RoutineBlockController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        $nextSortOrder = $user->routineBlocks()->max('sort_order') + 1;
+        $nextSortOrder = (int) $user->routineBlocks()->max('sort_order') + 1;
 
         $block = $user->routineBlocks()->create(
             array_merge($request->validated(), ['sort_order' => $nextSortOrder])
@@ -58,8 +58,14 @@ class RoutineBlockController extends Controller
 
     public function reorder(ReorderRoutineBlocksRequest $request): Response
     {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $userBlockIds = $user->routineBlocks()->pluck('id')->all();
+
         foreach ($request->validated('blocks') as $index => $blockId) {
-            RoutineBlock::where('id', $blockId)->update(['sort_order' => $index]);
+            if (in_array($blockId, $userBlockIds, true)) {
+                RoutineBlock::where('id', $blockId)->update(['sort_order' => $index]);
+            }
         }
 
         return response()->noContent();
