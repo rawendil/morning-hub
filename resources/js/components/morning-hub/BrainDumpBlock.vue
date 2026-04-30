@@ -5,10 +5,9 @@ import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { useClickUpApi } from '@/composables/useClickUpApi';
+import axiosInstance from '@/lib/axios';
 import { useTranslations } from '@/composables/useTranslations';
 import { resolveBlockIcon } from '@/lib/block-icons';
-import { createTask as createTaskRoute } from '@/routes/morning-hub/clickup';
 import type { RoutineBlock } from '@/types';
 
 const props = defineProps<{
@@ -29,7 +28,6 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useTranslations();
-const { postJson } = useClickUpApi();
 
 const input = ref('');
 const submitting = ref(false);
@@ -43,7 +41,7 @@ async function handleSubmit() {
 
     submitting.value = true;
     try {
-        await postJson(createTaskRoute.url(connectionId), {
+        await axiosInstance.post(`/morning-hub/clickup/${connectionId}/tasks`, {
             list_id: listId,
             name: input.value.trim(),
         });

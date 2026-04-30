@@ -6,8 +6,10 @@ interface User {
     id: number
     name: string
     email: string
+    google_id: string | null
     google_avatar: string | null
     email_verified_at: string | null
+    [key: string]: unknown
 }
 
 export const useAuthStore = defineStore('auth', () => {

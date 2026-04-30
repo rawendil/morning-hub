@@ -19,14 +19,8 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import { useClickUpApi } from '@/composables/useClickUpApi';
+import axiosInstance from '@/lib/axios';
 import { useTranslations } from '@/composables/useTranslations';
-import {
-    comments as commentsRoute,
-    createComment as createCommentRoute,
-    task as taskRoute,
-    updateTask as updateTaskRoute,
-} from '@/routes/morning-hub/clickup';
 import type {
     ClickUpComment,
     ClickUpTaskDetail,
@@ -45,7 +39,6 @@ const emit = defineEmits<{
 const isOpen = defineModel<boolean>('open', { default: false });
 
 const { t } = useTranslations();
-const { fetchJson, postJson, putJson } = useClickUpApi();
 
 const loading = ref(false);
 const saving = ref(false);
@@ -64,20 +57,13 @@ async function loadTaskDetail() {
     taskComments.value = [];
 
     try {
-        const [detail, comments] = await Promise.all([
-            fetchJson<ClickUpTaskDetail>(
-                taskRoute.url({
-                    connection: props.connectionId,
-                    taskId: props.taskId,
-                }),
-            ),
-            fetchJson<ClickUpComment[]>(
-                commentsRoute.url({
-                    connection: props.connectionId,
-                    taskId: props.taskId,
-                }),
-            ),
+        const base = `/morning-hub/clickup/${props.connectionId}/tasks/${props.taskId}`;
+        const [detailRes, commentsRes] = await Promise.all([
+            axiosInstance.get<{ data: ClickUpTaskDetail }>(base),
+            axiosInstance.get<{ data: ClickUpComment[] }>(`${base}/comments`),
         ]);
+        const detail = detailRes.data.data;
+        const comments = commentsRes.data.data;
         taskDetail.value = detail;
         taskComments.value = comments;
     } catch (e) {
@@ -95,12 +81,9 @@ async function saveTaskField(payload: UpdateTaskPayload) {
     if (!props.connectionId || !props.taskId) return;
     saving.value = true;
     try {
-        await putJson(
-            updateTaskRoute.url({
-                connection: props.connectionId,
-                taskId: props.taskId,
-            }),
-            payload as Record<string, unknown>,
+        await axiosInstance.put(
+            `/morning-hub/clickup/${props.connectionId}/tasks/${props.taskId}`,
+            payload,
         );
         await loadTaskDetail();
         emit('taskUpdated');
@@ -132,20 +115,13 @@ async function handleAddComment() {
         return;
     addingComment.value = true;
     try {
-        await postJson(
-            createCommentRoute.url({
-                connection: props.connectionId,
-                taskId: props.taskId,
-            }),
-            { comment_text: newComment.value.trim() },
-        );
+        const base = `/morning-hub/clickup/${props.connectionId}/tasks/${props.taskId}`;
+        await axiosInstance.post(`${base}/comments`, {
+            comment_text: newComment.value.trim(),
+        });
         newComment.value = '';
-        taskComments.value = await fetchJson<ClickUpComment[]>(
-            commentsRoute.url({
-                connection: props.connectionId,
-                taskId: props.taskId,
-            }),
-        );
+        const r = await axiosInstance.get<{ data: ClickUpComment[] }>(`${base}/comments`);
+        taskComments.value = r.data.data;
     } catch (e) {
         error.value = e instanceof Error ? e.message : 'Failed to add comment';
     } finally {

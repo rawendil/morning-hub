@@ -1,4 +1,4 @@
-import { computed, onBeforeUnmount, ref } from 'vue';
+import { computed, onBeforeUnmount, ref, unref } from 'vue';
 import type { ComputedRef, Ref } from 'vue';
 import type { RoutineBlock } from '@/types';
 
@@ -64,7 +64,7 @@ function persistState(state: StoredTimerState): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
+export function useRoutineTimer(blocks: RoutineBlock[] | Ref<RoutineBlock[]>): UseRoutineTimerReturn {
     const stored = loadState();
 
     const activeBlockId = ref<number | null>(stored?.activeBlockId ?? null);
@@ -134,7 +134,7 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
     }
 
     function getBlock(blockId: number): RoutineBlock | undefined {
-        return blocks.find((b) => b.id === blockId);
+        return unref(blocks).find((b) => b.id === blockId);
     }
 
     function start(blockId: number): void {
@@ -192,7 +192,7 @@ export function useRoutineTimer(blocks: RoutineBlock[]): UseRoutineTimerReturn {
 
     const blockStates = computed(() => {
         const states = new Map<number, BlockTimerState>();
-        for (const block of blocks) {
+        for (const block of unref(blocks)) {
             if (completedBlockIds.value.has(block.id)) {
                 states.set(block.id, 'completed');
             } else if (block.id === activeBlockId.value) {
