@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\TwoFactorController;
+use App\Http\Controllers\Api\ClickUpConnectionController;
 use App\Http\Controllers\Api\RoutineBlockController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -27,4 +28,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/morning-hub/routine/blocks/reorder', [RoutineBlockController::class, 'reorder']);
     Route::put('/morning-hub/routine/blocks/{block}', [RoutineBlockController::class, 'update']);
     Route::delete('/morning-hub/routine/blocks/{block}', [RoutineBlockController::class, 'destroy']);
+
+    Route::get('/morning-hub/clickup', [ClickUpConnectionController::class, 'index']);
+    Route::post('/morning-hub/clickup/connections', [ClickUpConnectionController::class, 'store'])->middleware('throttle:5,1');
+    Route::put('/morning-hub/clickup/connections/{connection}', [ClickUpConnectionController::class, 'update']);
+    Route::delete('/morning-hub/clickup/connections/{connection}', [ClickUpConnectionController::class, 'destroy']);
+    Route::post('/morning-hub/clickup/connections/{connection}/test', [ClickUpConnectionController::class, 'test'])->middleware('throttle:5,1');
 });
