@@ -13,6 +13,8 @@ use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
+    private const TWO_FACTOR_CHALLENGE_TTL = 300;
+
     public function __invoke(Request $request): JsonResponse
     {
         $request->validate([
@@ -30,7 +32,7 @@ class LoginController extends Controller
 
         if ($user->hasEnabledTwoFactorAuthentication()) {
             $tempToken = Str::random(40);
-            Cache::put("2fa_challenge:{$tempToken}", $user->id, 300);
+            Cache::put("2fa_challenge:{$tempToken}", $user->id, self::TWO_FACTOR_CHALLENGE_TTL);
 
             return response()->json([
                 'requires_2fa' => true,

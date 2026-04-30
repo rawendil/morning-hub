@@ -42,7 +42,7 @@ test('returns 422 with invalid 2fa code', function () {
     $this->postJson('/api/auth/two-factor', [
         'temp_token' => $tempToken,
         'code' => '000000',
-    ])->assertUnprocessable();
+    ])->assertUnprocessable()->assertJsonValidationErrors(['code']);
 });
 
 test('returns 422 when temp_token expired or not found', function () {
@@ -72,4 +72,16 @@ test('temp_token is deleted after successful verification', function () {
     ]);
 
     expect(Cache::has("2fa_challenge:{$tempToken}"))->toBeFalse();
+});
+
+test('returns 422 when temp_token is missing', function () {
+    $this->postJson('/api/auth/two-factor', [
+        'code' => '123456',
+    ])->assertUnprocessable()->assertJsonValidationErrors(['temp_token']);
+});
+
+test('returns 422 when code is missing', function () {
+    $this->postJson('/api/auth/two-factor', [
+        'temp_token' => 'some-token',
+    ])->assertUnprocessable()->assertJsonValidationErrors(['code']);
 });

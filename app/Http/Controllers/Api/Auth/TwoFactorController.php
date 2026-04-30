@@ -34,7 +34,15 @@ class TwoFactorController extends Controller
 
         $user = User::findOrFail($userId);
 
+        if (! $user->two_factor_secret) {
+            Cache::forget($cacheKey);
+            throw ValidationException::withMessages([
+                'temp_token' => [__('The session has expired. Please log in again.')],
+            ]);
+        }
+
         if (! $this->provider->verify(decrypt($user->two_factor_secret), $request->code)) {
+            Cache::forget($cacheKey);
             throw ValidationException::withMessages([
                 'code' => [__('The provided two factor authentication code was invalid.')],
             ]);
