@@ -12,6 +12,11 @@ use App\Http\Controllers\Api\ClickUpConnectionController;
 use App\Http\Controllers\Api\GoogleCalendarApiController;
 use App\Http\Controllers\Api\GoogleCalendarConnectionController;
 use App\Http\Controllers\Api\RoutineBlockController;
+use App\Http\Controllers\Api\Settings\AppearanceController;
+use App\Http\Controllers\Api\Settings\PasswordController;
+use App\Http\Controllers\Api\Settings\ProfileController;
+use App\Http\Controllers\Api\Settings\TwoFactorAuthenticationController;
+use App\Http\Controllers\Api\TodaysTasksConfigController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -61,4 +66,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/morning-hub/clickup/{connection}/tasks/{taskId}/comments', [ClickUpApiController::class, 'comments']);
         Route::get('/morning-hub/clickup/{connection}/statuses', [ClickUpApiController::class, 'statuses']);
     });
+
+    Route::get('/morning-hub/todays-tasks', [TodaysTasksConfigController::class, 'index']);
+    Route::put('/morning-hub/todays-tasks', [TodaysTasksConfigController::class, 'update']);
+
+    Route::get('/settings/profile', [ProfileController::class, 'show']);
+    Route::patch('/settings/profile', [ProfileController::class, 'update']);
+    Route::delete('/settings/profile', [ProfileController::class, 'destroy']);
+
+    Route::put('/settings/password', [PasswordController::class, 'update'])->middleware('throttle:6,1');
+
+    Route::get('/settings/two-factor', [TwoFactorAuthenticationController::class, 'show']);
+
+    Route::get('/settings/appearance', [AppearanceController::class, 'show']);
+    Route::patch('/settings/appearance', [AppearanceController::class, 'update']);
 });
