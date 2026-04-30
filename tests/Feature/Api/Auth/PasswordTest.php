@@ -22,6 +22,7 @@ test('forgot password returns 204 even for unknown email', function () {
 
 test('reset password with valid token updates password', function () {
     $user = User::factory()->create();
+    $originalPassword = $user->password;
     $token = Password::createToken($user);
 
     $this->postJson('/api/auth/reset-password', [
@@ -30,6 +31,8 @@ test('reset password with valid token updates password', function () {
         'password' => 'NewPassword1!',
         'password_confirmation' => 'NewPassword1!',
     ])->assertNoContent();
+
+    expect($user->fresh()->password)->not->toBe($originalPassword);
 });
 
 test('reset password with invalid token returns 422', function () {
