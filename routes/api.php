@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\ForgotPasswordController;
+use App\Http\Controllers\Api\Auth\GoogleAuthController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
@@ -14,3 +15,4 @@ Route::post('/auth/register', RegisterController::class)->name('api.auth.registe
 Route::middleware('auth:sanctum')->post('/auth/logout', LogoutController::class)->name('api.auth.logout');
 Route::post('/auth/forgot-password', ForgotPasswordController::class)->name('api.auth.forgot-password')->middleware('throttle:5,1');
 Route::post('/auth/reset-password', ResetPasswordController::class)->name('api.auth.reset-password')->middleware('throttle:5,1');
+Route::post('/auth/google', GoogleAuthController::class)->name('api.auth.google')->middleware('throttle:10,1');

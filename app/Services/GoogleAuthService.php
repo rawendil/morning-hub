@@ -134,6 +134,48 @@ class GoogleAuthService
         ]);
     }
 
+    /**
+     * Handle API login via Google access token (stateless, frontend-initiated OAuth).
+     *
+     * @return array{user: User, is_new: bool}
+     */
+    public function handleApiLogin(string $accessToken): array
+    {
+        /** @var GoogleProvider $provider */
+        $provider = Socialite::driver('google');
+        $googleUser = $provider->stateless()->userFromToken($accessToken);
+
+        return DB::transaction(function () use ($googleUser) {
+            $user = User::where('google_id', $googleUser->getId())->first();
+            if ($user) {
+                $this->updateAvatar($user, $googleUser);
+
+                return ['user' => $user, 'is_new' => false];
+            }
+
+            $user = User::where('email', $googleUser->getEmail())->first();
+            if ($user) {
+                $user->forceFill([
+                    'google_id' => $googleUser->getId(),
+                    'google_avatar' => $googleUser->getAvatar(),
+                    'email_verified_at' => $user->email_verified_at ?? now(),
+                ])->save();
+
+                return ['user' => $user, 'is_new' => false];
+            }
+
+            $user = User::create([
+                'name' => $googleUser->getName(),
+                'email' => $googleUser->getEmail(),
+                'google_id' => $googleUser->getId(),
+                'google_avatar' => $googleUser->getAvatar(),
+                'email_verified_at' => now(),
+            ]);
+
+            return ['user' => $user, 'is_new' => true];
+        });
+    }
+
     private function driver(): GoogleProvider
     {
         /** @var GoogleProvider */
