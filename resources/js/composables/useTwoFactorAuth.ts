@@ -1,6 +1,6 @@
 import type { ComputedRef, Ref } from 'vue';
 import { computed, ref } from 'vue';
-import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
+import axiosInstance from '@/lib/axios';
 
 export type UseTwoFactorAuthReturn = {
     qrCodeSvg: Ref<string | null>;
@@ -17,18 +17,6 @@ export type UseTwoFactorAuthReturn = {
     fetchRecoveryCodes: () => Promise<void>;
 };
 
-const fetchJson = async <T>(url: string): Promise<T> => {
-    const response = await fetch(url, {
-        headers: { Accept: 'application/json' },
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status}`);
-    }
-
-    return response.json();
-};
-
 const errors = ref<string[]>([]);
 const manualSetupKey = ref<string | null>(null);
 const qrCodeSvg = ref<string | null>(null);
@@ -41,11 +29,10 @@ const hasSetupData = computed<boolean>(
 export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     const fetchQrCode = async (): Promise<void> => {
         try {
-            const { svg } = await fetchJson<{ svg: string; url: string }>(
-                qrCode.url(),
+            const { data } = await axiosInstance.get<{ svg: string; url: string }>(
+                '/user/two-factor-qr-code',
             );
-
-            qrCodeSvg.value = svg;
+            qrCodeSvg.value = data.svg;
         } catch {
             errors.value.push('Failed to fetch QR code');
             qrCodeSvg.value = null;
@@ -54,11 +41,10 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
     const fetchSetupKey = async (): Promise<void> => {
         try {
-            const { secretKey: key } = await fetchJson<{ secretKey: string }>(
-                secretKey.url(),
+            const { data } = await axiosInstance.get<{ secretKey: string }>(
+                '/user/two-factor-secret-key',
             );
-
-            manualSetupKey.value = key;
+            manualSetupKey.value = data.secretKey;
         } catch {
             errors.value.push('Failed to fetch a setup key');
             manualSetupKey.value = null;
@@ -84,9 +70,8 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     const fetchRecoveryCodes = async (): Promise<void> => {
         try {
             clearErrors();
-            recoveryCodesList.value = await fetchJson<string[]>(
-                recoveryCodes.url(),
-            );
+            const { data } = await axiosInstance.get<string[]>('/user/two-factor-recovery-codes');
+            recoveryCodesList.value = data;
         } catch {
             errors.value.push('Failed to fetch recovery codes');
             recoveryCodesList.value = [];
