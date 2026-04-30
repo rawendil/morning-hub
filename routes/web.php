@@ -16,10 +16,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Google login — server-side redirect (OAuth state requires session)
-Route::middleware('guest')->group(function () {
-    Route::get('auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirect'])->name('google.redirect');
-    Route::get('auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'callback'])->name('google.callback');
-});
+Route::get('auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirect'])->name('google.redirect')->middleware('throttle:10,1');
+Route::get('auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'callback'])->name('google.callback');
 
 // Google account linking — server-side redirect (same reason)
 Route::middleware(['auth', 'verified'])->group(function () {
