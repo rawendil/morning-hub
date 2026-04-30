@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
 import { toast } from 'vue-sonner';
 import Heading from '@/components/Heading.vue';
+import { Skeleton } from '@/components/ui/skeleton';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskDetail from '@/components/morning-hub/ClickUpTaskDetail.vue';
 import DashboardBlockRenderer from '@/components/morning-hub/DashboardBlockRenderer.vue';
@@ -25,6 +26,7 @@ import type {
 
 const { t } = useTranslations();
 
+const loading = ref(true);
 const blocks = ref<RoutineBlock[]>([]);
 const blockTasksData = ref<Record<number, BlockTasksData>>({});
 const blockFeedData = ref<Record<number, BlockFeedData>>({});
@@ -47,26 +49,30 @@ function getEventsData(blockId: number): BlockGoogleCalendarData | undefined {
 }
 
 onMounted(async () => {
-    const { data } = await axiosInstance.get('/dashboard');
-    blocks.value = data.blocks ?? [];
+    try {
+        const { data } = await axiosInstance.get('/dashboard');
+        blocks.value = data.blocks ?? [];
 
-    if (data.blocks_data) {
-        for (const [key, value] of Object.entries(data.blocks_data)) {
-            const match = key.match(/^tasks_(\d+)$/);
-            if (match) {
-                blockTasksData.value[Number(match[1])] = value as BlockTasksData;
-                continue;
-            }
-            const feedMatch = key.match(/^feed_(\d+)$/);
-            if (feedMatch) {
-                blockFeedData.value[Number(feedMatch[1])] = value as BlockFeedData;
-                continue;
-            }
-            const eventsMatch = key.match(/^events_(\d+)$/);
-            if (eventsMatch) {
-                blockEventsData.value[Number(eventsMatch[1])] = value as BlockGoogleCalendarData;
+        if (data.blocks_data) {
+            for (const [key, value] of Object.entries(data.blocks_data)) {
+                const match = key.match(/^tasks_(\d+)$/);
+                if (match) {
+                    blockTasksData.value[Number(match[1])] = value as BlockTasksData;
+                    continue;
+                }
+                const feedMatch = key.match(/^feed_(\d+)$/);
+                if (feedMatch) {
+                    blockFeedData.value[Number(feedMatch[1])] = value as BlockFeedData;
+                    continue;
+                }
+                const eventsMatch = key.match(/^events_(\d+)$/);
+                if (eventsMatch) {
+                    blockEventsData.value[Number(eventsMatch[1])] = value as BlockGoogleCalendarData;
+                }
             }
         }
+    } finally {
+        loading.value = false;
     }
 });
 
@@ -149,8 +155,14 @@ watch(
                 :description="t('Twój codzienny panel rutyny.')"
             />
 
+            <div v-if="loading" class="space-y-3">
+                <Skeleton class="h-24 w-full rounded-lg" />
+                <Skeleton class="h-24 w-full rounded-lg" />
+                <Skeleton class="h-24 w-full rounded-lg" />
+            </div>
+
             <div
-                v-if="blocks.length === 0"
+                v-else-if="blocks.length === 0"
                 class="rounded-lg border border-dashed p-8 text-center"
             >
                 <p class="text-muted-foreground">
