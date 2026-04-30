@@ -22,20 +22,20 @@ A personal morning routine dashboard that helps you organize tasks, track habits
 **Backend:**
 
 - PHP 8.3 / Laravel 12
-- Inertia.js v2 (server-side)
-- Laravel Fortify (authentication)
-- Laravel Wayfinder (type-safe routes)
+- REST JSON API with Laravel Sanctum (Bearer token auth)
+- Laravel Fortify (authentication logic)
 - SQLite
 - Pest 4 (testing)
 
 **Frontend:**
 
-- Vue 3 + TypeScript
-- Inertia.js v2 (client-side)
+- Vue 3 + TypeScript (SPA)
+- Vue Router 4 (client-side routing)
+- Pinia (state management)
+- Axios (HTTP client with Bearer token interceptor)
 - Tailwind CSS v4
 - shadcn-vue (Reka UI)
 - Lucide icons
-- VueUse
 
 ## Requirements
 
@@ -96,9 +96,9 @@ composer run dev
 ### Authentication
 
 - Password-based login and Google OAuth (via Laravel Socialite) are supported side-by-side — you can link a Google account to an existing password account and unlink it at any time.
-- Sessions are stored server-side in the database (not in cookies) with a 120-minute lifetime.
-- CSRF protection is enabled on all state-changing requests via encrypted cookies.
-- Login attempts are rate-limited to 5 requests per minute (Laravel Fortify default).
+- Authentication uses Sanctum Personal Access Tokens stored in `localStorage`. Tokens are sent as `Authorization: Bearer` headers on every API request.
+- A 401 response from any API endpoint automatically clears the token and redirects to the login page.
+- Login attempts are rate-limited to 10 requests per minute.
 
 ### Two-Factor Authentication (2FA)
 
