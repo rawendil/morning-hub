@@ -164,13 +164,14 @@ class GoogleAuthService
                 return ['user' => $user, 'is_new' => false];
             }
 
-            $user = User::create([
+            $user = new User;
+            $user->forceFill([
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
                 'google_id' => $googleUser->getId(),
                 'google_avatar' => $googleUser->getAvatar(),
                 'email_verified_at' => now(),
-            ]);
+            ])->save();
 
             return ['user' => $user, 'is_new' => true];
         });

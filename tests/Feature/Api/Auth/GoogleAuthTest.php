@@ -18,7 +18,7 @@ test('existing user can login with valid google access token', function () {
 
     $this->postJson('/api/auth/google', ['access_token' => 'valid-token'])
         ->assertOk()
-        ->assertJsonStructure(['token', 'user' => ['id', 'name', 'email']]);
+        ->assertJsonStructure(['token', 'user' => ['id', 'name', 'email', 'google_avatar']]);
 });
 
 test('new user is registered via google', function () {
