@@ -28,6 +28,7 @@ jobs:
             npm install
             npm run build
             php83 $(which composer) install --no-dev --optimize-autoloader
+            php83 artisan optimize:clear
             php83 artisan migrate --force
             php83 artisan config:cache
             php83 artisan route:cache
