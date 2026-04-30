@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\TwoFactorController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/login', LoginController::class)->name('api.auth.login')->middleware('throttle:10,1');
@@ -16,3 +17,5 @@ Route::middleware('auth:sanctum')->post('/auth/logout', LogoutController::class)
 Route::post('/auth/forgot-password', ForgotPasswordController::class)->name('api.auth.forgot-password')->middleware('throttle:5,1');
 Route::post('/auth/reset-password', ResetPasswordController::class)->name('api.auth.reset-password')->middleware('throttle:5,1');
 Route::post('/auth/google', GoogleAuthController::class)->name('api.auth.google')->middleware('throttle:10,1');
+
+Route::middleware('auth:sanctum')->get('/user', UserController::class)->name('api.user');
