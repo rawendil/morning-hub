@@ -20,7 +20,11 @@ class ClickUpService
 
     public function testConnection(): bool
     {
-        return $this->request('get', self::BASE_URL.'/team')->successful();
+        try {
+            return $this->request('get', self::BASE_URL.'/team')->successful();
+        } catch (\RuntimeException) {
+            return false;
+        }
     }
 
     /** @return array<int, array<string, mixed>> */
@@ -107,6 +111,7 @@ class ClickUpService
             if (isset($responses[$listId])) {
                 if ($responses[$listId]->status() === 401) {
                     $this->logAuthFailure("/list/{$listId}/task");
+                    throw new \RuntimeException('Token ClickUp jest nieważny lub wygasł. Połącz konto ponownie w ustawieniach.');
                 }
 
                 if ($responses[$listId]->ok()) {
@@ -243,6 +248,7 @@ class ClickUpService
 
         if ($response->status() === 401) {
             $this->logAuthFailure(Str::after($url, self::BASE_URL));
+            throw new \RuntimeException('Token ClickUp jest nieważny lub wygasł. Połącz konto ponownie w ustawieniach.');
         }
 
         return $response;
