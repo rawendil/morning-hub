@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { RouterLink } from 'vue-router';
 import { computed } from 'vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { useTranslations } from '@/composables/useTranslations';
-import { toUrl } from '@/lib/utils';
-import { edit as editAppearance } from '@/routes/appearance';
-import { edit as editProfile } from '@/routes/profile';
-import { show } from '@/routes/two-factor';
-import { edit as editPassword } from '@/routes/user-password';
 import type { NavItem } from '@/types';
 
 const { t } = useTranslations();
@@ -18,19 +13,19 @@ const { t } = useTranslations();
 const sidebarNavItems = computed<NavItem[]>(() => [
     {
         title: t('Profil'),
-        href: editProfile(),
+        href: '/settings/profile',
     },
     {
         title: t('Hasło'),
-        href: editPassword(),
+        href: '/settings/password',
     },
     {
         title: t('Dwuskładnikowe'),
-        href: show(),
+        href: '/settings/two-factor',
     },
     {
         title: t('Wygląd'),
-        href: editAppearance(),
+        href: '/settings/appearance',
     },
 ]);
 
@@ -52,7 +47,7 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
                 >
                     <Button
                         v-for="item in sidebarNavItems"
-                        :key="toUrl(item.href)"
+                        :key="item.href"
                         variant="ghost"
                         :class="[
                             'w-full justify-start',
@@ -60,10 +55,10 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
                         ]"
                         as-child
                     >
-                        <Link :href="item.href">
+                        <RouterLink :to="item.href">
                             <component :is="item.icon" class="h-4 w-4" />
                             {{ item.title }}
-                        </Link>
+                        </RouterLink>
                     </Button>
                 </nav>
             </aside>

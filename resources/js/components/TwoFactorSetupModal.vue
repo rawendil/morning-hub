@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Form } from '@inertiajs/vue3';
 import { useClipboard } from '@vueuse/core';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import axiosInstance from '@/lib/axios';
 import AlertError from '@/components/AlertError.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
 import { useTranslations } from '@/composables/useTranslations';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
 
 type Props = {
@@ -42,6 +41,27 @@ const { qrCodeSvg, manualSetupKey, clearSetupData, fetchSetupData, errors } =
 
 const showVerificationStep = ref(false);
 const code = ref<string>('');
+const confirmErrors = ref<string[]>([]);
+const confirmProcessing = ref(false);
+
+async function submitConfirmation() {
+    confirmProcessing.value = true;
+    confirmErrors.value = [];
+    try {
+        await axiosInstance.post('/user/confirmed-two-factor-authentication', { code: code.value });
+        code.value = '';
+        isOpen.value = false;
+    } catch (error: any) {
+        code.value = '';
+        if (error.response?.data?.errors?.code) {
+            confirmErrors.value = error.response.data.errors.code;
+        } else {
+            confirmErrors.value = [t('Nieprawidłowy kod. Spróbuj ponownie.')];
+        }
+    } finally {
+        confirmProcessing.value = false;
+    }
+}
 
 const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
 
@@ -240,15 +260,7 @@ watch(
                 </template>
 
                 <template v-else>
-                    <Form
-                        v-bind="confirm.form()"
-                        error-bag="confirmTwoFactorAuthentication"
-                        reset-on-error
-                        @finish="code = ''"
-                        @success="isOpen = false"
-                        v-slot="{ errors, processing }"
-                    >
-                        <input type="hidden" name="code" :value="code" />
+                    <form @submit.prevent="submitConfirmation">
                         <div
                             ref="pinInputContainerRef"
                             class="relative w-full space-y-3"
@@ -260,7 +272,7 @@ watch(
                                     id="otp"
                                     v-model="code"
                                     :maxlength="6"
-                                    :disabled="processing"
+                                    :disabled="confirmProcessing"
                                 >
                                     <InputOTPGroup>
                                         <InputOTPSlot
@@ -270,7 +282,7 @@ watch(
                                         />
                                     </InputOTPGroup>
                                 </InputOTP>
-                                <InputError :message="errors?.code" />
+                                <InputError :message="confirmErrors[0]" />
                             </div>
 
                             <div class="flex w-full items-center space-x-5">
@@ -279,20 +291,20 @@ watch(
                                     variant="outline"
                                     class="w-auto flex-1"
                                     @click="showVerificationStep = false"
-                                    :disabled="processing"
+                                    :disabled="confirmProcessing"
                                 >
                                     {{ t('Wstecz') }}
                                 </Button>
                                 <Button
                                     type="submit"
                                     class="w-auto flex-1"
-                                    :disabled="processing || code.length < 6"
+                                    :disabled="confirmProcessing || code.length < 6"
                                 >
                                     {{ t('Potwierdź') }}
                                 </Button>
                             </div>
                         </div>
-                    </Form>
+                    </form>
                 </template>
             </div>
         </DialogContent>

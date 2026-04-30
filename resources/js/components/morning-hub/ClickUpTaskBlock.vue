@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
 import { Plus, RefreshCw, SkipForward } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
+import axiosInstance from '@/lib/axios';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskCard from '@/components/morning-hub/ClickUpTaskCard.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
@@ -9,14 +9,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useClickUpApi } from '@/composables/useClickUpApi';
 import { useTranslations } from '@/composables/useTranslations';
 import { resolveBlockIcon } from '@/lib/block-icons';
-import {
-    createTask as createTaskRoute,
-    statuses as statusesRoute,
-    updateTask as updateTaskRoute,
-} from '@/routes/morning-hub/clickup';
 import type {
     BlockTasksData,
     ClickUpStatus,
@@ -41,12 +35,11 @@ const emit = defineEmits<{
     timerResume: [];
     timerReset: [];
     timerSkip: [];
+    refresh: [];
 }>();
 
 const { t } = useTranslations();
-const { fetchJson, postJson, putJson } = useClickUpApi();
 
-const refreshing = ref(false);
 const availableStatuses = ref<ClickUpStatus[]>([]);
 const showCreateForm = ref(false);
 const newTaskName = ref('');
@@ -56,29 +49,23 @@ onMounted(async () => {
     if (
         !props.block.clickup_connection_id ||
         !props.block.clickup_connection?.default_list_id
-    )
+    ) {
         return;
+    }
     try {
-        availableStatuses.value = await fetchJson<ClickUpStatus[]>(
-            statusesRoute.url(props.block.clickup_connection_id, {
-                query: {
-                    list_id: props.block.clickup_connection.default_list_id,
-                },
-            }),
+        const id = props.block.clickup_connection_id;
+        const listId = props.block.clickup_connection.default_list_id;
+        const response = await axiosInstance.get(
+            `/morning-hub/clickup/${id}/statuses?list_id=${listId}`,
         );
+        availableStatuses.value = response.data.data;
     } catch {
         // Silently fail — status dropdown will be disabled
     }
 });
 
 function refresh() {
-    refreshing.value = true;
-    router.reload({
-        only: [`tasks_${props.block.id}`],
-        onFinish: () => {
-            refreshing.value = false;
-        },
-    });
+    emit('refresh');
 }
 
 async function handleUpdateTask(taskId: string, payload: UpdateTaskPayload) {
@@ -105,12 +92,10 @@ async function handleUpdateTask(taskId: string, payload: UpdateTaskPayload) {
     }
 
     try {
-        await putJson(
-            updateTaskRoute.url({
-                connection: props.block.clickup_connection_id,
-                taskId,
-            }),
-            payload as Record<string, unknown>,
+        const id = props.block.clickup_connection_id;
+        await axiosInstance.put(
+            `/morning-hub/clickup/${id}/tasks/${taskId}`,
+            payload,
         );
     } catch {
         // Rollback on error
@@ -126,7 +111,8 @@ async function handleCreateTask() {
 
     creating.value = true;
     try {
-        await postJson(createTaskRoute.url(props.block.clickup_connection_id), {
+        const id = props.block.clickup_connection_id;
+        await axiosInstance.post(`/morning-hub/clickup/${id}/tasks`, {
             list_id: listId,
             name: newTaskName.value.trim(),
         });
@@ -212,13 +198,9 @@ async function handleCreateTask() {
                     variant="ghost"
                     size="icon"
                     class="h-8 w-8"
-                    :disabled="refreshing"
                     @click="refresh"
                 >
-                    <RefreshCw
-                        class="h-4 w-4"
-                        :class="{ 'animate-spin': refreshing }"
-                    />
+                    <RefreshCw class="h-4 w-4" />
                 </Button>
             </div>
         </CardHeader>

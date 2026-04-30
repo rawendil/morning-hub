@@ -1,21 +1,22 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import {
-    linkRedirect,
-    unlink,
-} from '@/actions/App/Http/Controllers/Auth/GoogleAuthController';
+import axiosInstance from '@/lib/axios';
 import Heading from '@/components/Heading.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { useAuthStore } from '@/stores/auth';
 import { useTranslations } from '@/composables/useTranslations';
 
 const { t } = useTranslations();
+const auth = useAuthStore();
+const hasGoogle = computed(() => !!auth.user?.google_id);
+const hasPassword = computed(() => true);
 
-const page = usePage();
-const hasGoogle = computed(() => page.props.auth.hasGoogle);
-const hasPassword = computed(() => page.props.auth.hasPassword);
+async function unlinkGoogle() {
+    await axiosInstance.delete('/auth/google/unlink');
+    await auth.initialize();
+}
 </script>
 
 <template>
@@ -65,26 +66,18 @@ const hasPassword = computed(() => page.props.auth.hasPassword);
 
             <div>
                 <template v-if="hasGoogle">
-                    <Link
-                        :href="unlink.url()"
-                        method="delete"
-                        as="button"
+                    <Button
+                        variant="outline"
+                        size="sm"
                         :disabled="!hasPassword"
+                        :title="!hasPassword ? t('Najpierw ustaw hasło') : ''"
+                        @click="unlinkGoogle"
                     >
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            :disabled="!hasPassword"
-                            :title="
-                                !hasPassword ? t('Najpierw ustaw hasło') : ''
-                            "
-                        >
-                            {{ t('Odłącz') }}
-                        </Button>
-                    </Link>
+                        {{ t('Odłącz') }}
+                    </Button>
                 </template>
                 <template v-else>
-                    <a :href="linkRedirect.url()">
+                    <a :href="'/auth/google/link'">
                         <Button variant="outline" size="sm">
                             {{ t('Połącz') }}
                         </Button>

@@ -1,24 +1,16 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { ClipboardList, Repeat, Lightbulb, Github } from 'lucide-vue-next';
+import { RouterLink } from 'vue-router';
+import { ClipboardList, Github, Lightbulb, Repeat } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuthStore } from '@/stores/auth';
 import { useTranslations } from '@/composables/useTranslations';
-import { dashboard, login, register } from '@/routes';
-
-withDefaults(
-    defineProps<{
-        canRegister: boolean;
-    }>(),
-    {
-        canRegister: true,
-    },
-);
 
 const { t } = useTranslations();
+const auth = useAuthStore();
 
 const features = computed(() => [
     {
@@ -46,8 +38,6 @@ const features = computed(() => [
 </script>
 
 <template>
-    <Head title="Morning Hub" />
-
     <div class="flex min-h-screen flex-col bg-background text-foreground">
         <!-- Nav -->
         <header class="flex items-center justify-between px-6 py-4 lg:px-10">
@@ -67,20 +57,20 @@ const features = computed(() => [
                     <Github class="h-5 w-5" />
                 </a>
                 <LanguageSwitcher />
-                <template v-if="$page.props.auth.user">
-                    <Link :href="dashboard()">
+                <template v-if="auth.isAuthenticated">
+                    <RouterLink to="/dashboard">
                         <Button size="sm">{{ t('Panel') }}</Button>
-                    </Link>
+                    </RouterLink>
                 </template>
                 <template v-else>
-                    <Link :href="login.url()">
+                    <RouterLink to="/login">
                         <Button variant="ghost" size="sm">{{
                             t('Zaloguj się')
                         }}</Button>
-                    </Link>
-                    <Link v-if="canRegister" :href="register.url()">
+                    </RouterLink>
+                    <RouterLink to="/register">
                         <Button size="sm">{{ t('Rejestracja') }}</Button>
-                    </Link>
+                    </RouterLink>
                 </template>
             </nav>
         </header>
@@ -102,15 +92,12 @@ const features = computed(() => [
                     }}
                 </p>
                 <div>
-                    <Link v-if="$page.props.auth.user" :href="dashboard()">
+                    <RouterLink v-if="auth.isAuthenticated" to="/dashboard">
                         <Button size="lg">{{ t('Przejdź do panelu') }}</Button>
-                    </Link>
-                    <Link v-else-if="canRegister" :href="register.url()">
+                    </RouterLink>
+                    <RouterLink v-else to="/register">
                         <Button size="lg">{{ t('Rozpocznij') }}</Button>
-                    </Link>
-                    <Link v-else :href="login.url()">
-                        <Button size="lg">{{ t('Zaloguj się') }}</Button>
-                    </Link>
+                    </RouterLink>
                 </div>
             </div>
 

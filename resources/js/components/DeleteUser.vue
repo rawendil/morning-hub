@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Form } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useTemplateRef } from 'vue';
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import axiosInstance from '@/lib/axios';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -20,7 +21,34 @@ import { Label } from '@/components/ui/label';
 import { useTranslations } from '@/composables/useTranslations';
 
 const { t } = useTranslations();
+const router = useRouter();
 const passwordInput = useTemplateRef('passwordInput');
+
+const password = ref('');
+const errors = ref<Record<string, string[]>>({});
+const isLoading = ref(false);
+
+async function submit() {
+    isLoading.value = true;
+    errors.value = {};
+    try {
+        await axiosInstance.delete('/settings/profile', { data: { password: password.value } });
+        localStorage.removeItem('token');
+        router.push('/');
+    } catch (error: any) {
+        if (error.response?.status === 422) {
+            errors.value = error.response.data.errors;
+        }
+        passwordInput.value?.$el?.focus();
+    } finally {
+        isLoading.value = false;
+    }
+}
+
+function reset() {
+    password.value = '';
+    errors.value = {};
+}
 </script>
 
 <template>
@@ -50,16 +78,7 @@ const passwordInput = useTemplateRef('passwordInput');
                     >
                 </DialogTrigger>
                 <DialogContent>
-                    <Form
-                        v-bind="ProfileController.destroy.form()"
-                        reset-on-success
-                        @error="() => passwordInput?.$el?.focus()"
-                        :options="{
-                            preserveScroll: true,
-                        }"
-                        class="space-y-6"
-                        v-slot="{ errors, processing, reset, clearErrors }"
-                    >
+                    <form @submit.prevent="submit" class="space-y-6">
                         <DialogHeader class="space-y-3">
                             <DialogTitle>{{
                                 t('Czy na pewno chcesz usunąć swoje konto?')
@@ -80,23 +99,19 @@ const passwordInput = useTemplateRef('passwordInput');
                             <Input
                                 id="password"
                                 type="password"
-                                name="password"
                                 ref="passwordInput"
+                                v-model="password"
                                 :placeholder="t('Hasło')"
                             />
-                            <InputError :message="errors.password" />
+                            <InputError :message="errors['password']?.[0]" />
                         </div>
 
                         <DialogFooter class="gap-2">
                             <DialogClose as-child>
                                 <Button
                                     variant="secondary"
-                                    @click="
-                                        () => {
-                                            clearErrors();
-                                            reset();
-                                        }
-                                    "
+                                    type="button"
+                                    @click="reset"
                                 >
                                     {{ t('Anuluj') }}
                                 </Button>
@@ -105,13 +120,13 @@ const passwordInput = useTemplateRef('passwordInput');
                             <Button
                                 type="submit"
                                 variant="destructive"
-                                :disabled="processing"
+                                :disabled="isLoading"
                                 data-test="confirm-delete-user-button"
                             >
                                 {{ t('Usuń konto') }}
                             </Button>
                         </DialogFooter>
-                    </Form>
+                    </form>
                 </DialogContent>
             </Dialog>
         </div>

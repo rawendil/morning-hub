@@ -1,24 +1,16 @@
-import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import { useAuthStore } from '@/stores/auth';
 
 export function useTranslations() {
-    const page = usePage();
-    const translations = computed(
-        () => page.props.translations as Record<string, string>,
-    );
-    const locale = computed(() => page.props.locale as string);
+    const auth = useAuthStore();
+    const locale = computed(() => auth.locale);
 
     function t(key: string, replacements?: Record<string, string>): string {
-        let value = translations.value[key] ?? key;
-
-        if (replacements) {
-            for (const [placeholder, replacement] of Object.entries(
-                replacements,
-            )) {
-                value = value.replace(`:${placeholder}`, replacement);
-            }
+        if (!replacements) { return key; }
+        let value = key;
+        for (const [placeholder, replacement] of Object.entries(replacements)) {
+            value = value.replace(`:${placeholder}`, replacement);
         }
-
         return value;
     }
 

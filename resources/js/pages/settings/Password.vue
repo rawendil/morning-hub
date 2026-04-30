@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { Form, Head, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
-import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
+import { computed, ref } from 'vue';
+import axiosInstance from '@/lib/axios';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -10,26 +9,53 @@ import { Label } from '@/components/ui/label';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { edit } from '@/routes/user-password';
 import type { BreadcrumbItem } from '@/types';
 
 const { t } = useTranslations();
 
-const page = usePage();
-const hasPassword = computed(() => page.props.auth.hasPassword);
+const hasPassword = true;
+
+const currentPassword = ref('');
+const password = ref('');
+const passwordConfirmation = ref('');
+const errors = ref<Record<string, string[]>>({});
+const isLoading = ref(false);
+const recentlySuccessful = ref(false);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     {
         title: t('Ustawienia hasła'),
-        href: edit(),
+        href: '/settings/password',
     },
 ]);
+
+async function updatePassword() {
+    isLoading.value = true;
+    errors.value = {};
+    recentlySuccessful.value = false;
+    try {
+        await axiosInstance.put('/settings/password', {
+            current_password: currentPassword.value,
+            password: password.value,
+            password_confirmation: passwordConfirmation.value,
+        });
+        recentlySuccessful.value = true;
+        currentPassword.value = '';
+        password.value = '';
+        passwordConfirmation.value = '';
+        setTimeout(() => { recentlySuccessful.value = false; }, 2000);
+    } catch (error: any) {
+        if (error.response?.status === 422) {
+            errors.value = error.response.data.errors;
+        }
+    } finally {
+        isLoading.value = false;
+    }
+}
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head :title="t('Ustawienia hasła')" />
-
         <h1 class="sr-only">{{ t('Ustawienia hasła') }}</h1>
 
         <SettingsLayout>
@@ -46,19 +72,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     "
                 />
 
-                <Form
-                    v-bind="PasswordController.update.form()"
-                    :options="{
-                        preserveScroll: true,
-                    }"
-                    reset-on-success
-                    :reset-on-error="[
-                        'password',
-                        'password_confirmation',
-                        'current_password',
-                    ]"
+                <form
+                    @submit.prevent="updatePassword"
                     class="space-y-6"
-                    v-slot="{ errors, processing, recentlySuccessful }"
                 >
                     <div v-if="hasPassword" class="grid gap-2">
                         <Label for="current_password">{{
@@ -66,13 +82,13 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                         }}</Label>
                         <Input
                             id="current_password"
-                            name="current_password"
                             type="password"
                             class="mt-1 block w-full"
+                            v-model="currentPassword"
                             autocomplete="current-password"
                             :placeholder="t('Aktualne hasło')"
                         />
-                        <InputError :message="errors.current_password" />
+                        <InputError :message="errors['current_password']?.[0]" />
                     </div>
 
                     <div class="grid gap-2">
@@ -81,13 +97,13 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                         }}</Label>
                         <Input
                             id="password"
-                            name="password"
                             type="password"
                             class="mt-1 block w-full"
+                            v-model="password"
                             autocomplete="new-password"
                             :placeholder="t('Nowe hasło')"
                         />
-                        <InputError :message="errors.password" />
+                        <InputError :message="errors['password']?.[0]" />
                     </div>
 
                     <div class="grid gap-2">
@@ -96,18 +112,18 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                         }}</Label>
                         <Input
                             id="password_confirmation"
-                            name="password_confirmation"
                             type="password"
                             class="mt-1 block w-full"
+                            v-model="passwordConfirmation"
                             autocomplete="new-password"
                             :placeholder="t('Potwierdź hasło')"
                         />
-                        <InputError :message="errors.password_confirmation" />
+                        <InputError :message="errors['password_confirmation']?.[0]" />
                     </div>
 
                     <div class="flex items-center gap-4">
                         <Button
-                            :disabled="processing"
+                            :disabled="isLoading"
                             data-test="update-password-button"
                             >{{
                                 hasPassword
@@ -130,7 +146,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                             </p>
                         </Transition>
                     </div>
-                </Form>
+                </form>
             </div>
         </SettingsLayout>
     </AppLayout>

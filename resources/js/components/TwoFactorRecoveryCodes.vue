@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Form } from '@inertiajs/vue3';
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from 'lucide-vue-next';
 import { nextTick, onMounted, ref, useTemplateRef } from 'vue';
+import axiosInstance from '@/lib/axios';
 import AlertError from '@/components/AlertError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,12 +13,22 @@ import {
 } from '@/components/ui/card';
 import { useTranslations } from '@/composables/useTranslations';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { regenerateRecoveryCodes } from '@/routes/two-factor';
 
 const { t } = useTranslations();
 const { recoveryCodesList, fetchRecoveryCodes, errors } = useTwoFactorAuth();
 const isRecoveryCodesVisible = ref<boolean>(false);
 const recoveryCodeSectionRef = useTemplateRef('recoveryCodeSectionRef');
+const regenerating = ref(false);
+
+async function handleRegenerateCodes() {
+    regenerating.value = true;
+    try {
+        await axiosInstance.post('/user/two-factor-recovery-codes');
+        await fetchRecoveryCodes();
+    } finally {
+        regenerating.value = false;
+    }
+}
 
 const toggleRecoveryCodesVisibility = async () => {
     if (!isRecoveryCodesVisible.value && !recoveryCodesList.value.length) {
@@ -70,22 +80,15 @@ onMounted(async () => {
                     }}
                 </Button>
 
-                <Form
+                <Button
                     v-if="isRecoveryCodesVisible && recoveryCodesList.length"
-                    v-bind="regenerateRecoveryCodes.form()"
-                    method="post"
-                    :options="{ preserveScroll: true }"
-                    @success="fetchRecoveryCodes"
-                    #default="{ processing }"
+                    variant="secondary"
+                    type="button"
+                    :disabled="regenerating"
+                    @click="handleRegenerateCodes"
                 >
-                    <Button
-                        variant="secondary"
-                        type="submit"
-                        :disabled="processing"
-                    >
-                        <RefreshCw /> {{ t('Wygeneruj nowe kody') }}
-                    </Button>
-                </Form>
+                    <RefreshCw /> {{ t('Wygeneruj nowe kody') }}
+                </Button>
             </div>
             <div
                 :class="[
