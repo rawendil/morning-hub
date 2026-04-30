@@ -40,7 +40,7 @@ test('link callback sets google_id on user', function () {
 
     $response = $this->actingAs($user)->get(route('google.link.callback'));
 
-    $response->assertRedirect(route('profile.edit'));
+    $response->assertRedirect('/settings/profile');
     $response->assertSessionHas('status');
 
     $user->refresh();
@@ -59,7 +59,7 @@ test('link callback rejects already used google_id', function () {
 
     $response = $this->actingAs($user)->get(route('google.link.callback'));
 
-    $response->assertRedirect(route('profile.edit'));
+    $response->assertRedirect('/settings/profile');
     $response->assertSessionHas('error');
 
     expect($user->refresh()->google_id)->toBeNull();
@@ -70,7 +70,7 @@ test('unlink removes google_id when user has password', function () {
 
     $response = $this->actingAs($user)->delete(route('google.unlink'));
 
-    $response->assertRedirect(route('profile.edit'));
+    $response->assertRedirect('/settings/profile');
     $response->assertSessionHas('status');
 
     $user->refresh();
@@ -83,7 +83,7 @@ test('unlink is blocked when user has no password', function () {
 
     $response = $this->actingAs($user)->delete(route('google.unlink'));
 
-    $response->assertRedirect(route('profile.edit'));
+    $response->assertRedirect('/settings/profile');
     $response->assertSessionHas('error');
 
     expect($user->refresh()->google_id)->not->toBeNull();
@@ -94,6 +94,6 @@ test('unlink is blocked when google is not linked', function () {
 
     $response = $this->actingAs($user)->delete(route('google.unlink'));
 
-    $response->assertRedirect(route('profile.edit'));
+    $response->assertRedirect('/settings/profile');
     $response->assertSessionHas('error');
 });

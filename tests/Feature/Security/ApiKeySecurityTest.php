@@ -21,17 +21,14 @@ test('TodaysTasksService filters out connections not owned by user', function ()
     expect($result['groups'][0]['connectionId'])->toBe($connectionA->id);
 });
 
-test('api_token is never exposed in connection index page props', function () {
+test('api_token is never exposed in connection index response', function () {
     $user = User::factory()->create();
     ClickUpConnection::factory()->for($user)->create(['api_token' => 'pk_secret_token']);
 
-    $this->actingAs($user)
-        ->get(route('morning-hub.clickup.index'))
+    $this->actingAs($user, 'sanctum')
+        ->getJson('/api/morning-hub/clickup')
         ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->has('connections', 1)
-            ->missing('connections.0.api_token')
-        );
+        ->assertJsonMissingPath('connections.0.api_token');
 });
 
 test('audit log is written when connection is created', function () {
@@ -44,8 +41,8 @@ test('audit log is written when connection is created', function () {
 
     $user = User::factory()->create();
 
-    $this->actingAs($user)
-        ->post(route('morning-hub.clickup.store'), [
+    $this->actingAs($user, 'sanctum')
+        ->postJson('/api/morning-hub/clickup/connections', [
             'name' => 'Audit Test',
             'api_token' => 'pk_audit_token',
         ]);
@@ -66,8 +63,8 @@ test('audit log is written when connection is deleted', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create(['name' => 'Delete Me']);
 
-    $this->actingAs($user)
-        ->delete(route('morning-hub.clickup.destroy', $connection));
+    $this->actingAs($user, 'sanctum')
+        ->deleteJson("/api/morning-hub/clickup/connections/{$connection->id}");
 
     expect(file_exists($logFile))->toBeTrue();
     $logContent = file_get_contents($logFile);
@@ -80,8 +77,8 @@ test('cross-user access to connection API proxy is forbidden', function () {
     $otherUser = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($otherUser)->create();
 
-    $this->actingAs($user)
-        ->get(route('morning-hub.clickup.workspaces', $connection))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/workspaces")
         ->assertForbidden();
 });
 
@@ -96,8 +93,8 @@ test('401 from provider is logged to security channel', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->post(route('morning-hub.clickup.test', $connection));
+    $this->actingAs($user, 'sanctum')
+        ->postJson("/api/morning-hub/clickup/connections/{$connection->id}/test");
 
     expect(file_exists($logFile))->toBeTrue();
     $logContent = file_get_contents($logFile);
@@ -111,15 +108,15 @@ test('store endpoint is rate limited', function () {
     $user = User::factory()->create();
 
     for ($i = 0; $i < 5; $i++) {
-        $this->actingAs($user)
-            ->post(route('morning-hub.clickup.store'), [
+        $this->actingAs($user, 'sanctum')
+            ->postJson('/api/morning-hub/clickup/connections', [
                 'name' => "Connection $i",
                 'api_token' => 'pk_valid_token',
             ]);
     }
 
-    $this->actingAs($user)
-        ->post(route('morning-hub.clickup.store'), [
+    $this->actingAs($user, 'sanctum')
+        ->postJson('/api/morning-hub/clickup/connections', [
             'name' => 'Connection overflow',
             'api_token' => 'pk_valid_token',
         ])

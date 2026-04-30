@@ -8,7 +8,7 @@ test('guest cannot access clickup api proxy', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->get(route('morning-hub.clickup.workspaces', $connection))->assertRedirect(route('login'));
+    $this->getJson("/api/morning-hub/clickup/{$connection->id}/workspaces")->assertUnauthorized();
 });
 
 test('user cannot access another users connection workspaces', function () {
@@ -16,8 +16,8 @@ test('user cannot access another users connection workspaces', function () {
     $otherUser = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($otherUser)->create();
 
-    $this->actingAs($user)
-        ->get(route('morning-hub.clickup.workspaces', $connection))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/workspaces")
         ->assertForbidden();
 });
 
@@ -31,8 +31,8 @@ test('user can fetch workspaces', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->get(route('morning-hub.clickup.workspaces', $connection))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/workspaces")
         ->assertOk()
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.id', '123')
@@ -49,8 +49,8 @@ test('user can fetch spaces for a workspace', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->get(route('morning-hub.clickup.spaces', ['connection' => $connection, 'workspace_id' => '123']))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/spaces?workspace_id=123")
         ->assertOk()
         ->assertJsonCount(1, 'data');
 });
@@ -59,8 +59,8 @@ test('spaces endpoint requires workspace_id', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->getJson(route('morning-hub.clickup.spaces', $connection))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/spaces")
         ->assertStatus(422);
 });
 
@@ -74,8 +74,8 @@ test('user can fetch folders for a space', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->get(route('morning-hub.clickup.folders', ['connection' => $connection, 'space_id' => 's1']))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/folders?space_id=s1")
         ->assertOk()
         ->assertJsonCount(1, 'data');
 });
@@ -90,8 +90,8 @@ test('user can fetch lists for a folder', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->get(route('morning-hub.clickup.lists', ['connection' => $connection, 'folder_id' => 'f1']))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/lists?folder_id=f1")
         ->assertOk()
         ->assertJsonCount(1, 'data');
 });
@@ -106,8 +106,8 @@ test('user can fetch folderless lists for a space', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->get(route('morning-hub.clickup.lists', ['connection' => $connection, 'space_id' => 's1']))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/lists?space_id=s1")
         ->assertOk()
         ->assertJsonCount(1, 'data');
 });
@@ -123,8 +123,8 @@ test('user can fetch task detail', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->get(route('morning-hub.clickup.task', ['connection' => $connection, 'taskId' => 't1']))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1")
         ->assertOk()
         ->assertJsonPath('data.id', 't1')
         ->assertJsonPath('data.name', 'Fix bug')
@@ -136,12 +136,10 @@ test('user cannot fetch task detail from another users connection', function () 
     $otherUser = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($otherUser)->create();
 
-    $this->actingAs($user)
-        ->get(route('morning-hub.clickup.task', ['connection' => $connection, 'taskId' => 't1']))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1")
         ->assertForbidden();
 });
-
-// --- Phase 3: Write operations ---
 
 test('user can update task status', function () {
     Http::fake(['https://api.clickup.com/api/v2/task/t1' => Http::response([
@@ -152,8 +150,8 @@ test('user can update task status', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->putJson(route('morning-hub.clickup.updateTask', ['connection' => $connection, 'taskId' => 't1']), [
+    $this->actingAs($user, 'sanctum')
+        ->putJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1", [
             'status' => 'in progress',
         ])
         ->assertOk()
@@ -169,8 +167,8 @@ test('user can update task priority', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->putJson(route('morning-hub.clickup.updateTask', ['connection' => $connection, 'taskId' => 't1']), [
+    $this->actingAs($user, 'sanctum')
+        ->putJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1", [
             'priority' => 2,
         ])
         ->assertOk();
@@ -180,8 +178,8 @@ test('update task validates priority range', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->putJson(route('morning-hub.clickup.updateTask', ['connection' => $connection, 'taskId' => 't1']), [
+    $this->actingAs($user, 'sanctum')
+        ->putJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1", [
             'priority' => 5,
         ])
         ->assertUnprocessable()
@@ -193,8 +191,8 @@ test('user cannot update task on another users connection', function () {
     $otherUser = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($otherUser)->create();
 
-    $this->actingAs($user)
-        ->putJson(route('morning-hub.clickup.updateTask', ['connection' => $connection, 'taskId' => 't1']), [
+    $this->actingAs($user, 'sanctum')
+        ->putJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1", [
             'status' => 'done',
         ])
         ->assertForbidden();
@@ -204,7 +202,7 @@ test('guest cannot update task', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->putJson(route('morning-hub.clickup.updateTask', ['connection' => $connection, 'taskId' => 't1']), [
+    $this->putJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1", [
         'status' => 'done',
     ])->assertUnauthorized();
 });
@@ -218,8 +216,8 @@ test('user can create task', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->postJson(route('morning-hub.clickup.createTask', $connection), [
+    $this->actingAs($user, 'sanctum')
+        ->postJson("/api/morning-hub/clickup/{$connection->id}/tasks", [
             'list_id' => 'l1',
             'name' => 'New task',
         ])
@@ -232,8 +230,8 @@ test('create task requires name and list_id', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->postJson(route('morning-hub.clickup.createTask', $connection), [])
+    $this->actingAs($user, 'sanctum')
+        ->postJson("/api/morning-hub/clickup/{$connection->id}/tasks", [])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['list_id', 'name']);
 });
@@ -243,8 +241,8 @@ test('user cannot create task on another users connection', function () {
     $otherUser = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($otherUser)->create();
 
-    $this->actingAs($user)
-        ->postJson(route('morning-hub.clickup.createTask', $connection), [
+    $this->actingAs($user, 'sanctum')
+        ->postJson("/api/morning-hub/clickup/{$connection->id}/tasks", [
             'list_id' => 'l1',
             'name' => 'New task',
         ])
@@ -260,8 +258,8 @@ test('user can add comment to task', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->postJson(route('morning-hub.clickup.createComment', ['connection' => $connection, 'taskId' => 't1']), [
+    $this->actingAs($user, 'sanctum')
+        ->postJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1/comments", [
             'comment_text' => 'Great work',
         ])
         ->assertCreated()
@@ -272,8 +270,8 @@ test('create comment requires comment_text', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->postJson(route('morning-hub.clickup.createComment', ['connection' => $connection, 'taskId' => 't1']), [])
+    $this->actingAs($user, 'sanctum')
+        ->postJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1/comments", [])
         ->assertUnprocessable()
         ->assertJsonValidationErrors('comment_text');
 });
@@ -283,8 +281,8 @@ test('user cannot add comment on another users connection', function () {
     $otherUser = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($otherUser)->create();
 
-    $this->actingAs($user)
-        ->postJson(route('morning-hub.clickup.createComment', ['connection' => $connection, 'taskId' => 't1']), [
+    $this->actingAs($user, 'sanctum')
+        ->postJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1/comments", [
             'comment_text' => 'Hello',
         ])
         ->assertForbidden();
@@ -300,8 +298,8 @@ test('user can fetch task comments', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->getJson(route('morning-hub.clickup.comments', ['connection' => $connection, 'taskId' => 't1']))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/tasks/t1/comments")
         ->assertOk()
         ->assertJsonCount(1, 'data');
 });
@@ -318,8 +316,8 @@ test('user can fetch list statuses', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->getJson(route('morning-hub.clickup.statuses', ['connection' => $connection, 'list_id' => 'l1']))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/statuses?list_id=l1")
         ->assertOk()
         ->assertJsonCount(2, 'data');
 });
@@ -328,13 +326,11 @@ test('statuses endpoint returns empty array when no list_id and no default_list_
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->getJson(route('morning-hub.clickup.statuses', $connection))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/statuses")
         ->assertOk()
         ->assertJson(['data' => []]);
 });
-
-// --- Phase: Multi-list ---
 
 test('user can fetch all lists for a space', function () {
     Http::fake([
@@ -356,8 +352,8 @@ test('user can fetch all lists for a space', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->getJson(route('morning-hub.clickup.allLists', ['connection' => $connection, 'space_id' => 's1']))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/all-lists?space_id=s1")
         ->assertOk()
         ->assertJsonPath('data.folders.0.id', 'f1')
         ->assertJsonPath('data.folders.0.name', 'Sprint 1')
@@ -369,8 +365,8 @@ test('allLists endpoint requires space_id', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->getJson(route('morning-hub.clickup.allLists', $connection))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/all-lists")
         ->assertUnprocessable()
         ->assertJsonValidationErrors('space_id');
 });
@@ -380,12 +376,10 @@ test('user cannot fetch all lists from another users connection', function () {
     $otherUser = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($otherUser)->create();
 
-    $this->actingAs($user)
-        ->getJson(route('morning-hub.clickup.allLists', ['connection' => $connection, 'space_id' => 's1']))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/all-lists?space_id=s1")
         ->assertForbidden();
 });
-
-// --- Phase: Assignee filter ---
 
 test('user can fetch authenticated clickup user', function () {
     Http::fake(['https://api.clickup.com/api/v2/user' => Http::response([
@@ -395,8 +389,8 @@ test('user can fetch authenticated clickup user', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create();
 
-    $this->actingAs($user)
-        ->getJson(route('morning-hub.clickup.me', $connection))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/me")
         ->assertOk()
         ->assertJsonPath('data.id', 456)
         ->assertJsonPath('data.username', 'Me');
@@ -407,7 +401,7 @@ test('user cannot fetch clickup user from another users connection', function ()
     $otherUser = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($otherUser)->create();
 
-    $this->actingAs($user)
-        ->getJson(route('morning-hub.clickup.me', $connection))
+    $this->actingAs($user, 'sanctum')
+        ->getJson("/api/morning-hub/clickup/{$connection->id}/me")
         ->assertForbidden();
 });

@@ -24,5 +24,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // SPA catch-all — all other paths handled by Vue Router
 Route::get('/{any}', function () {
-    return view('app');
+    return view('spa');
 })->where('any', '.*')->name('spa');

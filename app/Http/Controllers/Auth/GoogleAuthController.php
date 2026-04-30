@@ -65,12 +65,12 @@ class GoogleAuthController extends Controller
         try {
             $this->googleAuthService->linkAccount($request->user());
         } catch (InvalidStateException) {
-            return redirect()->route('profile.edit')->with('error', __('Powiązanie z Google nie powiodło się. Spróbuj ponownie.'));
+            return redirect()->to('/settings/profile')->with('error', __('Powiązanie z Google nie powiodło się. Spróbuj ponownie.'));
         } catch (\InvalidArgumentException $e) {
-            return redirect()->route('profile.edit')->with('error', $e->getMessage());
+            return redirect()->to('/settings/profile')->with('error', $e->getMessage());
         }
 
-        return redirect()->route('profile.edit')->with('status', __('Konto Google zostało powiązane.'));
+        return redirect()->to('/settings/profile')->with('status', __('Konto Google zostało powiązane.'));
     }
 
     /**
@@ -81,9 +81,9 @@ class GoogleAuthController extends Controller
         try {
             $this->googleAuthService->unlinkAccount($request->user());
         } catch (\InvalidArgumentException $e) {
-            return redirect()->route('profile.edit')->with('error', $e->getMessage());
+            return redirect()->to('/settings/profile')->with('error', $e->getMessage());
         }
 
-        return redirect()->route('profile.edit')->with('status', __('Konto Google zostało odłączone.'));
+        return redirect()->to('/settings/profile')->with('status', __('Konto Google zostało odłączone.'));
     }
 }

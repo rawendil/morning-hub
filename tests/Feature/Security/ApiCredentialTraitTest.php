@@ -88,8 +88,8 @@ test('observer logs creation with provider name', function () {
 
     $user = User::factory()->create();
 
-    $this->actingAs($user)
-        ->post(route('morning-hub.clickup.store'), [
+    $this->actingAs($user, 'sanctum')
+        ->postJson('/api/morning-hub/clickup/connections', [
             'name' => 'Provider Test',
             'api_token' => 'pk_provider_test_token',
         ]);
@@ -118,8 +118,8 @@ test('observer logs masked token on token change', function () {
         unlink($logFile);
     }
 
-    $this->actingAs($user)
-        ->put(route('morning-hub.clickup.update', $connection), [
+    $this->actingAs($user, 'sanctum')
+        ->putJson("/api/morning-hub/clickup/connections/{$connection->id}", [
             'name' => $connection->name,
             'api_token' => 'pk_new_token_xyz12345',
         ]);
