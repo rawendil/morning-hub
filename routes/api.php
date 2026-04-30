@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\TwoFactorController;
+use App\Http\Controllers\Api\RoutineBlockController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,11 @@ Route::post('/auth/reset-password', ResetPasswordController::class)->name('api.a
 Route::post('/auth/google', GoogleAuthController::class)->name('api.auth.google')->middleware('throttle:10,1');
 
 Route::middleware('auth:sanctum')->get('/user', UserController::class)->name('api.user');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/morning-hub/routine', [RoutineBlockController::class, 'index']);
+    Route::post('/morning-hub/routine/blocks', [RoutineBlockController::class, 'store']);
+    Route::patch('/morning-hub/routine/blocks/reorder', [RoutineBlockController::class, 'reorder']);
+    Route::put('/morning-hub/routine/blocks/{block}', [RoutineBlockController::class, 'update']);
+    Route::delete('/morning-hub/routine/blocks/{block}', [RoutineBlockController::class, 'destroy']);
+});
