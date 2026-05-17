@@ -2,7 +2,6 @@
 
 use App\Models\ClickUpConnection;
 use App\Models\User;
-use App\Services\ClickUpServiceFactory;
 
 test('guest cannot access clickup connections', function () {
     $this->getJson('/api/morning-hub/clickup')->assertUnauthorized();
@@ -17,40 +16,6 @@ test('user can fetch their clickup connections', function () {
         ->assertOk()
         ->assertJsonCount(1, 'connections')
         ->assertJsonPath('connections.0.name', 'My Connection');
-});
-
-test('user can create a clickup connection', function () {
-    $user = User::factory()->create();
-
-    $factory = Mockery::mock(ClickUpServiceFactory::class);
-    $service = Mockery::mock(\App\Services\ClickUpService::class);
-    $service->shouldReceive('testConnection')->andReturn(true);
-    $factory->shouldReceive('make')->andReturn($service);
-    app()->instance(ClickUpServiceFactory::class, $factory);
-
-    $this->actingAs($user, 'sanctum')
-        ->postJson('/api/morning-hub/clickup/connections', [
-            'name' => 'New Connection',
-            'api_token' => 'pk_valid_token',
-        ])
-        ->assertCreated();
-});
-
-test('user cannot create connection with invalid token', function () {
-    $user = User::factory()->create();
-
-    $factory = Mockery::mock(ClickUpServiceFactory::class);
-    $service = Mockery::mock(\App\Services\ClickUpService::class);
-    $service->shouldReceive('testConnection')->andReturn(false);
-    $factory->shouldReceive('make')->andReturn($service);
-    app()->instance(ClickUpServiceFactory::class, $factory);
-
-    $this->actingAs($user, 'sanctum')
-        ->postJson('/api/morning-hub/clickup/connections', [
-            'name' => 'Bad Connection',
-            'api_token' => 'pk_bad_token',
-        ])
-        ->assertUnprocessable();
 });
 
 test('user cannot access another user\'s connection', function () {

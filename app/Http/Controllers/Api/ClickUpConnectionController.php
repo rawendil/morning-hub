@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\MorningHub\StoreClickUpConnectionRequest;
 use App\Http\Requests\MorningHub\UpdateClickUpConnectionRequest;
 use App\Models\ClickUpConnection;
 use App\Services\ClickUpServiceFactory;
@@ -27,24 +26,6 @@ class ClickUpConnectionController extends Controller
         return response()->json([
             'connections' => $user->clickUpConnections()->latest()->get(),
         ]);
-    }
-
-    public function store(StoreClickUpConnectionRequest $request): JsonResponse
-    {
-        /** @var \App\Models\User $user */
-        $user = $request->user();
-
-        $service = $this->clickUpServiceFactory->make($request->validated('api_token'));
-
-        if (! $service->testConnection()) {
-            throw ValidationException::withMessages([
-                'api_token' => ['The API token is invalid or the connection failed.'],
-            ]);
-        }
-
-        $connection = $user->clickUpConnections()->create($request->validated());
-
-        return response()->json(['connection' => $connection], 201);
     }
 
     public function update(UpdateClickUpConnectionRequest $request, ClickUpConnection $connection): JsonResponse

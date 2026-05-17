@@ -40,7 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/morning-hub/routine/blocks/{block}', [RoutineBlockController::class, 'destroy']);
 
     Route::get('/morning-hub/clickup', [ClickUpConnectionController::class, 'index']);
-    Route::post('/morning-hub/clickup/connections', [ClickUpConnectionController::class, 'store'])->middleware('throttle:5,1');
     Route::put('/morning-hub/clickup/connections/{connection}', [ClickUpConnectionController::class, 'update']);
     Route::delete('/morning-hub/clickup/connections/{connection}', [ClickUpConnectionController::class, 'destroy']);
     Route::post('/morning-hub/clickup/connections/{connection}/test', [ClickUpConnectionController::class, 'test'])->middleware('throttle:5,1');

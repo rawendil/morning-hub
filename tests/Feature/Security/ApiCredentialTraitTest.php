@@ -84,15 +84,11 @@ test('observer logs creation with provider name', function () {
         unlink($logFile);
     }
 
-    Http::fake(['https://api.clickup.com/api/v2/team' => Http::response(['teams' => []], 200)]);
-
     $user = User::factory()->create();
-
-    $this->actingAs($user, 'sanctum')
-        ->postJson('/api/morning-hub/clickup/connections', [
-            'name' => 'Provider Test',
-            'api_token' => 'pk_provider_test_token',
-        ]);
+    ClickUpConnection::factory()->for($user)->create([
+        'name' => 'Provider Test',
+        'api_token' => 'pk_provider_test_token',
+    ]);
 
     expect(file_exists($logFile))->toBeTrue();
     $logContent = file_get_contents($logFile);

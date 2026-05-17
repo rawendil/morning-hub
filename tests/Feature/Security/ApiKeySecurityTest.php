@@ -37,15 +37,11 @@ test('audit log is written when connection is created', function () {
         unlink($logFile);
     }
 
-    Http::fake(['https://api.clickup.com/api/v2/team' => Http::response(['teams' => []], 200)]);
-
     $user = User::factory()->create();
-
-    $this->actingAs($user, 'sanctum')
-        ->postJson('/api/morning-hub/clickup/connections', [
-            'name' => 'Audit Test',
-            'api_token' => 'pk_audit_token',
-        ]);
+    ClickUpConnection::factory()->for($user)->create([
+        'name' => 'Audit Test',
+        'api_token' => 'pk_audit_token',
+    ]);
 
     expect(file_exists($logFile))->toBeTrue();
     $logContent = file_get_contents($logFile);
@@ -100,25 +96,4 @@ test('401 from provider is logged to security channel', function () {
     $logContent = file_get_contents($logFile);
     expect($logContent)->toContain('API authentication failed (401)');
     expect($logContent)->toContain('clickup');
-});
-
-test('store endpoint is rate limited', function () {
-    Http::fake(['https://api.clickup.com/api/v2/team' => Http::response(['teams' => []], 200)]);
-
-    $user = User::factory()->create();
-
-    for ($i = 0; $i < 5; $i++) {
-        $this->actingAs($user, 'sanctum')
-            ->postJson('/api/morning-hub/clickup/connections', [
-                'name' => "Connection $i",
-                'api_token' => 'pk_valid_token',
-            ]);
-    }
-
-    $this->actingAs($user, 'sanctum')
-        ->postJson('/api/morning-hub/clickup/connections', [
-            'name' => 'Connection overflow',
-            'api_token' => 'pk_valid_token',
-        ])
-        ->assertStatus(429);
 });
