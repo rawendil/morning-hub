@@ -31,6 +31,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('clickup/oauth/callback', [ClickUpOAuthController::class, 'callback'])
     ->name('clickup.oauth.callback');
 
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy-policy');
+
 // SPA catch-all — all other paths handled by Vue Router
 Route::get('/{any}', function () {
     return view('spa');

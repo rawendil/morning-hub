@@ -120,6 +120,16 @@ return [
 
     'contact_email' => env('CONTACT_EMAIL', 'contact@example.com'),
 
+    'company_name' => env('COMPANY_NAME', 'RawCode Studio'),
+
+    'company_address' => env('COMPANY_ADDRESS', ''),
+
+    'company_city' => env('COMPANY_CITY', ''),
+
+    'company_zip' => env('COMPANY_ZIP', ''),
+
+    'company_region' => env('COMPANY_REGION', ''),
+
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
