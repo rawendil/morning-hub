@@ -42,4 +42,10 @@ return [
         'analytics_id' => env('VITE_GA_MEASUREMENT_ID'),
     ],
 
+    'clickup' => [
+        'client_id' => env('CLICKUP_CLIENT_ID'),
+        'client_secret' => env('CLICKUP_CLIENT_SECRET'),
+        'redirect' => env('CLICKUP_REDIRECT_URI', '/clickup/oauth/callback'),
+    ],
+
 ];
