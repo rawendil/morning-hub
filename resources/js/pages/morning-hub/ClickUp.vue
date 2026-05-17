@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Plus } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { toast } from 'vue-sonner';
 import Heading from '@/components/Heading.vue';
 import ClickUpConnectionCard from '@/components/morning-hub/ClickUpConnectionCard.vue';
 import ClickUpConnectionForm from '@/components/morning-hub/ClickUpConnectionForm.vue';
@@ -11,6 +13,8 @@ import axiosInstance from '@/lib/axios';
 import type { BreadcrumbItem, ClickUpConnection } from '@/types';
 
 const { t } = useTranslations();
+const route = useRoute();
+const router = useRouter();
 
 const connections = ref<ClickUpConnection[]>([]);
 
@@ -25,7 +29,28 @@ async function loadConnections() {
     connections.value = data.connections ?? [];
 }
 
-onMounted(loadConnections);
+onMounted(async () => {
+    try {
+        await loadConnections();
+    } finally {
+        const connected = route.query.connected as string | undefined;
+        const error = route.query.error as string | undefined;
+
+        if (connected) {
+            toast.success(t('Połączono z ClickUp.'));
+        } else if (error === 'no_code') {
+            toast.error(t('Anulowano autoryzację ClickUp.'));
+        } else if (error === 'invalid_state') {
+            toast.error(t('Błąd bezpieczeństwa. Spróbuj ponownie.'));
+        } else if (error === 'auth_failed') {
+            toast.error(t('Autoryzacja ClickUp nie powiodła się.'));
+        }
+
+        if (connected || error) {
+            router.replace({ query: {} });
+        }
+    }
+});
 </script>
 
 <template>
