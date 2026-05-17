@@ -27,14 +27,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('auth/google/unlink', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'unlink'])->name('google.unlink');
 });
 
-// ClickUp OAuth — server-side redirect (OAuth state requires session)
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('clickup/oauth/redirect', [ClickUpOAuthController::class, 'redirect'])
-        ->middleware('throttle:5,1')
-        ->name('clickup.oauth.redirect');
-    Route::get('clickup/oauth/callback', [ClickUpOAuthController::class, 'callback'])
-        ->name('clickup.oauth.callback');
-});
+// ClickUp OAuth callback — no auth required (user identified via cache state)
+Route::get('clickup/oauth/callback', [ClickUpOAuthController::class, 'callback'])
+    ->name('clickup.oauth.callback');
 
 // SPA catch-all — all other paths handled by Vue Router
 Route::get('/{any}', function () {

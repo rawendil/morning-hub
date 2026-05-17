@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\Settings\TwoFactorAuthenticationController;
 use App\Http\Controllers\Api\TodaysTasksConfigController;
 use App\Http\Controllers\Api\TodaysTasksController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\MorningHub\ClickUpOAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/login', LoginController::class)->name('api.auth.login')->middleware('throttle:10,1');
@@ -40,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/morning-hub/routine/blocks/{block}', [RoutineBlockController::class, 'destroy']);
 
     Route::get('/morning-hub/clickup', [ClickUpConnectionController::class, 'index']);
+    Route::post('/morning-hub/clickup/oauth/start', [ClickUpOAuthController::class, 'start'])->middleware('throttle:5,1');
     Route::put('/morning-hub/clickup/connections/{connection}', [ClickUpConnectionController::class, 'update']);
     Route::delete('/morning-hub/clickup/connections/{connection}', [ClickUpConnectionController::class, 'destroy']);
     Route::post('/morning-hub/clickup/connections/{connection}/test', [ClickUpConnectionController::class, 'test'])->middleware('throttle:5,1');

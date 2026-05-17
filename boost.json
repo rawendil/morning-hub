@@ -7,12 +7,14 @@
     "mcp": true,
     "nightwatch_mcp": false,
     "packages": [
-        "laravel/fortify"
+        "laravel/fortify",
+        "laravel/socialite"
     ],
     "sail": false,
     "skills": [
         "pest-testing",
         "tailwindcss-development",
-        "developing-with-fortify"
+        "developing-with-fortify",
+        "socialite-development"
     ]
 }

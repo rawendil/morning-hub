@@ -31,9 +31,16 @@ const connName = ref(props.connection?.name ?? '');
 const processing = ref(false);
 const errors = ref<Record<string, string>>({});
 
-function connectWithOAuth() {
-    const name = connName.value.trim() || 'ClickUp';
-    window.location.href = `/clickup/oauth/redirect?name=${encodeURIComponent(name)}`;
+async function connectWithOAuth() {
+    processing.value = true;
+    try {
+        const name = connName.value.trim() || 'ClickUp';
+        const { data } = await axiosInstance.post('/morning-hub/clickup/oauth/start', { name });
+        window.location.href = data.url;
+    } catch {
+        errors.value = { name: t('Nie udało się zainicjować autoryzacji ClickUp.') };
+        processing.value = false;
+    }
 }
 
 async function submitUpdate() {
