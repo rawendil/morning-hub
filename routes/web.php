@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MorningHub\ClickUpOAuthController;
 use App\Http\Controllers\MorningHub\GoogleCalendarOAuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('auth/google/link', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'linkRedirect'])->name('google.link');
     Route::get('auth/google/link/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'linkCallback'])->name('google.link.callback');
     Route::delete('auth/google/unlink', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'unlink'])->name('google.unlink');
+});
+
+// ClickUp OAuth — server-side redirect (OAuth state requires session)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('clickup/oauth/redirect', [ClickUpOAuthController::class, 'redirect'])
+        ->middleware('throttle:5,1')
+        ->name('clickup.oauth.redirect');
+    Route::get('clickup/oauth/callback', [ClickUpOAuthController::class, 'callback'])
+        ->name('clickup.oauth.callback');
 });
 
 // SPA catch-all — all other paths handled by Vue Router
