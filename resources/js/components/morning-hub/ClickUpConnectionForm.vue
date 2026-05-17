@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -13,9 +12,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import InputError from '@/components/InputError.vue';
 import { useTranslations } from '@/composables/useTranslations';
-import axiosInstance from '@/lib/axios';
 import type { ClickUpConnection } from '@/types';
+import axiosInstance from '@/lib/axios';
 
 const { t } = useTranslations();
 
@@ -28,45 +28,51 @@ const emit = defineEmits<{ success: [] }>();
 const isOpen = defineModel<boolean>('open', { default: false });
 
 const connName = ref(props.connection?.name ?? '');
-const apiToken = ref('');
 const processing = ref(false);
 const errors = ref<Record<string, string>>({});
 
-async function submit() {
+function connectWithOAuth() {
+    const name = connName.value.trim() || 'ClickUp';
+    window.location.href = `/clickup/oauth/redirect?name=${encodeURIComponent(name)}`;
+}
+
+async function submitUpdate() {
+    if (!props.connection) {
+        return;
+    }
+
     processing.value = true;
     errors.value = {};
 
     try {
-        if (props.connection) {
-            await axiosInstance.put(
-                `/morning-hub/clickup/connections/${props.connection.id}`,
-                {
-                    name: connName.value,
-                    ...(apiToken.value ? { api_token: apiToken.value } : {}),
-                },
-            );
-        } else {
-            await axiosInstance.post('/morning-hub/clickup/connections', {
-                name: connName.value,
-                api_token: apiToken.value,
-            });
-        }
-
+        await axiosInstance.put(
+            `/morning-hub/clickup/connections/${props.connection.id}`,
+            { name: connName.value },
+        );
         emit('success');
         isOpen.value = false;
     } catch (err: unknown) {
         const axiosErr = err as {
             response?: { data?: { errors?: Record<string, string[]> } };
         };
-
         if (axiosErr.response?.data?.errors) {
             const rawErrors = axiosErr.response.data.errors;
             errors.value = Object.fromEntries(
                 Object.entries(rawErrors).map(([k, v]) => [k, v[0]]),
             );
+        } else {
+            errors.value = { name: t('Wystąpił nieoczekiwany błąd.') };
         }
     } finally {
         processing.value = false;
+    }
+}
+
+function submit() {
+    if (props.connection) {
+        submitUpdate();
+    } else {
+        connectWithOAuth();
     }
 }
 </script>
@@ -86,7 +92,7 @@ async function submit() {
                             connection
                                 ? t('Zaktualizuj połączenie ClickUp.')
                                 : t(
-                                      'Połącz workspace ClickUp za pomocą osobistego tokena API.',
+                                      'Połącz workspace ClickUp przez OAuth.',
                                   )
                         }}
                     </DialogDescription>
@@ -103,22 +109,6 @@ async function submit() {
                         />
                         <InputError :message="errors.name" />
                     </div>
-
-                    <div class="grid gap-2">
-                        <Label for="conn-api-token">{{ t('Token API') }}</Label>
-                        <Input
-                            id="conn-api-token"
-                            v-model="apiToken"
-                            type="password"
-                            :required="!connection"
-                            :placeholder="
-                                connection
-                                    ? t('Pozostaw puste, aby zachować obecny')
-                                    : 'pk_...'
-                            "
-                        />
-                        <InputError :message="errors.api_token" />
-                    </div>
                 </div>
 
                 <DialogFooter class="gap-2">
@@ -126,7 +116,11 @@ async function submit() {
                         <Button variant="secondary">{{ t('Anuluj') }}</Button>
                     </DialogClose>
                     <Button type="submit" :disabled="processing">
-                        {{ connection ? t('Zapisz') : t('Dodaj połączenie') }}
+                        {{
+                            connection
+                                ? t('Zapisz')
+                                : t('Połącz z ClickUp')
+                        }}
                     </Button>
                 </DialogFooter>
             </form>
