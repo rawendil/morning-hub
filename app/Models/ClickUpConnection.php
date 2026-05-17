@@ -49,11 +49,6 @@ class ClickUpConnection extends Model implements ApiCredentialProvider
         return $this->belongsTo(User::class);
     }
 
-    public static function tokenFormatPattern(): ?string
-    {
-        return '/^pk_.{6,}/';
-    }
-
     public function getProviderName(): string
     {
         return 'clickup';

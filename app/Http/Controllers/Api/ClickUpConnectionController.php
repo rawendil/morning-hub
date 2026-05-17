@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\ValidationException;
 
 class ClickUpConnectionController extends Controller
 {
@@ -33,15 +32,6 @@ class ClickUpConnectionController extends Controller
         Gate::authorize('update', $connection);
 
         $data = $request->validated();
-
-        if (isset($data['api_token'])) {
-            $service = $this->clickUpServiceFactory->make($data['api_token']);
-            if (! $service->testConnection()) {
-                throw ValidationException::withMessages([
-                    'api_token' => ['The API token is invalid or the connection failed.'],
-                ]);
-            }
-        }
 
         if (array_key_exists('default_list_ids', $data)) {
             $data['default_list_id'] = $data['default_list_ids'][0] ?? null;

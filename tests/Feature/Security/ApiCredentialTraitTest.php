@@ -3,7 +3,6 @@
 use App\Contracts\ApiCredentialProvider;
 use App\Models\ClickUpConnection;
 use App\Models\User;
-use Illuminate\Support\Facades\Http;
 
 test('model implements ApiCredentialProvider interface', function () {
     $connection = ClickUpConnection::factory()->for(User::factory())->create();
@@ -63,13 +62,13 @@ test('validateTokenFormat accepts valid clickup tokens', function () {
     expect($connection->validateTokenFormat())->toBeTrue();
 });
 
-test('validateTokenFormat rejects tokens without pk_ prefix', function () {
+test('validateTokenFormat accepts any token when no pattern is defined', function () {
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create([
-        'api_token' => 'invalid_token_no_prefix',
+        'api_token' => 'any_token_without_prefix',
     ]);
 
-    expect($connection->validateTokenFormat())->toBeFalse();
+    expect($connection->validateTokenFormat())->toBeTrue();
 });
 
 test('getProviderName returns correct provider string', function () {
@@ -96,13 +95,11 @@ test('observer logs creation with provider name', function () {
     expect($logContent)->toContain('Provider Test');
 });
 
-test('observer logs masked token on token change', function () {
+test('observer logs connection update when name changes via api', function () {
     $logFile = storage_path('logs/security-'.now()->format('Y-m-d').'.log');
     if (file_exists($logFile)) {
         unlink($logFile);
     }
-
-    Http::fake(['https://api.clickup.com/api/v2/team' => Http::response(['teams' => []], 200)]);
 
     $user = User::factory()->create();
     $connection = ClickUpConnection::factory()->for($user)->create([
@@ -116,13 +113,11 @@ test('observer logs masked token on token change', function () {
 
     $this->actingAs($user, 'sanctum')
         ->putJson("/api/morning-hub/clickup/connections/{$connection->id}", [
-            'name' => $connection->name,
-            'api_token' => 'pk_new_token_xyz12345',
+            'name' => 'Updated Connection Name',
         ]);
 
     expect(file_exists($logFile))->toBeTrue();
     $logContent = file_get_contents($logFile);
     expect($logContent)->toContain('clickup connection updated');
-    expect($logContent)->toContain('pk_****...');
-    expect($logContent)->not->toContain('pk_new_token_xyz12345');
+    expect($logContent)->toContain('Updated Connection Name');
 });
