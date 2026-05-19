@@ -21,6 +21,7 @@ class GoogleCalendarConnectionController extends Controller
 
         return response()->json([
             'connection' => $user->googleCalendarConnection,
+            'hasGoogleAccount' => $user->hasGoogleLinked(),
         ]);
     }
 

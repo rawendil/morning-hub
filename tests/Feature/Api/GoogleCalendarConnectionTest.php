@@ -17,7 +17,19 @@ test('user can fetch their google calendar connection', function () {
     $this->actingAs($user, 'sanctum')
         ->getJson('/api/morning-hub/google-calendar')
         ->assertOk()
-        ->assertJsonPath('connection.name', 'work@example.com');
+        ->assertJsonPath('connection.name', 'work@example.com')
+        ->assertJsonPath('hasGoogleAccount', false);
+});
+
+test('index returns hasGoogleAccount true when google id is set', function () {
+    /** @var User $user */
+    $user = User::factory()->create(['google_id' => 'google-123']);
+
+    $this->actingAs($user, 'sanctum')
+        ->getJson('/api/morning-hub/google-calendar')
+        ->assertOk()
+        ->assertJsonPath('hasGoogleAccount', true)
+        ->assertJsonPath('connection', null);
 });
 
 test('user can update calendar ids', function () {
