@@ -42,5 +42,14 @@ defineProps<{
                 <slot />
             </div>
         </div>
+        <p class="text-center text-xs text-muted-foreground">
+            <a
+                href="/privacy-policy"
+                target="_blank"
+                class="underline underline-offset-4 hover:text-foreground"
+            >
+                Privacy Policy
+            </a>
+        </p>
     </div>
 </template>
