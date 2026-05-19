@@ -49,7 +49,9 @@ const disconnectOpen = ref(false);
 async function startConnect() {
     connecting.value = true;
     try {
-        const { data } = await axiosInstance.post('/morning-hub/google-calendar/connect');
+        const { data } = await axiosInstance.post(
+            '/morning-hub/google-calendar/connect',
+        );
         window.location.href = data.url;
     } catch {
         toast.error(t('Blad polaczenia. Sprobuj ponownie.'));

@@ -66,10 +66,10 @@ class GoogleCalendarOAuthController extends Controller
         }
 
         try {
-            /** @var GoogleProvider $driver */
-            $driver = Socialite::driver('google');
+            /** @var \Laravel\Socialite\Two\AbstractProvider $provider */
+            $provider = Socialite::driver('google');
             /** @var SocialiteUser $socialiteUser */
-            $socialiteUser = $driver
+            $socialiteUser = $provider
                 ->stateless()
                 ->redirectUrl(route('morning-hub.google-calendar.callback'))
                 ->user();
