@@ -130,16 +130,16 @@ const whyCards = computed(() => [
                         <Button size="lg" as-child>
                             <RouterLink to="/register">{{ t('Rozpocznij za darmo') }}</RouterLink>
                         </Button>
-                        <a
-                            href="https://github.com/rawendil/morning-hub"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Button variant="outline" size="lg" class="gap-2">
+                        <Button variant="outline" size="lg" class="gap-2" as-child>
+                            <a
+                                href="https://github.com/rawendil/morning-hub"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
                                 <Github class="h-4 w-4" />
                                 GitHub
-                            </Button>
-                        </a>
+                            </a>
+                        </Button>
                     </template>
                 </div>
             </div>
