@@ -1,5 +1,3 @@
-import type { Auth } from '@/types/auth';
-
 declare global {
     interface Window {
         gtag: (...args: unknown[]) => void;
