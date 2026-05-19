@@ -35,10 +35,15 @@ async function connectWithOAuth() {
     processing.value = true;
     try {
         const name = connName.value.trim() || 'ClickUp';
-        const { data } = await axiosInstance.post('/morning-hub/clickup/oauth/start', { name });
+        const { data } = await axiosInstance.post(
+            '/morning-hub/clickup/oauth/start',
+            { name },
+        );
         window.location.href = data.url;
     } catch {
-        errors.value = { name: t('Nie udało się zainicjować autoryzacji ClickUp.') };
+        errors.value = {
+            name: t('Nie udało się zainicjować autoryzacji ClickUp.'),
+        };
         processing.value = false;
     }
 }
@@ -98,9 +103,7 @@ function submit() {
                         {{
                             connection
                                 ? t('Zaktualizuj połączenie ClickUp.')
-                                : t(
-                                      'Połącz workspace ClickUp przez OAuth.',
-                                  )
+                                : t('Połącz workspace ClickUp przez OAuth.')
                         }}
                     </DialogDescription>
                 </DialogHeader>
@@ -123,11 +126,7 @@ function submit() {
                         <Button variant="secondary">{{ t('Anuluj') }}</Button>
                     </DialogClose>
                     <Button type="submit" :disabled="processing">
-                        {{
-                            connection
-                                ? t('Zapisz')
-                                : t('Połącz z ClickUp')
-                        }}
+                        {{ connection ? t('Zapisz') : t('Połącz z ClickUp') }}
                     </Button>
                 </DialogFooter>
             </form>
