@@ -3,58 +3,82 @@
 namespace App\Http\Controllers\MorningHub;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
-use Laravel\Socialite\Two\GoogleProvider;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
 class GoogleCalendarOAuthController extends Controller
 {
-    public function redirect(Request $request): RedirectResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+    private const STATE_TTL_MINUTES = 15;
+
+    public function connect(Request $request): JsonResponse
     {
-        if (! $request->user()->hasGoogleLinked()) {
-            return redirect()->route('morning-hub.google-calendar.index')
-                ->with('error', __('Najpierw połącz konto Google w ustawieniach profilu.'));
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if (! $user->hasGoogleLinked()) {
+            return response()->json(['error' => __('Najpierw połącz konto Google w ustawieniach profilu.')], 422);
         }
 
-        /** @var GoogleProvider $driver */
-        $driver = Socialite::driver('google');
+        $state = Str::random(40);
 
-        return $driver
-            ->scopes([
-                'openid',
-                'profile',
-                'email',
-                'https://www.googleapis.com/auth/calendar.readonly',
-            ])
-            ->with([
-                'access_type' => 'offline',
-                'prompt' => 'consent',
-            ])
-            ->redirectUrl(route('morning-hub.google-calendar.callback'))
-            ->redirect();
+        Cache::put(
+            "google_calendar_oauth_state_{$state}",
+            $user->id,
+            now()->addMinutes(self::STATE_TTL_MINUTES),
+        );
+
+        $url = 'https://accounts.google.com/o/oauth2/v2/auth?'.http_build_query([
+            'client_id' => config('services.google.client_id'),
+            'redirect_uri' => route('morning-hub.google-calendar.callback'),
+            'response_type' => 'code',
+            'scope' => 'openid profile email https://www.googleapis.com/auth/calendar.readonly',
+            'access_type' => 'offline',
+            'prompt' => 'consent',
+            'state' => $state,
+        ]);
+
+        return response()->json(['url' => $url]);
     }
 
     public function callback(Request $request): RedirectResponse
     {
+        $state = (string) $request->query('state', '');
+        $userId = Cache::pull("google_calendar_oauth_state_{$state}");
+
+        if (! $request->has('code')) {
+            return redirect()->route('spa')->with('error', 'no_code');
+        }
+
+        if (! $userId) {
+            return redirect()->route('spa')->with('error', 'invalid_state');
+        }
+
+        $user = User::find($userId);
+
+        if (! $user) {
+            return redirect()->route('spa')->with('error', 'auth_failed');
+        }
+
         try {
             /** @var GoogleProvider $driver */
             $driver = Socialite::driver('google');
             /** @var SocialiteUser $socialiteUser */
             $socialiteUser = $driver
+                ->stateless()
                 ->redirectUrl(route('morning-hub.google-calendar.callback'))
                 ->user();
         } catch (\Throwable) {
-            return redirect()->route('morning-hub.google-calendar.index')
-                ->with('error', __('Autoryzacja Google nie powiodła się. Spróbuj ponownie.'));
+            return redirect('/morning-hub/google-calendar?error=auth_failed');
         }
 
-        $user = $request->user();
-
         if ($socialiteUser->id !== $user->google_id) {
-            return redirect()->route('morning-hub.google-calendar.index')
-                ->with('error', __('Użyj tego samego konta Google, które jest połączone z Twoim profilem.'));
+            return redirect('/morning-hub/google-calendar?error=wrong_account');
         }
 
         $user->googleCalendarConnection()->updateOrCreate(
@@ -68,8 +92,7 @@ class GoogleCalendarOAuthController extends Controller
             ],
         );
 
-        return redirect()->route('morning-hub.google-calendar.index')
-            ->with('success', __('Google Calendar został połączony.'));
+        return redirect('/morning-hub/google-calendar?connected=1');
     }
 
     public function disconnect(Request $request): RedirectResponse

@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\TodaysTasksConfigController;
 use App\Http\Controllers\Api\TodaysTasksController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\MorningHub\ClickUpOAuthController;
+use App\Http\Controllers\MorningHub\GoogleCalendarOAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/login', LoginController::class)->name('api.auth.login')->middleware('throttle:10,1');
@@ -48,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Google Calendar connection
     Route::get('/morning-hub/google-calendar', [GoogleCalendarConnectionController::class, 'index']);
+    Route::post('/morning-hub/google-calendar/connect', [GoogleCalendarOAuthController::class, 'connect'])->middleware('throttle:5,1');
     Route::put('/morning-hub/google-calendar', [GoogleCalendarConnectionController::class, 'update']);
     Route::delete('/morning-hub/google-calendar', [GoogleCalendarConnectionController::class, 'destroy']);
     Route::post('/morning-hub/google-calendar/test', [GoogleCalendarConnectionController::class, 'test'])->middleware('throttle:5,1');

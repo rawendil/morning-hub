@@ -43,7 +43,19 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     { title: t('Google Calendar'), href: '/morning-hub/google-calendar' },
 ]);
 
+const connecting = ref(false);
 const disconnectOpen = ref(false);
+
+async function startConnect() {
+    connecting.value = true;
+    try {
+        const { data } = await axiosInstance.post('/morning-hub/google-calendar/connect');
+        window.location.href = data.url;
+    } catch {
+        toast.error(t('Blad polaczenia. Sprobuj ponownie.'));
+        connecting.value = false;
+    }
+}
 const testing = ref(false);
 const testResult = ref<{ success: boolean; message: string } | null>(null);
 const loadingCalendars = ref(false);
@@ -165,10 +177,8 @@ onMounted(async () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Button as-child>
-                        <a href="/morning-hub/google-calendar/connect">
-                            {{ t('Polacz Google Calendar') }}
-                        </a>
+                    <Button :disabled="connecting" @click="startConnect">
+                        {{ t('Polacz Google Calendar') }}
                     </Button>
                 </CardContent>
             </Card>

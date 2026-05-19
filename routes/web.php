@@ -4,13 +4,11 @@ use App\Http\Controllers\MorningHub\ClickUpOAuthController;
 use App\Http\Controllers\MorningHub\GoogleCalendarOAuthController;
 use Illuminate\Support\Facades\Route;
 
-// Google Calendar OAuth — server-side redirect (Google requires HTTPS callback URL)
+// Google Calendar OAuth callback — no auth required (user identified via cache state)
+Route::get('morning-hub/google-calendar/callback', [GoogleCalendarOAuthController::class, 'callback'])
+    ->name('morning-hub.google-calendar.callback');
+
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('morning-hub/google-calendar/connect', [GoogleCalendarOAuthController::class, 'redirect'])
-        ->middleware('throttle:5,1')
-        ->name('morning-hub.google-calendar.connect');
-    Route::get('morning-hub/google-calendar/callback', [GoogleCalendarOAuthController::class, 'callback'])
-        ->name('morning-hub.google-calendar.callback');
     Route::delete('morning-hub/google-calendar/disconnect', [GoogleCalendarOAuthController::class, 'disconnect'])
         ->middleware('throttle:5,1')
         ->name('morning-hub.google-calendar.disconnect');
