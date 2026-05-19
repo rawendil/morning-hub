@@ -50,6 +50,14 @@ defineProps<{
             >
                 Privacy Policy
             </a>
+            <span class="mx-1">·</span>
+            <a
+                href="/terms-of-service"
+                target="_blank"
+                class="underline underline-offset-4 hover:text-foreground"
+            >
+                Terms of Service
+            </a>
         </p>
     </div>
 </template>

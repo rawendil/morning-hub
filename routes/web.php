@@ -33,6 +33,10 @@ Route::get('/privacy-policy', function () {
     return view('privacy-policy');
 })->name('privacy-policy');
 
+Route::get('/terms-of-service', function () {
+    return view('terms-of-service');
+})->name('terms-of-service');
+
 // SPA catch-all — all other paths handled by Vue Router
 Route::get('/{any}', function () {
     return view('spa');
