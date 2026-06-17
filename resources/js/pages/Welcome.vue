@@ -112,11 +112,6 @@ const whyCards = computed(() => [
         <!-- Hero -->
         <section class="px-6 pt-20 pb-14 text-center lg:px-10">
             <div class="mx-auto max-w-2xl space-y-6">
-                <span
-                    class="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-primary"
-                >
-                    🌿 {{ t('Open source · Bezpłatny') }}
-                </span>
                 <h1 class="text-5xl font-bold tracking-tight sm:text-6xl">
                     {{ t('Twoja poranna rutyna,') }}<br />
                     <span class="text-primary">{{ t('uporządkowana.') }}</span>
