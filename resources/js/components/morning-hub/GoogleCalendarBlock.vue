@@ -2,6 +2,7 @@
 import { CalendarX, ExternalLink, SkipForward } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
+import BlockCompletedBadge from '@/components/morning-hub/BlockCompletedBadge.vue';
 import GoogleCalendarBlockSkeleton from '@/components/morning-hub/GoogleCalendarBlockSkeleton.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +16,7 @@ const props = defineProps<{
     block: RoutineBlock;
     eventsData: BlockGoogleCalendarData | undefined;
     isActiveBlock: boolean;
+    isCompleted: boolean;
     isTimerRunning: boolean;
     isTimerExpired: boolean;
     remainingSeconds: number;
@@ -48,7 +50,13 @@ function formatEventTime(dateStr: string): string {
 
 <template>
     <GoogleCalendarBlockSkeleton v-if="!eventsData" />
-    <Card v-else :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
+    <Card
+        v-else
+        :class="{
+            'ring-2 ring-primary/30': isActiveBlock,
+            'opacity-75 transition-opacity hover:opacity-100': isCompleted,
+        }"
+    >
         <CardHeader
             class="flex flex-row items-center justify-between space-y-0 py-3"
         >
@@ -71,6 +79,7 @@ function formatEventTime(dateStr: string): string {
                     @resume="emit('timerResume')"
                     @reset="emit('timerReset')"
                 />
+                <BlockCompletedBadge v-if="isCompleted" />
             </div>
             <div class="flex items-center gap-1">
                 <Button

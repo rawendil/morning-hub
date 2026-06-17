@@ -18,6 +18,7 @@ defineProps<{
     feedData?: BlockFeedData;
     eventsData?: BlockGoogleCalendarData;
     isActiveBlock: boolean;
+    isCompleted: boolean;
     isTimerRunning: boolean;
     isTimerExpired: boolean;
     remainingSeconds: number;
@@ -40,6 +41,7 @@ const emit = defineEmits<{
         :block="block"
         :tasks-data="tasksData"
         :is-active-block="isActiveBlock"
+        :is-completed="isCompleted"
         :is-timer-running="isTimerRunning"
         :is-timer-expired="isTimerExpired"
         :remaining-seconds="remainingSeconds"
@@ -55,6 +57,7 @@ const emit = defineEmits<{
         v-else-if="block.type === 'braindump'"
         :block="block"
         :is-active-block="isActiveBlock"
+        :is-completed="isCompleted"
         :is-timer-running="isTimerRunning"
         :is-timer-expired="isTimerExpired"
         :remaining-seconds="remainingSeconds"
@@ -69,6 +72,7 @@ const emit = defineEmits<{
         v-else-if="block.type === 'habits'"
         :block="block"
         :is-active-block="isActiveBlock"
+        :is-completed="isCompleted"
         :is-timer-running="isTimerRunning"
         :is-timer-expired="isTimerExpired"
         :remaining-seconds="remainingSeconds"
@@ -84,6 +88,7 @@ const emit = defineEmits<{
         :block="block"
         :feed-data="feedData"
         :is-active-block="isActiveBlock"
+        :is-completed="isCompleted"
         :is-timer-running="isTimerRunning"
         :is-timer-expired="isTimerExpired"
         :remaining-seconds="remainingSeconds"
@@ -99,6 +104,7 @@ const emit = defineEmits<{
         :block="block"
         :events-data="eventsData"
         :is-active-block="isActiveBlock"
+        :is-completed="isCompleted"
         :is-timer-running="isTimerRunning"
         :is-timer-expired="isTimerExpired"
         :remaining-seconds="remainingSeconds"
@@ -113,6 +119,7 @@ const emit = defineEmits<{
         v-else
         :block="block"
         :is-active-block="isActiveBlock"
+        :is-completed="isCompleted"
         :is-timer-running="isTimerRunning"
         :is-timer-expired="isTimerExpired"
         :remaining-seconds="remainingSeconds"
