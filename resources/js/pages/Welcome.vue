@@ -89,22 +89,28 @@ const whyCards = computed(() => [
                 <LanguageSwitcher />
                 <template v-if="auth.isAuthenticated">
                     <Button size="sm" as-child>
-                        <RouterLink to="/dashboard">{{ t('Panel') }}</RouterLink>
+                        <RouterLink to="/dashboard">{{
+                            t('Panel')
+                        }}</RouterLink>
                     </Button>
                 </template>
                 <template v-else>
                     <Button variant="ghost" size="sm" as-child>
-                        <RouterLink to="/login">{{ t('Zaloguj się') }}</RouterLink>
+                        <RouterLink to="/login">{{
+                            t('Zaloguj się')
+                        }}</RouterLink>
                     </Button>
                     <Button size="sm" as-child>
-                        <RouterLink to="/register">{{ t('Rejestracja') }}</RouterLink>
+                        <RouterLink to="/register">{{
+                            t('Rejestracja')
+                        }}</RouterLink>
                     </Button>
                 </template>
             </nav>
         </header>
 
         <!-- Hero -->
-        <section class="px-6 pb-14 pt-20 text-center lg:px-10">
+        <section class="px-6 pt-20 pb-14 text-center lg:px-10">
             <div class="mx-auto max-w-2xl space-y-6">
                 <span
                     class="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-primary"
@@ -124,13 +130,22 @@ const whyCards = computed(() => [
                 </p>
                 <div class="flex items-center justify-center gap-3">
                     <Button v-if="auth.isAuthenticated" size="lg" as-child>
-                        <RouterLink to="/dashboard">{{ t('Przejdź do panelu') }}</RouterLink>
+                        <RouterLink to="/dashboard">{{
+                            t('Przejdź do panelu')
+                        }}</RouterLink>
                     </Button>
                     <template v-else>
                         <Button size="lg" as-child>
-                            <RouterLink to="/register">{{ t('Rozpocznij za darmo') }}</RouterLink>
+                            <RouterLink to="/register">{{
+                                t('Rozpocznij za darmo')
+                            }}</RouterLink>
                         </Button>
-                        <Button variant="outline" size="lg" class="gap-2" as-child>
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            class="gap-2"
+                            as-child
+                        >
                             <a
                                 href="https://github.com/rawendil/morning-hub"
                                 target="_blank"
@@ -168,7 +183,7 @@ const whyCards = computed(() => [
         <!-- Feature Rows -->
         <section class="bg-muted px-6 py-20 lg:px-10">
             <p
-                class="mb-14 text-center text-xs font-semibold uppercase tracking-widest text-primary"
+                class="mb-14 text-center text-xs font-semibold tracking-widest text-primary uppercase"
             >
                 {{ t('Funkcjonalności') }}
             </p>
@@ -277,9 +292,7 @@ const whyCards = computed(() => [
                 {{ t('Zacznij swój poranek lepiej.') }}
             </h2>
             <p class="mb-7 text-muted-foreground">
-                {{
-                    t('Bezpłatnie. Bez karty kredytowej. Gotowe w 2 minuty.')
-                }}
+                {{ t('Bezpłatnie. Bez karty kredytowej. Gotowe w 2 minuty.') }}
             </p>
             <Button v-if="auth.isAuthenticated" size="lg" as-child>
                 <RouterLink to="/dashboard">{{ t('Panel') }}</RouterLink>
