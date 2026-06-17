@@ -13,6 +13,7 @@ import RoutineCompletionDialog from '@/components/morning-hub/RoutineCompletionD
 import RoutineProgress from '@/components/morning-hub/RoutineProgress.vue';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRoutineTimer } from '@/composables/useRoutineTimer';
+import { useTimerSound } from '@/composables/useTimerSound';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import axiosInstance from '@/lib/axios';
@@ -89,6 +90,8 @@ function openTaskDetail(connectionId: number, taskId: string) {
     detailOpen.value = true;
 }
 
+const { playTimerEndSound } = useTimerSound();
+
 const {
     activeBlockId,
     remainingSeconds,
@@ -102,7 +105,7 @@ const {
     reset,
     skip,
     formatTime,
-} = useRoutineTimer(blocks);
+} = useRoutineTimer(blocks, { onExpire: () => playTimerEndSound() });
 
 const completedElapsedMinutes = computed(() =>
     Math.floor(completedElapsedSeconds.value / 60),
