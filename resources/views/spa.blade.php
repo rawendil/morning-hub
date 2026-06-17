@@ -49,6 +49,31 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        @php
+            $ogTitle = 'Morning Hub — Twoja poranna rutyna, uporządkowana';
+            $ogDescription = 'Jeden panel do zadań, nawyków, artykułów i kalendarza — zacznij dzień skupiony, nie przytłoczony.';
+            $ogImage = asset('images/og-image.png');
+        @endphp
+
+        {{-- SEO + Open Graph / Twitter Card meta — server-rendered so crawlers (LinkedIn, Facebook, Slack) get a proper unfurl without executing JS --}}
+        <meta name="description" content="{{ $ogDescription }}">
+
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="{{ config('app.name', 'Morning Hub') }}">
+        <meta property="og:title" content="{{ $ogTitle }}">
+        <meta property="og:description" content="{{ $ogDescription }}">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:image" content="{{ $ogImage }}">
+        <meta property="og:image:type" content="image/png">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="Morning Hub — panel porannej rutyny">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $ogTitle }}">
+        <meta name="twitter:description" content="{{ $ogDescription }}">
+        <meta name="twitter:image" content="{{ $ogImage }}">
+
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
