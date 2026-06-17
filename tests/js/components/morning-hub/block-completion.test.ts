@@ -52,13 +52,13 @@ describe('routine block completion treatment', () => {
         const wrapper = mountBlock(true)
 
         expect(wrapper.findComponent(BlockCompletedBadge).exists()).toBe(true)
-        expect(wrapper.html()).toContain('opacity-75')
+        expect(wrapper.html()).toContain('opacity-60')
     })
 
     it('shows no badge and full opacity when not completed', () => {
         const wrapper = mountBlock(false)
 
         expect(wrapper.findComponent(BlockCompletedBadge).exists()).toBe(false)
-        expect(wrapper.html()).not.toContain('opacity-75')
+        expect(wrapper.html()).not.toContain('opacity-60')
     })
 })
