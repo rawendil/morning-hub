@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Plus, RefreshCw, SkipForward } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
+import BlockCompletedBadge from '@/components/morning-hub/BlockCompletedBadge.vue';
 import ClickUpTaskBlockSkeleton from '@/components/morning-hub/ClickUpTaskBlockSkeleton.vue';
 import ClickUpTaskCard from '@/components/morning-hub/ClickUpTaskCard.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
@@ -22,6 +23,7 @@ const props = defineProps<{
     block: RoutineBlock;
     tasksData: BlockTasksData | undefined;
     isActiveBlock: boolean;
+    isCompleted: boolean;
     isTimerRunning: boolean;
     isTimerExpired: boolean;
     remainingSeconds: number;
@@ -130,7 +132,10 @@ async function handleCreateTask() {
 <template>
     <Card
         v-if="!block.clickup_connection_id"
-        :class="{ 'ring-2 ring-primary/30': isActiveBlock }"
+        :class="{
+            'ring-2 ring-primary/30': isActiveBlock,
+            'opacity-75 transition-opacity hover:opacity-100': isCompleted,
+        }"
     >
         <CardHeader
             class="flex flex-row items-center justify-between space-y-0 py-3"
@@ -141,6 +146,7 @@ async function handleCreateTask() {
                     class="h-4 w-4 text-muted-foreground"
                 />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
+                <BlockCompletedBadge v-if="isCompleted" />
             </div>
         </CardHeader>
         <CardContent class="pt-0">
@@ -152,7 +158,13 @@ async function handleCreateTask() {
 
     <ClickUpTaskBlockSkeleton v-else-if="!tasksData" />
 
-    <Card v-else :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
+    <Card
+        v-else
+        :class="{
+            'ring-2 ring-primary/30': isActiveBlock,
+            'opacity-75 transition-opacity hover:opacity-100': isCompleted,
+        }"
+    >
         <CardHeader
             class="flex flex-row items-center justify-between space-y-0 py-3"
         >
@@ -175,6 +187,7 @@ async function handleCreateTask() {
                     @resume="emit('timerResume')"
                     @reset="emit('timerReset')"
                 />
+                <BlockCompletedBadge v-if="isCompleted" />
             </div>
             <div class="flex items-center gap-1">
                 <Button

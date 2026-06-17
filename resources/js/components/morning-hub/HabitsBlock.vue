@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { SkipForward } from 'lucide-vue-next';
 import { computed } from 'vue';
+import BlockCompletedBadge from '@/components/morning-hub/BlockCompletedBadge.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +15,7 @@ import type { RoutineBlock } from '@/types';
 const props = defineProps<{
     block: RoutineBlock;
     isActiveBlock: boolean;
+    isCompleted: boolean;
     isTimerRunning: boolean;
     isTimerExpired: boolean;
     remainingSeconds: number;
@@ -39,7 +41,12 @@ const progress = computed(
 </script>
 
 <template>
-    <Card :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
+    <Card
+        :class="{
+            'ring-2 ring-primary/30': isActiveBlock,
+            'opacity-75 transition-opacity hover:opacity-100': isCompleted,
+        }"
+    >
         <CardHeader
             class="flex flex-row items-center justify-between space-y-0 py-3"
         >
@@ -62,6 +69,7 @@ const progress = computed(
                     @resume="emit('timerResume')"
                     @reset="emit('timerReset')"
                 />
+                <BlockCompletedBadge v-if="isCompleted" />
             </div>
             <div class="flex items-center gap-2">
                 <span class="text-xs text-muted-foreground">{{

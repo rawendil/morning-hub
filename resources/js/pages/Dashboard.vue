@@ -208,6 +208,9 @@ watch(
                                 :block="block"
                                 :tasks-data="getTasksData(block.id)"
                                 :is-active-block="activeBlockId === block.id"
+                                :is-completed="
+                                    blockStates.get(block.id) === 'completed'
+                                "
                                 :is-timer-running="
                                     activeBlockId === block.id && isRunning
                                 "
@@ -245,6 +248,9 @@ watch(
                                 :block="block"
                                 :feed-data="getFeedData(block.id)"
                                 :is-active-block="activeBlockId === block.id"
+                                :is-completed="
+                                    blockStates.get(block.id) === 'completed'
+                                "
                                 :is-timer-running="
                                     activeBlockId === block.id && isRunning
                                 "
@@ -283,6 +289,9 @@ watch(
                                 :block="block"
                                 :events-data="getEventsData(block.id)"
                                 :is-active-block="activeBlockId === block.id"
+                                :is-completed="
+                                    blockStates.get(block.id) === 'completed'
+                                "
                                 :is-timer-running="
                                     activeBlockId === block.id && isRunning
                                 "
@@ -312,6 +321,9 @@ watch(
                             :block="block"
                             :feed-data="getFeedData(block.id)"
                             :is-active-block="activeBlockId === block.id"
+                            :is-completed="
+                                blockStates.get(block.id) === 'completed'
+                            "
                             :is-timer-running="
                                 activeBlockId === block.id && isRunning
                             "

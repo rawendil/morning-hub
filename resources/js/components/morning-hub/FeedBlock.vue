@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ExternalLink, Eye, EyeOff, SkipForward } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import BlockCompletedBadge from '@/components/morning-hub/BlockCompletedBadge.vue';
 import RoutineTimerBadge from '@/components/morning-hub/RoutineTimerBadge.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ const props = defineProps<{
     block: RoutineBlock;
     feedData: BlockFeedData | undefined;
     isActiveBlock: boolean;
+    isCompleted: boolean;
     isTimerRunning: boolean;
     isTimerExpired: boolean;
     remainingSeconds: number;
@@ -57,7 +59,12 @@ function timeAgo(isoDate: string): string {
 </script>
 
 <template>
-    <Card :class="{ 'ring-2 ring-primary/30': isActiveBlock }">
+    <Card
+        :class="{
+            'ring-2 ring-primary/30': isActiveBlock,
+            'opacity-75 transition-opacity hover:opacity-100': isCompleted,
+        }"
+    >
         <CardHeader
             class="flex flex-row items-center justify-between space-y-0 py-3"
         >
@@ -80,6 +87,7 @@ function timeAgo(isoDate: string): string {
                     @resume="emit('timerResume')"
                     @reset="emit('timerReset')"
                 />
+                <BlockCompletedBadge v-if="isCompleted" />
             </div>
             <div class="flex items-center gap-2">
                 <button
