@@ -44,7 +44,7 @@ const progress = computed(
     <Card
         :class="{
             'ring-2 ring-primary/30': isActiveBlock,
-            'opacity-75 transition-opacity hover:opacity-100': isCompleted,
+            'opacity-60 transition-opacity hover:opacity-100': isCompleted,
         }"
     >
         <CardHeader
