@@ -27,6 +27,10 @@ type StoredTimerState = {
     elapsedSeconds: Record<number, number>;
 };
 
+export type UseRoutineTimerOptions = {
+    onExpire?: (blockId: number) => void;
+};
+
 const STORAGE_KEY = 'morning-hub-timer-state';
 
 function todayString(): string {
@@ -66,6 +70,7 @@ function persistState(state: StoredTimerState): void {
 
 export function useRoutineTimer(
     blocks: RoutineBlock[] | Ref<RoutineBlock[]>,
+    options: UseRoutineTimerOptions = {},
 ): UseRoutineTimerReturn {
     const stored = loadState();
 
@@ -129,7 +134,11 @@ export function useRoutineTimer(
             remainingSeconds.value--;
             if (remainingSeconds.value <= 0) {
                 remainingSeconds.value = 0;
+                const expiredBlockId = activeBlockId.value;
                 clearTimer();
+                if (expiredBlockId !== null) {
+                    options.onExpire?.(expiredBlockId);
+                }
             }
             saveState();
         }, 1000);

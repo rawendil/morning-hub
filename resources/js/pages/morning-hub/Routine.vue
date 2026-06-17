@@ -14,12 +14,17 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { useTimerSound } from '@/composables/useTimerSound';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import axiosInstance from '@/lib/axios';
 import type { BreadcrumbItem, ClickUpConnection, RoutineBlock } from '@/types';
 
 const { t } = useTranslations();
+const { enabled: timerSoundEnabled, setEnabled: setTimerSoundEnabled } =
+    useTimerSound();
 
 const blocks = ref<RoutineBlock[]>([]);
 const connections = ref<ClickUpConnection[]>([]);
@@ -93,6 +98,28 @@ async function moveBlock(blockIndex: number, direction: -1 | 1) {
                     <Plus class="h-4 w-4" />
                     {{ t('Dodaj blok') }}
                 </Button>
+            </div>
+
+            <div
+                class="flex items-center justify-between gap-4 rounded-lg border p-4"
+            >
+                <div class="space-y-0.5">
+                    <Label for="timer-sound-toggle" class="text-base">
+                        {{ t('Dźwięk po zakończeniu bloku') }}
+                    </Label>
+                    <p class="text-sm text-muted-foreground">
+                        {{
+                            t(
+                                'Odtwarzaj dźwięk, gdy upłynie czas bloku rutyny.',
+                            )
+                        }}
+                    </p>
+                </div>
+                <Switch
+                    id="timer-sound-toggle"
+                    :model-value="timerSoundEnabled"
+                    @update:model-value="setTimerSoundEnabled"
+                />
             </div>
 
             <div
