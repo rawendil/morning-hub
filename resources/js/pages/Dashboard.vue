@@ -32,6 +32,7 @@ const blocks = ref<RoutineBlock[]>([]);
 const blockTasksData = ref<Record<number, BlockTasksData>>({});
 const blockFeedData = ref<Record<number, BlockFeedData>>({});
 const blockEventsData = ref<Record<number, BlockGoogleCalendarData>>({});
+const refreshingBlockIds = ref<Set<number>>(new Set());
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     { title: t('Panel'), href: '/dashboard' },
@@ -79,6 +80,24 @@ onMounted(async () => {
         loading.value = false;
     }
 });
+
+async function refreshBlockTasks(blockId: number) {
+    const block = blocks.value.find((b) => b.id === blockId);
+    const connectionId = block?.clickup_connection_id;
+    if (!connectionId) {
+        return;
+    }
+
+    refreshingBlockIds.value.add(blockId);
+    try {
+        const { data } = await axiosInstance.get(
+            `/morning-hub/clickup/${connectionId}/tasks`,
+        );
+        blockTasksData.value[blockId] = data as BlockTasksData;
+    } finally {
+        refreshingBlockIds.value.delete(blockId);
+    }
+}
 
 const detailOpen = ref(false);
 const detailConnectionId = ref<number | null>(null);
@@ -230,12 +249,16 @@ watch(
                                         ? formatTime(remainingSeconds)
                                         : ''
                                 "
+                                :is-refreshing="
+                                    refreshingBlockIds.has(block.id)
+                                "
                                 @select-task="openTaskDetail"
                                 @timer-start="start(block.id)"
                                 @timer-pause="pause()"
                                 @timer-resume="resume()"
                                 @timer-reset="reset()"
                                 @timer-skip="skip()"
+                                @refresh="refreshBlockTasks(block.id)"
                             />
                         </template>
                         <template

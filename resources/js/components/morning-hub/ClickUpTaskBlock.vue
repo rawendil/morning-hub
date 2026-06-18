@@ -28,6 +28,7 @@ const props = defineProps<{
     isTimerExpired: boolean;
     remainingSeconds: number;
     formattedTime: string;
+    isRefreshing?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -211,9 +212,13 @@ async function handleCreateTask() {
                     variant="ghost"
                     size="icon"
                     class="h-8 w-8"
+                    :disabled="isRefreshing"
                     @click="refresh"
                 >
-                    <RefreshCw class="h-4 w-4" />
+                    <RefreshCw
+                        class="h-4 w-4"
+                        :class="{ 'animate-spin': isRefreshing }"
+                    />
                 </Button>
             </div>
         </CardHeader>
@@ -246,9 +251,13 @@ async function handleCreateTask() {
             <Alert v-if="tasksData.error" variant="destructive">
                 <AlertDescription class="flex items-center justify-between">
                     <span>{{ tasksData.error }}</span>
-                    <Button variant="outline" size="sm" @click="refresh">{{
-                        t('Ponów')
-                    }}</Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        :disabled="isRefreshing"
+                        @click="refresh"
+                        >{{ t('Ponów') }}</Button
+                    >
                 </AlertDescription>
             </Alert>
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\BlockType;
 use App\Http\Controllers\Controller;
 use App\Models\RoutineBlock;
-use App\Services\ClickUpService;
+use App\Services\ClickUpBlockTaskService;
 use App\Services\FeedService;
 use App\Services\GoogleCalendarServiceFactory;
 use Illuminate\Http\JsonResponse;
@@ -15,6 +15,7 @@ class DashboardController extends Controller
 {
     public function __construct(
         private readonly GoogleCalendarServiceFactory $googleCalendarServiceFactory,
+        private readonly ClickUpBlockTaskService $clickUpBlockTaskService,
     ) {}
 
     public function __invoke(Request $request): JsonResponse
@@ -51,28 +52,7 @@ class DashboardController extends Controller
             return;
         }
 
-        $hasLists = ! empty($block->clickUpConnection->default_list_ids)
-            || $block->clickUpConnection->default_list_id;
-
-        if (! $hasLists) {
-            return;
-        }
-
-        try {
-            $service = new ClickUpService($block->clickUpConnection->api_token);
-
-            /** @var array<int, string> $listIds */
-            $listIds = $block->clickUpConnection->default_list_ids;
-            $filters = $block->clickUpConnection->default_filters ?? [];
-
-            $tasks = ! empty($listIds)
-                ? $service->getTasksFromLists($listIds, $filters)
-                : $service->getTasks($block->clickUpConnection->default_list_id, $filters);
-
-            $blocksData["tasks_{$block->id}"] = ['tasks' => $tasks, 'error' => null];
-        } catch (\Throwable $e) {
-            $blocksData["tasks_{$block->id}"] = ['tasks' => [], 'error' => $e->getMessage()];
-        }
+        $blocksData["tasks_{$block->id}"] = $this->clickUpBlockTaskService->forConnection($block->clickUpConnection);
     }
 
     /** @param array<string, mixed> $blocksData */

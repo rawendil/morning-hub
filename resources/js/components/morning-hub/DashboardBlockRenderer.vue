@@ -23,6 +23,7 @@ defineProps<{
     isTimerExpired: boolean;
     remainingSeconds: number;
     formattedTime: string;
+    isRefreshing?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -32,6 +33,7 @@ const emit = defineEmits<{
     timerResume: [];
     timerReset: [];
     timerSkip: [];
+    refresh: [];
 }>();
 </script>
 
@@ -46,12 +48,14 @@ const emit = defineEmits<{
         :is-timer-expired="isTimerExpired"
         :remaining-seconds="remainingSeconds"
         :formatted-time="formattedTime"
+        :is-refreshing="isRefreshing"
         @select-task="(connId, taskId) => emit('selectTask', connId, taskId)"
         @timer-start="emit('timerStart')"
         @timer-pause="emit('timerPause')"
         @timer-resume="emit('timerResume')"
         @timer-reset="emit('timerReset')"
         @timer-skip="emit('timerSkip')"
+        @refresh="emit('refresh')"
     />
     <BrainDumpBlock
         v-else-if="block.type === 'braindump'"
