@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/morning-hub/clickup/{connection}/lists', [ClickUpApiController::class, 'lists']);
         Route::get('/morning-hub/clickup/{connection}/all-lists', [ClickUpApiController::class, 'allLists']);
         Route::get('/morning-hub/clickup/{connection}/me', [ClickUpApiController::class, 'me']);
+        Route::get('/morning-hub/clickup/{connection}/tasks', [ClickUpApiController::class, 'tasks']);
         Route::get('/morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'task']);
         Route::put('/morning-hub/clickup/{connection}/tasks/{taskId}', [ClickUpApiController::class, 'updateTask']);
         Route::post('/morning-hub/clickup/{connection}/tasks', [ClickUpApiController::class, 'createTask']);

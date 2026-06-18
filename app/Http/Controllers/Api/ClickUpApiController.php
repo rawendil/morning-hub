@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClickUpConnection;
+use App\Services\ClickUpBlockTaskService;
 use App\Services\ClickUpServiceFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ class ClickUpApiController extends Controller
 {
     public function __construct(
         private readonly ClickUpServiceFactory $clickUpServiceFactory,
+        private readonly ClickUpBlockTaskService $clickUpBlockTaskService,
     ) {}
 
     public function workspaces(Request $request, ClickUpConnection $connection): JsonResponse
@@ -76,6 +78,13 @@ class ClickUpApiController extends Controller
         $service = $this->clickUpServiceFactory->make($connection->api_token, $connection->id);
 
         return response()->json(['data' => $service->getAuthenticatedUser()]);
+    }
+
+    public function tasks(ClickUpConnection $connection): JsonResponse
+    {
+        Gate::authorize('view', $connection);
+
+        return response()->json($this->clickUpBlockTaskService->forConnection($connection));
     }
 
     public function task(Request $request, ClickUpConnection $connection, string $taskId): JsonResponse
