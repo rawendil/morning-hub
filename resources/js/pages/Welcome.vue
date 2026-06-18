@@ -12,24 +12,36 @@ import { useAuthStore } from '@/stores/auth';
 const { t } = useTranslations();
 const auth = useAuthStore();
 
-const featureRows = computed(() => [
+const steps = computed(() => [
     {
-        title: t('Zaprojektuj swój idealny poranek'),
-        description: t(
-            'Dodaj bloki rutyny, przypisz czas i ułóż w kolejności. Każdy blok to inny moduł — feed RSS, nawyki, notatki, zadania, własny tekst. Strona resetuje się każdego ranka.',
-        ),
-        tags: [t('Bloki rutyny'), 'Timer', t('Nawyki'), t('Braindump')],
-        image: '/images/morning-rutine-config.png',
-        reversed: false,
-    },
-    {
+        number: 1,
         title: t('Połącz narzędzia, których już używasz'),
         description: t(
             'Importuj zadania z ClickUp i wydarzenia z Google Calendar. Filtry po statusach i przypisanych osobach — zobaczysz tylko to, co ważne na dziś.',
         ),
-        tags: ['ClickUp', 'Google Calendar', t('Filtry zadań')],
+        tags: ['ClickUp', 'Google Calendar'],
         image: '/images/clickup-config.png',
+        reversed: false,
+    },
+    {
+        number: 2,
+        title: t('Zaprojektuj swój idealny poranek'),
+        description: t(
+            'Dodaj bloki rutyny, przypisz czas i ułóż w kolejności. Każdy blok to inny moduł — feed RSS, nawyki, notatki, zadania, własny tekst.',
+        ),
+        tags: [t('Bloki rutyny'), 'Timer', t('Nawyki'), t('Braindump')],
+        image: '/images/morning-rutine-config.png',
         reversed: true,
+    },
+    {
+        number: 3,
+        title: t('Korzystaj każdego ranka'),
+        description: t(
+            'Otwórz panel, włącz timer i przechodź przez bloki po kolei. Zaznaczaj nawyki, czytaj feed, zapisuj myśli — a następnego ranka wszystko czeka odświeżone.',
+        ),
+        tags: [t('Timer bloku'), t('Pasek postępu'), t('Codzienny reset')],
+        image: '/images/routine-in-use.png',
+        reversed: false,
     },
 ]);
 
@@ -119,7 +131,7 @@ const whyCards = computed(() => [
                 <p class="mx-auto max-w-lg text-lg text-muted-foreground">
                     {{
                         t(
-                            'Jeden panel do zadań, nawyków, artykułów i kalendarza — zacznij dzień skupiony, nie przytłoczony.',
+                            'Jeden panel dla Twoich codziennych nawyków, śledzenia artykułów branżowych i zadań — zacznij dzień w skupieniu i harmonii.',
                         )
                     }}
                 </p>
@@ -175,29 +187,53 @@ const whyCards = computed(() => [
             </p>
         </section>
 
-        <!-- Feature Rows -->
+        <!-- How it works -->
         <section class="bg-muted px-6 py-20 lg:px-10">
-            <p
-                class="mb-14 text-center text-xs font-semibold tracking-widest text-primary uppercase"
-            >
-                {{ t('Funkcjonalności') }}
-            </p>
+            <div class="mx-auto mb-16 max-w-2xl text-center">
+                <p
+                    class="mb-3 text-xs font-semibold tracking-widest text-primary uppercase"
+                >
+                    {{ t('Jak to działa') }}
+                </p>
+                <h2 class="mb-3 text-3xl font-bold tracking-tight sm:text-4xl">
+                    {{ t('Rozpocznij swoją codzienną poranną rutynę!') }}
+                </h2>
+                <p class="text-muted-foreground">
+                    {{
+                        t(
+                            'Trzy kroki — od konfiguracji narzędzi po skupiony, powtarzalny poranek.',
+                        )
+                    }}
+                </p>
+            </div>
             <div class="mx-auto max-w-5xl space-y-24">
                 <div
-                    v-for="feature in featureRows"
-                    :key="feature.title"
+                    v-for="step in steps"
+                    :key="step.number"
                     class="grid items-center gap-16 lg:grid-cols-2"
                 >
-                    <div :class="{ 'lg:order-last': feature.reversed }">
+                    <div :class="{ 'lg:order-last': step.reversed }">
+                        <div class="mb-4 flex items-center gap-3">
+                            <span
+                                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground"
+                            >
+                                {{ step.number }}
+                            </span>
+                            <span
+                                class="text-xs font-semibold tracking-widest text-primary uppercase"
+                            >
+                                {{ t('Krok') }} {{ step.number }}
+                            </span>
+                        </div>
                         <h3 class="mb-4 text-2xl font-bold tracking-tight">
-                            {{ feature.title }}
+                            {{ step.title }}
                         </h3>
                         <p class="mb-5 leading-relaxed text-muted-foreground">
-                            {{ feature.description }}
+                            {{ step.description }}
                         </p>
                         <div class="flex flex-wrap gap-2">
                             <span
-                                v-for="tag in feature.tags"
+                                v-for="tag in step.tags"
                                 :key="tag"
                                 class="rounded-full border border-border bg-card px-3 py-0.5 text-xs font-medium text-primary"
                             >
@@ -206,12 +242,12 @@ const whyCards = computed(() => [
                         </div>
                     </div>
                     <div
-                        :class="{ 'lg:order-first': feature.reversed }"
+                        :class="{ 'lg:order-first': step.reversed }"
                         class="overflow-hidden rounded-lg border border-border shadow-md"
                     >
                         <img
-                            :src="feature.image"
-                            :alt="feature.title"
+                            :src="step.image"
+                            :alt="step.title"
                             class="w-full"
                         />
                     </div>
