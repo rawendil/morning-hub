@@ -26,9 +26,9 @@ class DatabaseSeeder extends Seeder
             'timer_minutes' => 5,
             'config' => [
                 'habits' => [
-                    'Wypij szklankę wody',
-                    'Medytacja 5 minut',
-                    'Rozciąganie',
+                    ['id' => 'habit-water', 'label' => 'Wypij szklankę wody'],
+                    ['id' => 'habit-meditation', 'label' => 'Medytacja 5 minut'],
+                    ['id' => 'habit-stretching', 'label' => 'Rozciąganie'],
                 ],
             ],
         ]);

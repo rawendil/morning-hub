@@ -12,20 +12,26 @@ import OnboardingModal from '@/components/morning-hub/OnboardingModal.vue';
 import RoutineCompletionDialog from '@/components/morning-hub/RoutineCompletionDialog.vue';
 import RoutineProgress from '@/components/morning-hub/RoutineProgress.vue';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useDailyProgress } from '@/composables/useDailyProgress';
 import { useRoutineTimer } from '@/composables/useRoutineTimer';
 import { useTimerSound } from '@/composables/useTimerSound';
+import { useTimezoneSync } from '@/composables/useTimezoneSync';
 import { useTranslations } from '@/composables/useTranslations';
 import AppLayout from '@/layouts/AppLayout.vue';
 import axiosInstance from '@/lib/axios';
+import { newlyCompletedBlockIds } from '@/lib/routine-notifications';
 import type {
     BreadcrumbItem,
     BlockFeedData,
     BlockGoogleCalendarData,
     BlockTasksData,
+    DailyProgress,
     RoutineBlock,
 } from '@/types';
 
 const { t } = useTranslations();
+const { syncTimezone } = useTimezoneSync();
+const { hydrate: hydrateDailyProgress } = useDailyProgress();
 
 const loading = ref(true);
 const blocks = ref<RoutineBlock[]>([]);
@@ -33,6 +39,8 @@ const blockTasksData = ref<Record<number, BlockTasksData>>({});
 const blockFeedData = ref<Record<number, BlockFeedData>>({});
 const blockEventsData = ref<Record<number, BlockGoogleCalendarData>>({});
 const refreshingBlockIds = ref<Set<number>>(new Set());
+const completedOnLoad = ref<Set<number>>(new Set());
+const routineCompleteOnLoad = ref(false);
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     { title: t('Panel'), href: '/dashboard' },
@@ -52,8 +60,21 @@ function getEventsData(blockId: number): BlockGoogleCalendarData | undefined {
 
 onMounted(async () => {
     try {
+        await syncTimezone();
+
         const { data } = await axiosInstance.get('/dashboard');
         blocks.value = data.blocks ?? [];
+
+        const dailyProgress = data.daily_progress as DailyProgress | undefined;
+        hydrateDailyProgress(dailyProgress);
+        completedOnLoad.value = new Set(
+            (dailyProgress?.blocks ?? []).map(
+                (block) => block.routine_block_id,
+            ),
+        );
+        routineCompleteOnLoad.value =
+            blocks.value.length > 0 &&
+            blocks.value.every((block) => completedOnLoad.value.has(block.id));
 
         if (data.blocks_data) {
             for (const [key, value] of Object.entries(data.blocks_data)) {
@@ -146,15 +167,16 @@ const allBlocksCompleted = computed(
 watch(
     blockStates,
     (newStates, oldStates) => {
-        for (const [blockId, state] of newStates) {
-            if (
-                state === 'completed' &&
-                oldStates?.get(blockId) !== 'completed'
-            ) {
-                const block = blocks.value.find((b) => b.id === blockId);
-                if (block) {
-                    toast.success(`${block.name} — ukończono! ✓`);
-                }
+        const announced = newlyCompletedBlockIds(
+            newStates,
+            oldStates,
+            completedOnLoad.value,
+        );
+
+        for (const blockId of announced) {
+            const block = blocks.value.find((b) => b.id === blockId);
+            if (block) {
+                toast.success(`${block.name} — ukończono! ✓`);
             }
         }
     },
@@ -164,7 +186,7 @@ watch(
 watch(
     allBlocksCompleted,
     (isComplete) => {
-        if (isComplete) {
+        if (isComplete && !routineCompleteOnLoad.value) {
             routineCompleteOpen.value = true;
         }
     },

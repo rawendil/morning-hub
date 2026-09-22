@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Auth\ResetPasswordController;
 use App\Http\Controllers\Api\Auth\TwoFactorController;
 use App\Http\Controllers\Api\ClickUpApiController;
 use App\Http\Controllers\Api\ClickUpConnectionController;
+use App\Http\Controllers\Api\DailyProgressController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\GoogleCalendarApiController;
 use App\Http\Controllers\Api\GoogleCalendarConnectionController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Api\RoutineBlockController;
 use App\Http\Controllers\Api\Settings\AppearanceController;
 use App\Http\Controllers\Api\Settings\PasswordController;
 use App\Http\Controllers\Api\Settings\ProfileController;
+use App\Http\Controllers\Api\Settings\TimezoneController;
 use App\Http\Controllers\Api\Settings\TwoFactorAuthenticationController;
 use App\Http\Controllers\Api\TodaysTasksConfigController;
 use App\Http\Controllers\Api\TodaysTasksController;
@@ -40,6 +42,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/morning-hub/routine/blocks/reorder', [RoutineBlockController::class, 'reorder']);
     Route::put('/morning-hub/routine/blocks/{block}', [RoutineBlockController::class, 'update']);
     Route::delete('/morning-hub/routine/blocks/{block}', [RoutineBlockController::class, 'destroy']);
+
+    Route::get('/morning-hub/daily', [DailyProgressController::class, 'show']);
+    Route::post('/morning-hub/daily/blocks/{block}/habits', [DailyProgressController::class, 'storeHabit']);
+    Route::put('/morning-hub/daily/blocks/{block}', [DailyProgressController::class, 'update']);
+    Route::delete('/morning-hub/daily/blocks/{block}', [DailyProgressController::class, 'destroy']);
 
     Route::get('/morning-hub/clickup', [ClickUpConnectionController::class, 'index']);
     Route::post('/morning-hub/clickup/oauth/start', [ClickUpOAuthController::class, 'start'])->middleware('throttle:5,1');
@@ -84,6 +91,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/settings/password', [PasswordController::class, 'update'])->middleware('throttle:6,1');
 
     Route::get('/settings/two-factor', [TwoFactorAuthenticationController::class, 'show']);
+
+    Route::put('/settings/timezone', [TimezoneController::class, 'update']);
 
     Route::get('/settings/appearance', [AppearanceController::class, 'show']);
     Route::patch('/settings/appearance', [AppearanceController::class, 'update']);

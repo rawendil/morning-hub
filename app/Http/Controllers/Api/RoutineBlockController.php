@@ -7,6 +7,7 @@ use App\Http\Requests\MorningHub\ReorderRoutineBlocksRequest;
 use App\Http\Requests\MorningHub\StoreRoutineBlockRequest;
 use App\Http\Requests\MorningHub\UpdateRoutineBlockRequest;
 use App\Models\RoutineBlock;
+use App\Services\RoutineBlockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\Gate;
 
 class RoutineBlockController extends Controller
 {
+    public function __construct(
+        private readonly RoutineBlockService $routineBlockService,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var \App\Models\User $user */
@@ -31,11 +36,7 @@ class RoutineBlockController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        $nextSortOrder = (int) $user->routineBlocks()->max('sort_order') + 1;
-
-        $block = $user->routineBlocks()->create(
-            array_merge($request->validated(), ['sort_order' => $nextSortOrder])
-        );
+        $block = $this->routineBlockService->create($user, $request->validated());
 
         return response()->json(['block' => $block], 201);
     }
@@ -43,9 +44,10 @@ class RoutineBlockController extends Controller
     public function update(UpdateRoutineBlockRequest $request, RoutineBlock $block): JsonResponse
     {
         Gate::authorize('update', $block);
-        $block->update($request->validated());
 
-        return response()->json(['block' => $block->fresh()]);
+        return response()->json([
+            'block' => $this->routineBlockService->update($block, $request->validated()),
+        ]);
     }
 
     public function destroy(Request $request, RoutineBlock $block): Response

@@ -146,3 +146,24 @@ test('user can fetch todays tasks data', function () {
         ->assertOk()
         ->assertJsonStructure(['config', 'connections']);
 });
+
+test('dashboard includes the daily progress for the current local day', function () {
+    /** @var User $user */
+    $user = User::factory()->create(['timezone' => 'Europe/Warsaw']);
+    $block = RoutineBlock::factory()->for($user)->create([
+        'type' => BlockType::Habits,
+        'config' => ['habits' => [['id' => 'habit-water', 'label' => 'Woda']]],
+    ]);
+
+    $this->actingAs($user, 'sanctum')
+        ->postJson("/api/morning-hub/daily/blocks/{$block->id}/habits", [
+            'habit_id' => 'habit-water',
+            'completed' => true,
+        ])->assertOk();
+
+    $this->actingAs($user, 'sanctum')
+        ->getJson('/api/dashboard')
+        ->assertOk()
+        ->assertJsonPath('daily_progress.date', $user->localDate()->toDateString())
+        ->assertJsonPath('daily_progress.habits.0.habit_id', 'habit-water');
+});

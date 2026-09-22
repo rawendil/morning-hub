@@ -1,5 +1,6 @@
 import { computed, onBeforeUnmount, ref, unref } from 'vue';
 import type { ComputedRef, Ref } from 'vue';
+import { useDailyProgress } from '@/composables/useDailyProgress';
 import type { RoutineBlock } from '@/types';
 
 export type BlockTimerState = 'pending' | 'active' | 'expired' | 'completed';
@@ -19,11 +20,14 @@ export type UseRoutineTimerReturn = {
     formatTime: (seconds: number) => string;
 };
 
+/**
+ * Only the running countdown lives in browser storage — which block is
+ * completed is owned by the server, see `useDailyProgress`.
+ */
 type StoredTimerState = {
     date: string;
     activeBlockId: number | null;
     remainingSeconds: number;
-    completedBlockIds: number[];
     elapsedSeconds: Record<number, number>;
 };
 
@@ -73,13 +77,11 @@ export function useRoutineTimer(
     options: UseRoutineTimerOptions = {},
 ): UseRoutineTimerReturn {
     const stored = loadState();
+    const dailyProgress = useDailyProgress();
 
     const activeBlockId = ref<number | null>(stored?.activeBlockId ?? null);
     const remainingSeconds = ref(stored?.remainingSeconds ?? 0);
     const isRunning = ref(false);
-    const completedBlockIds = ref(
-        new Set<number>(stored?.completedBlockIds ?? []),
-    );
     const elapsedSeconds = ref<Map<number, number>>(
         new Map(
             Object.entries(stored?.elapsedSeconds ?? {}).map(([k, v]) => [
@@ -108,7 +110,6 @@ export function useRoutineTimer(
             date: todayString(),
             activeBlockId: activeBlockId.value,
             remainingSeconds: remainingSeconds.value,
-            completedBlockIds: [...completedBlockIds.value],
             elapsedSeconds: Object.fromEntries(elapsedSeconds.value),
         });
     }
@@ -188,10 +189,16 @@ export function useRoutineTimer(
     }
 
     function skip(): void {
-        if (activeBlockId.value !== null) {
-            completedBlockIds.value.add(activeBlockId.value);
-        }
+        const completedBlockId = activeBlockId.value;
         clearTimer();
+
+        if (completedBlockId !== null) {
+            void dailyProgress.recordBlockCompletion(
+                completedBlockId,
+                elapsedSeconds.value.get(completedBlockId) ?? 0,
+            );
+        }
+
         activeBlockId.value = null;
         remainingSeconds.value = 0;
         saveState();
@@ -204,7 +211,7 @@ export function useRoutineTimer(
     const blockStates = computed(() => {
         const states = new Map<number, BlockTimerState>();
         for (const block of unref(blocks)) {
-            if (completedBlockIds.value.has(block.id)) {
+            if (dailyProgress.completedBlockIds.value.has(block.id)) {
                 states.set(block.id, 'completed');
             } else if (block.id === activeBlockId.value) {
                 states.set(block.id, isExpired.value ? 'expired' : 'active');
@@ -215,13 +222,7 @@ export function useRoutineTimer(
         return states;
     });
 
-    const completedElapsedSeconds = computed(() => {
-        let total = 0;
-        for (const blockId of completedBlockIds.value) {
-            total += elapsedSeconds.value.get(blockId) ?? 0;
-        }
-        return total;
-    });
+    const completedElapsedSeconds = dailyProgress.completedElapsedSeconds;
 
     function formatTime(seconds: number): string {
         const m = Math.floor(seconds / 60);

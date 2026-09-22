@@ -197,3 +197,27 @@ export type GoogleCalendarListItem = {
     name: string;
     color: string;
 };
+
+export type Habit = {
+    id: string;
+    label: string;
+};
+
+export type BlockCompletionStatus = 'completed' | 'skipped';
+
+export type HabitCompletion = {
+    routine_block_id: number;
+    habit_id: string;
+};
+
+export type BlockCompletion = {
+    routine_block_id: number;
+    status: BlockCompletionStatus;
+    elapsed_seconds: number | null;
+};
+
+export type DailyProgress = {
+    date: string;
+    blocks: BlockCompletion[];
+    habits: HabitCompletion[];
+};

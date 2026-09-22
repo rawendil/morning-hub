@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { useHabitsStorage } from '@/composables/useHabitsStorage';
+import { useDailyProgress } from '@/composables/useDailyProgress';
 import { useTranslations } from '@/composables/useTranslations';
 import { resolveBlockIcon } from '@/lib/block-icons';
+import { toHabits } from '@/lib/habits';
 import type { RoutineBlock } from '@/types';
 
 const props = defineProps<{
@@ -31,12 +32,14 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useTranslations();
-const { state, toggle: toggleHabit } = useHabitsStorage();
+const { isHabitCompleted, toggleHabit } = useDailyProgress();
 
-const habits = computed(() => (props.block.config?.habits as string[]) ?? []);
-const completed = computed(() => state.value.blocks[props.block.id] ?? []);
+const habits = computed(() => toHabits(props.block.config?.habits));
+const completedCount = computed(
+    () => habits.value.filter((habit) => isHabitCompleted(habit.id)).length,
+);
 const progress = computed(
-    () => `${completed.value.length}/${habits.value.length}`,
+    () => `${completedCount.value}/${habits.value.length}`,
 );
 </script>
 
@@ -90,23 +93,25 @@ const progress = computed(
         <CardContent class="space-y-2 pt-0">
             <div
                 v-for="(habit, index) in habits"
-                :key="index"
+                :key="habit.id || index"
                 class="flex items-center gap-3"
             >
                 <Checkbox
-                    :id="`habit-${block.id}-${index}`"
-                    :checked="completed.includes(index)"
-                    @update:checked="toggleHabit(block.id, index)"
+                    :id="`habit-${block.id}-${habit.id || index}`"
+                    :checked="isHabitCompleted(habit.id)"
+                    :disabled="!habit.id"
+                    @update:checked="toggleHabit(block.id, habit.id)"
                 />
                 <Label
-                    :for="`habit-${block.id}-${index}`"
+                    :for="`habit-${block.id}-${habit.id || index}`"
                     class="text-sm leading-none"
                     :class="{
-                        'text-muted-foreground line-through':
-                            completed.includes(index),
+                        'text-muted-foreground line-through': isHabitCompleted(
+                            habit.id,
+                        ),
                     }"
                 >
-                    {{ habit }}
+                    {{ habit.label }}
                 </Label>
             </div>
 

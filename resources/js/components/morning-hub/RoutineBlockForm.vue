@@ -25,7 +25,13 @@ import {
 import { useTranslations } from '@/composables/useTranslations';
 import axiosInstance from '@/lib/axios';
 import { getDefaultIconName } from '@/lib/block-icons';
-import type { BlockType, ClickUpConnection, RoutineBlock } from '@/types';
+import { toHabits } from '@/lib/habits';
+import type {
+    BlockType,
+    ClickUpConnection,
+    Habit,
+    RoutineBlock,
+} from '@/types';
 
 const { t } = useTranslations();
 
@@ -55,7 +61,11 @@ const selectedIcon = ref<string>(
     (props.block?.config?.icon as string) ||
         (props.block?.type ? getDefaultIconName(props.block.type) : ''),
 );
-const habits = ref<string[]>((props.block?.config?.habits as string[]) ?? ['']);
+const habits = ref<Habit[]>(
+    toHabits(props.block?.config?.habits).length > 0
+        ? toHabits(props.block?.config?.habits)
+        : [{ id: '', label: '' }],
+);
 const feedSources = ref<{ name: string; url: string }[]>(
     (props.block?.config?.sources as { name: string; url: string }[]) ?? [
         { name: '', url: '' },
@@ -84,7 +94,10 @@ watch(
         selectedIcon.value =
             (newBlock?.config?.icon as string) ||
             (newBlock?.type ? getDefaultIconName(newBlock.type) : '');
-        habits.value = (newBlock?.config?.habits as string[]) ?? [''];
+        habits.value =
+            toHabits(newBlock?.config?.habits).length > 0
+                ? toHabits(newBlock?.config?.habits)
+                : [{ id: '', label: '' }];
         feedSources.value = (newBlock?.config?.sources as {
             name: string;
             url: string;
@@ -119,7 +132,9 @@ function buildConfig(): Record<string, unknown> {
     const config: Record<string, unknown> = { icon: selectedIcon.value };
 
     if (selectedType.value === 'habits') {
-        config.habits = habits.value;
+        config.habits = habits.value
+            .filter((habit) => habit.label.trim() !== '')
+            .map((habit) => (habit.id ? habit : { label: habit.label }));
     }
 
     if (selectedType.value === 'feed') {
@@ -329,7 +344,7 @@ async function submit() {
                             class="flex items-center gap-2"
                         >
                             <Input
-                                v-model="habits[index]"
+                                v-model="habits[index].label"
                                 :placeholder="
                                     t('np. Obejrzeć film na Laracasts')
                                 "
@@ -349,7 +364,7 @@ async function submit() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            @click="habits.push('')"
+                            @click="habits.push({ id: '', label: '' })"
                         >
                             <Plus class="h-4 w-4" />
                             {{ t('Dodaj nawyk') }}

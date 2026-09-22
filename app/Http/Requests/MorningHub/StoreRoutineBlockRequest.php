@@ -3,11 +3,19 @@
 namespace App\Http\Requests\MorningHub;
 
 use App\Enums\BlockType;
+use App\Http\Requests\Concerns\NormalizesHabitConfig;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreRoutineBlockRequest extends FormRequest
 {
+    use NormalizesHabitConfig;
+
+    protected function prepareForValidation(): void
+    {
+        $this->normalizeHabitConfig();
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -32,7 +40,9 @@ class StoreRoutineBlockRequest extends FormRequest
             'config' => ['nullable', 'array'],
             'config.icon' => ['nullable', 'string', 'max:50'],
             'config.habits' => ['required_if:type,habits', 'array', 'min:1'],
-            'config.habits.*' => ['required', 'string', 'max:255'],
+            'config.habits.*' => ['required', 'array'],
+            'config.habits.*.id' => ['nullable', 'string', 'max:64', 'distinct'],
+            'config.habits.*.label' => ['required', 'string', 'max:255'],
             'config.sources' => ['required_if:type,feed', 'array', 'min:1'],
             'config.sources.*.name' => ['required', 'string', 'max:255'],
             'config.sources.*.url' => ['required', 'url', 'max:500'],

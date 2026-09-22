@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -27,6 +28,7 @@ class User extends Authenticatable
         'password',
         'google_id',
         'google_avatar',
+        'timezone',
     ];
 
     /**
@@ -53,6 +55,26 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The start of the user's current local day, falling back to UTC
+     * when no valid timezone is stored on the account.
+     */
+    public function localDate(): CarbonImmutable
+    {
+        return CarbonImmutable::now($this->resolvedTimezone())->startOfDay();
+    }
+
+    public function resolvedTimezone(): string
+    {
+        $timezone = $this->timezone;
+
+        if ($timezone === null || ! in_array($timezone, timezone_identifiers_list(), true)) {
+            return 'UTC';
+        }
+
+        return $timezone;
     }
 
     public function hasPassword(): bool

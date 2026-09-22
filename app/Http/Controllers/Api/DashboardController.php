@@ -6,6 +6,7 @@ use App\Enums\BlockType;
 use App\Http\Controllers\Controller;
 use App\Models\RoutineBlock;
 use App\Services\ClickUpBlockTaskService;
+use App\Services\DailyProgressService;
 use App\Services\FeedService;
 use App\Services\GoogleCalendarServiceFactory;
 use Illuminate\Http\JsonResponse;
@@ -16,6 +17,7 @@ class DashboardController extends Controller
     public function __construct(
         private readonly GoogleCalendarServiceFactory $googleCalendarServiceFactory,
         private readonly ClickUpBlockTaskService $clickUpBlockTaskService,
+        private readonly DailyProgressService $dailyProgressService,
     ) {}
 
     public function __invoke(Request $request): JsonResponse
@@ -42,6 +44,7 @@ class DashboardController extends Controller
         return response()->json([
             'blocks' => $blocks,
             'blocks_data' => $blocksData,
+            'daily_progress' => $this->dailyProgressService->stateFor($user),
         ]);
     }
 
