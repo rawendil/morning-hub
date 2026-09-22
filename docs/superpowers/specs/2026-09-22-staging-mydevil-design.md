@@ -47,6 +47,20 @@ wyprowadzają się z `APP_URL`, więc staging generuje własne adresy zwrotne.
 Bez wpisania ich w konsolach Google i ClickUp logowanie na stagingu nie
 zadziała — to czynność poza repozytorium.
 
+## Tryb maintenance
+
+Staging stoi stale w trybie maintenance (`php83 artisan down`), żeby adres nie
+był publicznie dostępny poza testami. Wejście wymaga sekretu obejścia, który
+leży **na serwerze**, poza repozytorium; ciasteczko działa 12 h.
+
+Tryb przeżywa wdrożenie: znacznik to `storage/framework/down`, a `storage/` jest
+poza gitem, więc `git reset --hard` go nie usuwa; `artisan optimize:clear`
+czyści cache konfiguracji, tras i widoków, ale nie dotyka maintenance.
+
+Konsekwencja dla weryfikacji: **zwykły `curl` na staging zwraca 503** i to nie
+jest awaria wdrożenia. Dowód „na żywo" zbiera się z ciasteczkiem obejścia.
+Zdjęcie trybu to `php83 artisan up`.
+
 ## Poza zakresem repozytorium
 
 `.claude/skills/next-task` i `.claude/skills/add-task` są w `.gitignore`
