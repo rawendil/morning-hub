@@ -34,3 +34,8 @@ yarn-error.log
 /rawcodestudio-plugins
 /.playwright-mcp
 /.superpowers
+
+# Personal task workflow — my own way of driving tasks from the tracker,
+# deliberately kept out of the public repo. Not needed to run the project.
+/.claude/skills/next-task
+/.claude/skills/add-task
