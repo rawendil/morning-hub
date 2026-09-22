@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\User;
-
 test('guests cannot access google link routes', function () {
     $this->get(route('google.link'))
         ->assertRedirect(route('login'));
