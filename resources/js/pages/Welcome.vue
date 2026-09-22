@@ -45,6 +45,47 @@ const steps = computed(() => [
     },
 ]);
 
+const researchCards = computed(() => [
+    {
+        stat: t('47% vs 37%'),
+        title: t('Ten sam czas, lepszy wynik'),
+        description: t(
+            'Materiał powtarzany w odstępach dawał 47% poprawnych odpowiedzi wobec 37% przy nauce jednym ciągiem — przy identycznym łącznym czasie nauki.',
+        ),
+        source: t('Cepeda i in., Psychological Bulletin, 2006'),
+        href: 'https://doi.org/10.1037/0033-2909.132.3.354',
+    },
+    {
+        stat: t('61% vs 40%'),
+        title: t('Przypomnienie bije doczytywanie'),
+        description: t(
+            'Tydzień po nauce studenci, którzy trzy razy odtwarzali tekst z pamięci, pamiętali 61% treści wobec 40% u tych, którzy zamiast tego czytali go ponownie.',
+        ),
+        source: t('Roediger i Karpicke, Psychological Science, 2006'),
+        href: 'https://doi.org/10.1111/j.1467-9280.2006.01693.x',
+    },
+    {
+        stat: t('18–254 dni'),
+        title: t('Nawyk nie ma jednego terminu'),
+        description: t(
+            'Tyle zajmowało dojście do automatyzmu 96 osobom powtarzającym tę samą czynność o tej samej porze dnia — mediana wypadła na 66 dniach, ale to rozrzut jest tu wynikiem.',
+        ),
+        source: t('Lally i in., European Journal of Social Psychology, 2010'),
+        href: 'https://doi.org/10.1002/ejsp.674',
+    },
+    {
+        stat: t('94'),
+        title: t('Plan „kiedy i gdzie” zmienia wynik'),
+        description: t(
+            'W 94 niezależnych testach samo ustalenie z góry, kiedy i gdzie wykonasz zamiar, zwiększało szansę jego realizacji — średni efekt d = 0,65.',
+        ),
+        source: t(
+            'Gollwitzer i Sheeran, Advances in Experimental Social Psychology, 2006',
+        ),
+        href: 'https://doi.org/10.1016/S0065-2601(06)38002-1',
+    },
+]);
+
 const whyCards = computed(() => [
     {
         icon: LayoutGrid,
@@ -255,8 +296,71 @@ const whyCards = computed(() => [
             </div>
         </section>
 
+        <!-- Why routine works -->
+        <section data-testid="research" class="px-6 py-20 lg:px-10">
+            <div class="mx-auto max-w-5xl">
+                <div class="mx-auto mb-12 max-w-2xl text-center">
+                    <p
+                        class="mb-3 text-xs font-semibold tracking-widest text-primary uppercase"
+                    >
+                        {{ t('Dlaczego to działa') }}
+                    </p>
+                    <h2
+                        class="mb-3 text-3xl font-bold tracking-tight sm:text-4xl"
+                    >
+                        {{ t('Rutyna to nie dyscyplina. To mechanizm.') }}
+                    </h2>
+                    <p class="text-muted-foreground">
+                        {{
+                            t(
+                                'Cztery wyniki badań, które tłumaczą, dlaczego małe, powtarzalne działania wyprzedzają zrywy.',
+                            )
+                        }}
+                    </p>
+                </div>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <Card
+                        v-for="card in researchCards"
+                        :key="card.href"
+                        data-testid="research-card"
+                        class="flex flex-col"
+                    >
+                        <CardHeader>
+                            <p
+                                data-testid="research-stat"
+                                class="text-3xl font-bold tracking-tight text-primary"
+                            >
+                                {{ card.stat }}
+                            </p>
+                            <CardTitle class="text-base">{{
+                                card.title
+                            }}</CardTitle>
+                        </CardHeader>
+                        <CardContent
+                            class="flex flex-1 flex-col justify-between gap-4"
+                        >
+                            <p
+                                class="text-sm leading-relaxed text-muted-foreground"
+                            >
+                                {{ card.description }}
+                            </p>
+                            <a
+                                data-testid="research-source"
+                                :href="card.href"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-xs text-muted-foreground underline decoration-muted-foreground/50 underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
+                            >
+                                {{ card.source }}
+                            </a>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </section>
+
         <!-- Why Morning Hub -->
-        <section class="px-6 py-20 lg:px-10">
+        <section class="bg-muted px-6 py-20 lg:px-10">
             <div class="mx-auto max-w-4xl">
                 <h2 class="mb-3 text-center text-3xl font-bold tracking-tight">
                     {{ t('Dlaczego Morning Hub?') }}
