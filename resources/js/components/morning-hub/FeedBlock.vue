@@ -90,20 +90,28 @@ function timeAgo(isoDate: string): string {
                 <BlockCompletedBadge v-if="isCompleted" />
             </div>
             <div class="flex items-center gap-2">
-                <button
+                <div
                     v-if="items.length"
                     class="flex items-center gap-1.5 text-muted-foreground"
-                    @click="showRead = !showRead"
                 >
                     <Switch
-                        :checked="showRead"
-                        @update:checked="showRead = $event"
+                        :id="`show-read-${block.id}`"
+                        :model-value="showRead"
+                        :aria-label="t('Pokaż przeczytane')"
+                        @update:model-value="showRead = $event"
                     />
-                    <component
-                        :is="showRead ? EyeOff : Eye"
-                        class="h-3.5 w-3.5"
-                    />
-                </button>
+                    <button
+                        type="button"
+                        class="cursor-pointer"
+                        :aria-label="t('Pokaż przeczytane')"
+                        @click="showRead = !showRead"
+                    >
+                        <component
+                            :is="showRead ? EyeOff : Eye"
+                            class="h-3.5 w-3.5"
+                        />
+                    </button>
+                </div>
                 <Button
                     v-if="isActiveBlock"
                     variant="ghost"
@@ -149,13 +157,12 @@ function timeAgo(isoDate: string): string {
                 class="flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/50"
                 :class="{ 'opacity-50': isRead(item.link) }"
             >
-                <button class="mt-1 shrink-0" @click="toggleRead(item.link)">
-                    <Checkbox
-                        :model-value="isRead(item.link)"
-                        class="pointer-events-none"
-                        :tabindex="-1"
-                    />
-                </button>
+                <Checkbox
+                    :model-value="isRead(item.link)"
+                    :aria-label="t('Oznacz jako przeczytane')"
+                    class="mt-1 shrink-0"
+                    @update:model-value="toggleRead(item.link)"
+                />
                 <a
                     :href="item.link"
                     target="_blank"
