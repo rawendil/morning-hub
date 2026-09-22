@@ -230,6 +230,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 - Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
 - Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
+- Frontend changes (Vue components, composables, stores) are covered by Vitest. Run `npx vitest run <path>` for a single file, `npm run test` for the suite. `composer ci:check` and the `frontend` CI job both run it, so a failing Vitest test blocks the build.
 
 === laravel/core rules ===
 

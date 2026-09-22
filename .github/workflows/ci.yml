@@ -49,7 +49,7 @@ jobs:
         run: php artisan test --compact
 
   frontend:
-    name: Frontend — types, lint & format
+    name: Frontend — types, lint, format & tests
     runs-on: ubuntu-latest
 
     steps:
@@ -90,3 +90,6 @@ jobs:
 
       - name: Format check
         run: npm run format:check
+
+      - name: Run Vitest
+        run: npm run test
