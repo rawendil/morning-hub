@@ -98,9 +98,9 @@ const progress = computed(
             >
                 <Checkbox
                     :id="`habit-${block.id}-${habit.id || index}`"
-                    :checked="isHabitCompleted(habit.id)"
+                    :model-value="isHabitCompleted(habit.id)"
                     :disabled="!habit.id"
-                    @update:checked="toggleHabit(block.id, habit.id)"
+                    @update:model-value="toggleHabit(block.id, habit.id)"
                 />
                 <Label
                     :for="`habit-${block.id}-${habit.id || index}`"
