@@ -70,8 +70,20 @@ test('composer ci replaces the former ci:check script', function () {
         ->not->toHaveKey('ci:check');
 });
 
-test('the CI workflow is retired', function () {
+test('the quality gate lives in the deploy workflow, not a separate CI file', function () {
     expect(projectPath('.github/workflows/ci.yml'))->not->toBeFile();
+});
+
+test('the deploy workflow runs the quality gate', function () {
+    $deploy = (string) file_get_contents(projectPath('.github/workflows/deploy.yml'));
+
+    expect($deploy)->toContain('composer ci');
+});
+
+test('deployment is blocked until the quality gate passes', function () {
+    $deploy = (string) file_get_contents(projectPath('.github/workflows/deploy.yml'));
+
+    expect($deploy)->toMatch('/^\s+deploy:\s*\n(?:\s+.*\n)*?\s+needs:\s*\[?\s*quality\s*\]?\s*$/m');
 });
 
 test('deploy workflow is triggered by a push to master', function () {

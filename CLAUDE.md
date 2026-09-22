@@ -231,7 +231,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 - Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
 - Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
 - Frontend changes (Vue components, composables, stores) are covered by Vitest. Run `npx vitest run <path>` for a single file, `npm run test` for the suite.
-- `composer ci` is the full quality gate: Pint, PHPStan, `types:check`, `lint:check`, `format:check`, Vitest and the PHP test suite. There is no CI workflow — the gate runs locally, so run `composer ci` before handing work over. Pushing to `master` deploys straight to production.
+- `composer ci` is the full quality gate: Pint, PHPStan, `types:check`, `lint:check`, `format:check`, Vitest and the PHP test suite. Run it before handing work over. Pushing to `master` runs the very same command in `.github/workflows/deploy.yml`, and production is deployed only if it passes.
 
 === laravel/core rules ===
 
