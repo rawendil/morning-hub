@@ -9,6 +9,7 @@ use App\Services\ClickUpBlockTaskService;
 use App\Services\DailyProgressService;
 use App\Services\FeedService;
 use App\Services\GoogleCalendarServiceFactory;
+use App\Services\ReadArticleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -18,6 +19,7 @@ class DashboardController extends Controller
         private readonly GoogleCalendarServiceFactory $googleCalendarServiceFactory,
         private readonly ClickUpBlockTaskService $clickUpBlockTaskService,
         private readonly DailyProgressService $dailyProgressService,
+        private readonly ReadArticleService $readArticleService,
     ) {}
 
     public function __invoke(Request $request): JsonResponse
@@ -45,6 +47,7 @@ class DashboardController extends Controller
             'blocks' => $blocks,
             'blocks_data' => $blocksData,
             'daily_progress' => $this->dailyProgressService->stateFor($user),
+            'read_articles' => $this->readArticleService->readLinksFor($user),
         ]);
     }
 

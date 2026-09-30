@@ -1,70 +1,73 @@
 import { ref } from 'vue';
+import { toast } from 'vue-sonner';
+import { useTranslations } from '@/composables/useTranslations';
+import axiosInstance from '@/lib/axios';
 import type { FeedItem } from '@/types';
 
-const STORAGE_KEY = 'read-articles';
-const MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+const LEGACY_STORAGE_KEY = 'read-articles';
 
 export type UseReadArticlesReturn = {
+    hydrate: (links: string[] | null | undefined) => void;
     isRead: (link: string) => boolean;
-    toggleRead: (link: string) => void;
+    toggleRead: (link: string) => Promise<void>;
     visibleItems: (items: FeedItem[], showRead: boolean) => FeedItem[];
     unreadCount: (items: FeedItem[]) => number;
 };
 
-function loadFromStorage(): Record<string, number> {
-    if (typeof window === 'undefined') {
-        return {};
-    }
+const readLinks = ref<Set<string>>(new Set());
 
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-
-        return raw ? JSON.parse(raw) : {};
-    } catch {
-        return {};
-    }
-}
-
-function cleanup(data: Record<string, number>): Record<string, number> {
-    const now = Date.now();
-    const cleaned: Record<string, number> = {};
-
-    for (const [link, timestamp] of Object.entries(data)) {
-        if (now - timestamp < MAX_AGE_MS) {
-            cleaned[link] = timestamp;
-        }
-    }
-
-    return cleaned;
-}
-
-function persist(data: Record<string, number>): void {
+function dropLegacyStorage(): void {
     if (typeof window === 'undefined') {
         return;
     }
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    try {
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
+    } catch {
+        // Storage may be unavailable; the legacy list is ignored either way.
+    }
 }
 
-const readLinks = ref<Record<string, number>>(cleanup(loadFromStorage()));
-persist(readLinks.value);
-
+/**
+ * Articles the user marked read, owned by the server so the list follows
+ * the account across devices. Every change is applied locally first and
+ * rolled back if the request fails.
+ */
 export function useReadArticles(): UseReadArticlesReturn {
-    function isRead(link: string): boolean {
-        return link in readLinks.value;
+    const { t } = useTranslations();
+
+    function hydrate(links: string[] | null | undefined): void {
+        readLinks.value = new Set(links ?? []);
+        dropLegacyStorage();
     }
 
-    function toggleRead(link: string): void {
-        const updated = { ...readLinks.value };
+    function isRead(link: string): boolean {
+        return readLinks.value.has(link);
+    }
 
-        if (link in updated) {
-            delete updated[link];
+    async function toggleRead(link: string): Promise<void> {
+        const previous = readLinks.value;
+        const read = !previous.has(link);
+        const optimistic = new Set(previous);
+
+        if (read) {
+            optimistic.add(link);
         } else {
-            updated[link] = Date.now();
+            optimistic.delete(link);
         }
 
-        readLinks.value = updated;
-        persist(readLinks.value);
+        readLinks.value = optimistic;
+
+        try {
+            const { data } = await axiosInstance.post(
+                '/morning-hub/read-articles',
+                { link, read },
+            );
+            readLinks.value = new Set(data as string[]);
+        } catch {
+            readLinks.value = previous;
+            toast.error(t('Nie udało się zapisać statusu artykułu.'));
+        }
     }
 
     function visibleItems(items: FeedItem[], showRead: boolean): FeedItem[] {
@@ -80,6 +83,7 @@ export function useReadArticles(): UseReadArticlesReturn {
     }
 
     return {
+        hydrate,
         isRead,
         toggleRead,
         visibleItems,

@@ -49,8 +49,9 @@ The line runs between **UI state** and **domain events**, not between "ephemeral
 | Structural configuration | Database | Routine blocks, API connections |
 | Sensitive data (tokens, keys) | Database (encrypted) | `api_token` in `clickup_connections` |
 | Domain events (what the user did) | Database, keyed by `user_id` + `local_date` | `daily_habit_completions`, `daily_block_completions` |
+| Per-account state that must follow the user across devices | Database, keyed by `user_id` | `read_articles` (30-day retention, pruned on write) |
 | Running UI state | `localStorage` | Remaining seconds and active block in `useRoutineTimer.ts` |
-| Per-browser preferences | `localStorage` (optionally with TTL) | Read articles, onboarding flag, timer sound |
+| Per-browser preferences | `localStorage` (optionally with TTL) | Onboarding flag, timer sound |
 | Legal consent | `localStorage` (the operative gate is per browser) | Cookie consent |
 | UI preferences needing the server | `localStorage` + cookie | Light/dark mode |
 | External data (API) | Nowhere — fetch live | ClickUp tasks, RSS articles, calendar events |

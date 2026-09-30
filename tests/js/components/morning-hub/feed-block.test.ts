@@ -1,9 +1,13 @@
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import FeedBlock from '@/components/morning-hub/FeedBlock.vue';
 import { useReadArticles } from '@/composables/useReadArticles';
 import type { BlockFeedData, RoutineBlock } from '@/types';
+
+vi.mock('@/lib/axios', () => ({
+    default: { post: vi.fn(() => new Promise(() => {})) },
+}));
 
 const UNREAD_LINK = 'https://example.test/unread';
 const READ_LINK = 'https://example.test/read';
@@ -60,13 +64,7 @@ function mountFeed() {
 beforeEach(() => {
     setActivePinia(createPinia());
 
-    const { isRead, toggleRead } = useReadArticles();
-    if (!isRead(READ_LINK)) {
-        toggleRead(READ_LINK);
-    }
-    if (isRead(UNREAD_LINK)) {
-        toggleRead(UNREAD_LINK);
-    }
+    useReadArticles().hydrate([READ_LINK]);
 });
 
 describe('FeedBlock read-articles switch', () => {

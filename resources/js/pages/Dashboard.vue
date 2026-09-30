@@ -13,6 +13,7 @@ import RoutineCompletionDialog from '@/components/morning-hub/RoutineCompletionD
 import RoutineProgress from '@/components/morning-hub/RoutineProgress.vue';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDailyProgress } from '@/composables/useDailyProgress';
+import { useReadArticles } from '@/composables/useReadArticles';
 import { useRoutineTimer } from '@/composables/useRoutineTimer';
 import { useTimerSound } from '@/composables/useTimerSound';
 import { useTimezoneSync } from '@/composables/useTimezoneSync';
@@ -32,6 +33,7 @@ import type {
 const { t } = useTranslations();
 const { syncTimezone } = useTimezoneSync();
 const { hydrate: hydrateDailyProgress } = useDailyProgress();
+const { hydrate: hydrateReadArticles } = useReadArticles();
 
 const loading = ref(true);
 const blocks = ref<RoutineBlock[]>([]);
@@ -67,6 +69,7 @@ onMounted(async () => {
 
         const dailyProgress = data.daily_progress as DailyProgress | undefined;
         hydrateDailyProgress(dailyProgress);
+        hydrateReadArticles(data.read_articles as string[] | undefined);
         completedOnLoad.value = new Set(
             (dailyProgress?.blocks ?? []).map(
                 (block) => block.routine_block_id,

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\DailyProgressController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\GoogleCalendarApiController;
 use App\Http\Controllers\Api\GoogleCalendarConnectionController;
+use App\Http\Controllers\Api\ReadArticleController;
 use App\Http\Controllers\Api\RoutineBlockController;
 use App\Http\Controllers\Api\Settings\AppearanceController;
 use App\Http\Controllers\Api\Settings\PasswordController;
@@ -56,6 +57,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/morning-hub/daily/blocks/{block}/habits', [DailyProgressController::class, 'storeHabit']);
     Route::put('/morning-hub/daily/blocks/{block}', [DailyProgressController::class, 'update']);
     Route::delete('/morning-hub/daily/blocks/{block}', [DailyProgressController::class, 'destroy']);
+
+    Route::post('/morning-hub/read-articles', [ReadArticleController::class, 'store']);
 
     Route::get('/morning-hub/clickup', [ClickUpConnectionController::class, 'index']);
     Route::post('/morning-hub/clickup/oauth/start', [ClickUpOAuthController::class, 'start'])->middleware('throttle:5,1');
