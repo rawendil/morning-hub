@@ -39,3 +39,6 @@ yarn-error.log
 # deliberately kept out of the public repo. Not needed to run the project.
 /.claude/skills/next-task
 /.claude/skills/add-task
+
+# Working notes (specs, plans) stay local: the repo is public
+/docs
