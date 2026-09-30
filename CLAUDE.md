@@ -1,18 +1,18 @@
-# Public Repository
-
-This repository (`rawendil/morning-hub`) is **public** on GitHub. Every commit, commit message, test and config example is world-readable, and a pushed commit cannot be taken back without rewriting history.
-
-- Before every commit, read the whole staged diff (`git diff --cached`) and the commit message, looking for anything that must not go public:
-  - secrets: tokens, keys, passwords, DSNs, bypass or cookie secrets;
-  - real `.env` values, including non-secret production config such as analytics website IDs or third-party instance hosts;
-  - personal data;
-  - infrastructure details: SSH hosts and users, server paths, key file names;
-  - details of other private repositories or projects: names, code, architecture.
-- In tests and examples, use placeholders: `example.test`, `203.0.113.x`, dummy UUIDs.
-- `/docs` is git-ignored on purpose. Specs and plans (`docs/superpowers/`) are local working notes and must never be committed. Do not re-add them or copy their content into tracked files.
-- If a leak has already been pushed, say so immediately. Rewriting history (force-push) needs the user's explicit consent.
-
 <laravel-boost-guidelines>
+=== .ai/analytics rules ===
+
+# Analytics
+
+## Umami bez cookies — nie przywracaj GA ani baneru zgody
+
+Statystyki prowadzi self-hosted Umami (`UMAMI_URL` + `UMAMI_WEBSITE_ID` → `config('services.umami')`), obsługiwane przez `App\Services\UmamiProxyService`. Google Analytics, Consent Mode, `window.gtag` i baner cookies zostały usunięte świadomie. Umami nie zapisuje cookies ani identyfikatorów, więc podstawą jest art. 6 ust. 1 lit. f RODO, nie zgoda. Zmiana analityki wymaga poprawienia polityki prywatności (§4, §5, §11).
+
+- **Adres instancji nie trafia do HTML.** Przeglądarka rozmawia tylko z `/api/mh.js` i `/api/send`.
+- **Trasy proxy zostają w `routes/api.php`.** `api.php` rejestruje się przed `web.php`, którego catch-all SPA `/{any}` przechwyciłby każdą późniejszą trasę. Grupa `web` dokleiłaby też cookies sesji i CSRF.
+- **Nie dopisuj ręcznego `page_view` w Vue Router.** Tracker sam podpina się pod `history.pushState`; ręczne wywołanie zdubluje odsłony.
+- **`data-exclude-search="true"` jest obowiązkowy** — `/reset-password?token=…&email=…` wysłałby token i e-mail do statystyk.
+- Lokalnie i na stagingu `UMAMI_*` zostają puste, żeby ruch dev nie trafiał do statystyk produkcji.
+
 === .ai/architecture rules ===
 
 # Project Architecture
@@ -37,7 +37,10 @@ This repository (`rawendil/morning-hub`) is **public** on GitHub. Every commit, 
 
 # Data Storage Strategy
 
-The project follows a minimal database storage principle. Ephemeral data lives on the client side.
+The line runs between **UI state** and **domain events**, not between "ephemeral" and "permanent".
+
+- **UI state** is how the screen currently looks to one person in one browser: a running countdown, a collapsed section, a chosen theme. Losing it costs nothing. It stays on the client.
+- **Domain events** are facts about the user: a habit checked off, a routine block finished and how long it took. They are the only record of what the app is for. They go to the database, keyed to the user's local day.
 
 ## Where to store data
 
@@ -45,47 +48,63 @@ The project follows a minimal database storage principle. Ephemeral data lives o
 |---|---|---|
 | Structural configuration | Database | Routine blocks, API connections |
 | Sensitive data (tokens, keys) | Database (encrypted) | `api_token` in `clickup_connections` |
-| Ephemeral daily state | `localStorage` with daily reset | Routine timer, habit completion |
-| Per-browser preferences | `localStorage` (optionally with TTL) | Read articles, onboarding flag |
-| UI preferences with SSR | `localStorage` + cookie | Light/dark mode (cookie for SSR) |
-| External data (API) | Nowhere — `Inertia::defer()` | ClickUp tasks, RSS articles |
-| Simple UI state | Cookie | Sidebar state |
+| Domain events (what the user did) | Database, keyed by `user_id` + `local_date` | `daily_habit_completions`, `daily_block_completions` |
+| Running UI state | `localStorage` | Remaining seconds and active block in `useRoutineTimer.ts` |
+| Per-browser preferences | `localStorage` (optionally with TTL) | Read articles, onboarding flag, timer sound |
+| Legal consent | `localStorage` (the operative gate is per browser) | Cookie consent |
+| UI preferences needing the server | `localStorage` + cookie | Light/dark mode |
+| External data (API) | Nowhere — fetch live | ClickUp tasks, RSS articles, calendar events |
 
 ## Decision rules
 
-- **Does the server need the data at render time?** → Database or `Inertia::defer()`
-- **Does the data change frequently (every second)?** → `localStorage` (zero server cost)
-- **Does the data live at most 1 day?** → `localStorage` with daily reset pattern (compare `date` with `todayString()`)
-- **Is data loss acceptable?** → `localStorage`
-- **Must the data persist across devices?** → Database
-- **Is the data sensitive or requires integrity?** → Database (users can edit localStorage in DevTools)
+- **Is it a fact about what the user did?** → Database. It is worth keeping even if the feature using it does not exist yet.
+- **Does it need to be the same on another device?** → Database.
+- **Does the server need to act on it without a browser open** (notification, digest, streak)? → Database.
+- **Does it change every second?** → `localStorage`. Persist to the server on state transitions only, never on the tick.
+- **Is it how this one screen currently looks?** → `localStorage`.
+- **Is it sensitive or does it require integrity?** → Database (users can edit `localStorage` in DevTools).
 
-## Pattern: localStorage with daily reset
+## The user's day
 
-Pattern used in `useRoutineTimer.ts` and `useHabitsStorage.ts`:
+A "day" is the user's local calendar day, not UTC and not the server's timezone.
 
-```ts
-type StoredState = {
-    date: string; // 'YYYY-MM-DD'
-    // ... composable-specific data
-};
+- `users.timezone` holds an IANA identifier, detected in the browser and synced by `useTimezoneSync.ts`.
+- `User::localDate()` is the only way to ask what day it is for someone. It falls back to UTC for a missing or unknown timezone.
+- Never derive a date with `new Date().toISOString().slice(0, 10)` — that is the UTC date, which rolls over mid-evening for users east of Greenwich.
+- Store it as a plain `YYYY-MM-DD` string. It is a calendar date with no time and no offset; casting it to a datetime reintroduces the timezone that was just resolved.
 
-function loadState(): StoredState | null {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = JSON.parse(raw);
-    if (parsed.date !== todayString()) {
-        localStorage.removeItem(STORAGE_KEY);
-        return null; // reset on new day
-    }
-    return parsed;
-}
-```
+## Writing to the server
+
+Writes are server-first with optimistic UI: apply locally, send, and roll back with a toast if the request fails. See `useDailyProgress.ts`. There is no offline queue and no conflict resolution — an offline change is lost and the user is told.
+
+Completion tables are keyed by a unique index on `(user_id, …, local_date)`, so every write is an idempotent upsert or a delete. Repeating a request is always safe.
+
+## Referring to things that history outlives
+
+Anything that completion history points at needs an identifier that survives editing. Habits carry a generated `id` in `routine_blocks.config.habits` (`{id, label}`) precisely so that renaming or reordering them does not rewrite the past. Never key history by array position.
 
 ## What NOT to do
 
-- Do NOT use PHP sessions to store UI/daily state — sessions expire and require a request on every change.
-- Do NOT create database tables for data whose loss is not a problem.
-- Do NOT store external (API) data locally — always fetch live via `Inertia::defer()`.
+- Do NOT use PHP sessions for UI or daily state — sessions expire and require a request on every change.
+- Do NOT put a per-second timer tick behind an HTTP request.
+- Do NOT store external (API) data locally — always fetch it live.
+- Do NOT key anything durable by array index.
+
+=== .ai/public-repository rules ===
+
+# Public Repository
+
+This repository (`rawendil/morning-hub`) is **public** on GitHub. Every commit, commit message, test and config example is world-readable, and a pushed commit cannot be taken back without rewriting history.
+
+- Before every commit, read the whole staged diff (`git diff --cached`) and the commit message, looking for anything that must not go public:
+  - secrets: tokens, keys, passwords, DSNs, bypass or cookie secrets;
+  - real `.env` values, including non-secret production config such as analytics website IDs or third-party instance hosts;
+  - personal data;
+  - infrastructure details: SSH hosts and users, server paths, key file names;
+  - details of other private repositories or projects: names, code, architecture.
+- In tests and examples, use placeholders: `example.test`, `203.0.113.x`, dummy UUIDs.
+- `/docs` is git-ignored on purpose. Specs and plans (`docs/superpowers/`) are local working notes and must never be committed. Do not re-add them or copy their content into tracked files.
+- If a leak has already been pushed, say so immediately. Rewriting history (force-push) needs the user's explicit consent.
 
 === .ai/static-analysis rules ===
 
@@ -106,7 +125,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.3.6
+- php - 8.4.26
 - laravel/fortify (FORTIFY) - v1
 - laravel/framework (LARAVEL) - v12
 - laravel/prompts (PROMPTS) - v0
@@ -244,8 +263,6 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 - Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
 - Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
-- Frontend changes (Vue components, composables, stores) are covered by Vitest. Run `npx vitest run <path>` for a single file, `npm run test` for the suite.
-- `composer ci` is the full quality gate: Pint, PHPStan, `types:check`, `lint:check`, `format:check`, Vitest and the PHP test suite. Run it before handing work over. Pushing to `master` runs the very same command in `.github/workflows/deploy.yml`, and production is deployed only if it passes.
 
 === laravel/core rules ===
 
