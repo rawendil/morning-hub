@@ -27,7 +27,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.4'
           extensions: sqlite3
           coverage: none
 
@@ -76,8 +76,8 @@ jobs:
             git reset --hard origin/development
             npm install
             npm run build
-            php83 $(which composer) install --no-dev --optimize-autoloader
-            php83 artisan optimize:clear
-            php83 artisan migrate --force
-            php83 artisan config:cache
-            php83 artisan route:cache
+            php84 $(which composer) install --no-dev --optimize-autoloader
+            php84 artisan optimize:clear
+            php84 artisan migrate --force
+            php84 artisan config:cache
+            php84 artisan route:cache

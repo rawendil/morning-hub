@@ -21,7 +21,7 @@ A personal morning routine dashboard that helps you organize tasks, track habits
 
 **Backend:**
 
-- PHP 8.3 / Laravel 12
+- PHP 8.4 / Laravel 12
 - REST JSON API with Laravel Sanctum (Bearer token auth)
 - Laravel Fortify (authentication logic)
 - SQLite
@@ -39,7 +39,7 @@ A personal morning routine dashboard that helps you organize tasks, track habits
 
 ## Requirements
 
-- PHP >= 8.3
+- PHP >= 8.4
 - Node.js >= 18
 - Composer
 - SQLite
