@@ -1,12 +1,5 @@
 export {};
 
-declare global {
-    interface Window {
-        gtag: (...args: unknown[]) => void;
-        dataLayer: unknown[];
-    }
-}
-
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
     interface ImportMetaEnv {

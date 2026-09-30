@@ -3,7 +3,6 @@ import {
     BookOpen,
     Calendar,
     CalendarCheck,
-    Cookie,
     Github,
     LayoutGrid,
     ListChecks,
@@ -23,12 +22,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { useCookieConsent } from '@/composables/useCookieConsent';
 import { useTranslations } from '@/composables/useTranslations';
 import type { NavItem } from '@/types';
 
 const { t } = useTranslations();
-const { openSettings } = useCookieConsent();
 
 const morningHubNavItems = computed<NavItem[]>(() => [
     {
@@ -97,12 +94,6 @@ const integrationNavItems = computed<NavItem[]>(() => [
 
         <SidebarFooter>
             <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton @click="openSettings">
-                        <Cookie />
-                        <span>{{ t('Ustawienia cookies') }}</span>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <SidebarMenuButton as-child>
                         <a
