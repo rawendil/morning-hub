@@ -44,3 +44,9 @@ test('privacy policy names the preference cookies instead of claiming only neces
         ->assertSee('locale')
         ->assertSee('sidebar_state');
 });
+
+test('privacy policy lists the recorded acceptance of the legal documents', function () {
+    $this->get('/privacy-policy')
+        ->assertOk()
+        ->assertSee('data i godzina akceptacji Regulaminu i Polityki prywatności wraz z potwierdzeniem pełnoletności');
+});

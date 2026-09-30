@@ -73,6 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
         email: string;
         password: string;
         password_confirmation: string;
+        terms: boolean;
     }): Promise<void> {
         const { data } = await axiosInstance.post('/auth/register', payload);
         localStorage.setItem('token', data.token);

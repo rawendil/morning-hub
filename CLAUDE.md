@@ -52,7 +52,7 @@ The line runs between **UI state** and **domain events**, not between "ephemeral
 | Per-account state that must follow the user across devices | Database, keyed by `user_id` | `read_articles` (30-day retention, pruned on write) |
 | Running UI state | `localStorage` | Remaining seconds and active block in `useRoutineTimer.ts` |
 | Per-browser preferences | `localStorage` (optionally with TTL) | Onboarding flag, timer sound |
-| Legal consent | `localStorage` (the operative gate is per browser) | Cookie consent |
+| Acceptance of legal documents | Database, keyed by `user_id` | `users.terms_accepted_at` (set at registration) |
 | UI preferences needing the server | `localStorage` + cookie | Light/dark mode |
 | External data (API) | Nowhere — fetch live | ClickUp tasks, RSS articles, calendar events |
 

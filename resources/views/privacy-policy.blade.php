@@ -17,7 +17,7 @@
 <body>
 
 <h1>POLITYKA PRYWATNOŚCI</h1>
-<p><strong>Ostatnia aktualizacja: 17 maja 2026</strong></p>
+<p><strong>Ostatnia aktualizacja: 30 września 2026</strong></p>
 
 <p>Niniejsza Polityka Prywatności dotyczy {{ config('app.company_name') }} (<strong>„my"</strong>, <strong>„nas"</strong> lub <strong>„nasz"</strong>) i opisuje sposób, w jaki możemy uzyskiwać dostęp do Twoich danych osobowych, zbierać je, przechowywać, wykorzystywać i/lub udostępniać (<strong>„przetwarzać"</strong>), gdy korzystasz z naszych usług (<strong>„Usługi"</strong>), w tym gdy:</p>
 <ul>
@@ -75,6 +75,7 @@
   <li>imiona i nazwiska</li>
   <li>adresy e-mail</li>
   <li>hasła</li>
+  <li>data i godzina akceptacji Regulaminu i Polityki prywatności wraz z potwierdzeniem pełnoletności</li>
   <li>dane kontaktowe lub uwierzytelniające</li>
 </ul>
 <p><strong>Dane wrażliwe.</strong> Nie przetwarzamy wrażliwych danych osobowych.</p>

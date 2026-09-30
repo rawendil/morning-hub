@@ -2,10 +2,12 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import InputError from '@/components/InputError.vue';
+import LegalDocumentLinks from '@/components/LegalDocumentLinks.vue';
 import SocialLoginButton from '@/components/SocialLoginButton.vue';
 import SocialLoginSeparator from '@/components/SocialLoginSeparator.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -21,6 +23,7 @@ const form = ref({
     email: '',
     password: '',
     password_confirmation: '',
+    terms: false,
 });
 const errors = ref<Record<string, string[]>>({});
 const isLoading = ref(false);
@@ -113,10 +116,30 @@ async function submit() {
                     />
                 </div>
 
+                <div class="grid gap-2" data-testid="terms-consent">
+                    <div class="flex items-start gap-3">
+                        <Checkbox
+                            id="terms"
+                            name="terms"
+                            v-model="form.terms"
+                            :tabindex="5"
+                            class="mt-0.5"
+                        />
+                        <Label
+                            for="terms"
+                            class="block text-sm leading-snug font-normal"
+                        >
+                            {{ t('Mam ukończone 18 lat i akceptuję') }}
+                            <LegalDocumentLinks />.
+                        </Label>
+                    </div>
+                    <InputError :message="errors['terms']?.[0]" />
+                </div>
+
                 <Button
                     type="submit"
                     class="mt-2 w-full"
-                    tabindex="5"
+                    tabindex="6"
                     :disabled="isLoading"
                     data-test="register-user-button"
                 >
@@ -133,7 +156,7 @@ async function submit() {
                 <TextLink
                     href="/login"
                     class="underline underline-offset-4"
-                    :tabindex="6"
+                    :tabindex="7"
                     >{{ t('Zaloguj się') }}</TextLink
                 >
             </div>

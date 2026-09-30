@@ -75,6 +75,7 @@ class GoogleAuthService
                 'google_id' => $googleUser->getId(),
                 'google_avatar' => $googleUser->getAvatar(),
                 'email_verified_at' => now(),
+                'terms_accepted_at' => now(),
             ]);
             $user->save();
 
@@ -171,6 +172,7 @@ class GoogleAuthService
                 'google_id' => $googleUser->getId(),
                 'google_avatar' => $googleUser->getAvatar(),
                 'email_verified_at' => now(),
+                'terms_accepted_at' => now(),
             ])->save();
 
             return ['user' => $user, 'is_new' => true];
