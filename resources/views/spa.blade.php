@@ -30,21 +30,19 @@
             }
         </style>
 
-        @if(config('services.google.analytics_id'))
-            <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('consent', 'default', {
-                    'analytics_storage': 'denied',
-                    'ad_storage': 'denied',
-                    'ad_user_data': 'denied',
-                    'ad_personalization': 'denied',
-                    'wait_for_update': 500,
-                });
-                gtag('js', new Date());
-                gtag('config', '{{ config('services.google.analytics_id') }}');
-            </script>
-            <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google.analytics_id') }}"></script>
+        @inject('umami', 'App\Services\UmamiProxyService')
+        @if ($umami->isEnabled())
+            {{-- Umami: no cookies, served through our domain (see UmamiProxyService). Page views
+                 of Vue Router come from the tracker's own history.pushState hook — do not send them
+                 manually. data-exclude-search keeps reset-password tokens out of the statistics. --}}
+            <script
+                defer
+                src="{{ url('/api/mh.js') }}"
+                data-website-id="{{ $umami->websiteId() }}"
+                data-host-url="{{ url('/') }}"
+                data-exclude-search="true"
+                data-do-not-track="true"
+            ></script>
         @endif
 
         <title>{{ config('app.name', 'Laravel') }}</title>
