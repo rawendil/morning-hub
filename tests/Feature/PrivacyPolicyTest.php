@@ -26,3 +26,21 @@ test('privacy policy states that Do Not Track is honoured', function () {
         ->assertDontSee('nie reagujemy na te sygnały')
         ->assertSee('Respektujemy ten sygnał');
 });
+
+test('privacy policy describes what Umami actually derives from the ip address', function () {
+    $this->get('/privacy-policy')
+        ->assertOk()
+        ->assertDontSee('nie pozwala rozpoznać Cię przy kolejnej wizycie')
+        ->assertDontSee('służy wyłącznie do wyznaczenia kraju')
+        ->assertSee('przybliżonej lokalizacji (kraj, region, miasto)')
+        ->assertSee('zmienia się co miesiąc');
+});
+
+test('privacy policy names the preference cookies instead of claiming only necessary ones', function () {
+    $this->get('/privacy-policy')
+        ->assertOk()
+        ->assertDontSee('wyłącznie niezbędnych plików cookie')
+        ->assertSee('appearance')
+        ->assertSee('locale')
+        ->assertSee('sidebar_state');
+});

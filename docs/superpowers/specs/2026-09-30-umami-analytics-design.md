@@ -136,9 +136,12 @@ czyścimy go.
 - §4: „Analityka webowa: Google Analytics, Google Tag Manager" → Umami (własna
   instancja).
 - §5: akapit „Google Analytics" zastąpiony opisem Umami: bez cookies i
-  identyfikatorów, skrypt i zdarzenia przez domenę serwisu, IP użyte tylko do
-  kraju i nieprzechowywane, adresy bez parametrów zapytania, wyłączenie przez
-  DNT lub `localStorage` `umami.disabled = 1`.
+  identyfikatorów w przeglądarce, skrypt i zdarzenia przez domenę serwisu, IP
+  nieprzechowywane — użyte do przybliżonej lokalizacji (kraj, region, miasto) i
+  skrótu sesji z miesięcznie zmienianą solą, adresy bez parametrów zapytania,
+  wyłączenie przez DNT lub `localStorage` `umami.disabled = 1`. Zdanie o cookies
+  wymienia cookies preferencji (`appearance`, `locale`, `sidebar_state`).
+- `POST /api/send` odrzuca treść powyżej 16 KB kodem 413 (publiczny przekaźnik).
 - §7 bez zmian: wymienia Google (OAuth), ClickUp i Sentry, nie Analytics;
   instancja Umami stoi w UE.
 

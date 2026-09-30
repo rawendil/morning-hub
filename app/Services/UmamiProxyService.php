@@ -13,6 +13,12 @@ use Throwable;
  */
 class UmamiProxyService
 {
+    /**
+     * Upper bound for a forwarded tracker event. Real Umami payloads stay under 2 KB;
+     * the limit keeps the public beacon from relaying bulk data to the upstream.
+     */
+    public const MAX_EVENT_BYTES = 16 * 1024;
+
     private const SCRIPT_CACHE_KEY = 'umami:tracker-script';
 
     private const SCRIPT_CACHE_HOURS = 24;

@@ -15,8 +15,12 @@ class UmamiCollectController extends Controller
     {
         abort_unless($this->umami->isEnabled(), 404);
 
+        $payload = $request->getContent();
+
+        abort_if(strlen($payload) > UmamiProxyService::MAX_EVENT_BYTES, 413);
+
         $this->umami->forwardEvent(
-            $request->getContent(),
+            $payload,
             (string) $request->ip(),
             (string) $request->userAgent(),
             (string) $request->header('Accept-Language'),

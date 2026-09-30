@@ -93,3 +93,12 @@ test('throttles the beacon', function () {
 
     $this->postJson('/api/send', [])->assertTooManyRequests();
 });
+
+test('rejects oversized beacon payloads without contacting the upstream', function () {
+    Http::fake();
+
+    $this->call('POST', '/api/send', [], [], [], ['CONTENT_TYPE' => 'application/json'], str_repeat('a', 16 * 1024 + 1))
+        ->assertStatus(413);
+
+    Http::assertNothingSent();
+});
