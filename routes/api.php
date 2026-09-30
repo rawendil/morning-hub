@@ -21,10 +21,19 @@ use App\Http\Controllers\Api\Settings\TimezoneController;
 use App\Http\Controllers\Api\Settings\TwoFactorAuthenticationController;
 use App\Http\Controllers\Api\TodaysTasksConfigController;
 use App\Http\Controllers\Api\TodaysTasksController;
+use App\Http\Controllers\Api\UmamiCollectController;
+use App\Http\Controllers\Api\UmamiScriptController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\MorningHub\ClickUpOAuthController;
 use App\Http\Controllers\MorningHub\GoogleCalendarOAuthController;
 use Illuminate\Support\Facades\Route;
+
+// Umami analytics proxy. Both routes must stay in api.php: it is registered before
+// web.php, whose SPA catch-all would otherwise answer /api/mh.js with HTML. The api
+// group adds no session or CSRF, so the proxy stays cookieless. The /api/send path
+// is fixed by the tracker (`${data-host-url}/api/send`).
+Route::get('/mh.js', UmamiScriptController::class)->name('analytics.script');
+Route::post('/send', UmamiCollectController::class)->middleware('throttle:120,1')->name('analytics.collect');
 
 Route::post('/auth/login', LoginController::class)->name('api.auth.login')->middleware('throttle:10,1');
 Route::post('/auth/two-factor', TwoFactorController::class)->name('api.auth.two-factor')->middleware('throttle:5,1');
