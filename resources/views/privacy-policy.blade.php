@@ -129,7 +129,7 @@
 <ul>
   <li><strong>Optymalizacja funkcjonalności:</strong> ClickUp</li>
   <li><strong>Rejestracja konta i uwierzytelnianie:</strong> Google OAuth 2.0</li>
-  <li><strong>Analityka webowa i mobilna:</strong> Google Analytics, Google Tag Manager</li>
+  <li><strong>Analityka webowa:</strong> Umami (własna instancja, bez plików cookie)</li>
   <li><strong>Monitoring wydajności serwisu:</strong> Sentry</li>
 </ul>
 <p>Możemy również udostępniać Twoje dane w następujących sytuacjach:</p>
@@ -138,10 +138,9 @@
 </ul>
 
 <h2 id="cookies">5. CZY UŻYWAMY PLIKÓW COOKIE I INNYCH TECHNOLOGII ŚLEDZENIA?</h2>
-<p><em>Krótko: Możemy używać plików cookie i innych technologii śledzenia do zbierania i przechowywania informacji.</em></p>
+<p><em>Krótko: Używamy wyłącznie niezbędnych plików cookie. Statystyki odwiedzin prowadzimy bez plików cookie.</em></p>
 <p>Używamy plików cookie i podobnych technologii śledzenia do zbierania informacji podczas interakcji z Usługami. Pomagają one utrzymać bezpieczeństwo Usług i Twojego konta, zapobiegać awariom, naprawiać błędy, zapisywać preferencje i wspomagać podstawowe funkcje strony.</p>
-<p>Zezwalamy również podmiotom trzecim na używanie technologii śledzenia online w naszych Usługach do celów analitycznych.</p>
-<p><strong>Google Analytics.</strong> Możemy udostępniać Twoje informacje Google Analytics w celu śledzenia i analizowania korzystania z Usług. Aby zrezygnować ze śledzenia przez Google Analytics, odwiedź <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">https://tools.google.com/dlpage/gaoptout</a>. Więcej informacji o praktykach prywatności Google znajdziesz na stronie <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy &amp; Terms</a>.</p>
+<p><strong>Umami.</strong> Statystyki odwiedzin zbieramy narzędziem Umami uruchomionym na własnym serwerze w Unii Europejskiej. Narzędzie nie zapisuje na Twoim urządzeniu plików cookie ani identyfikatorów i nie pozwala rozpoznać Cię przy kolejnej wizycie. Skrypt i zdarzenia obsługuje domena Morning Hub, która przekazuje je do instancji analitycznej wraz z adresem IP, typem przeglądarki i językiem — adres IP służy wyłącznie do wyznaczenia kraju wizyty i nie jest przechowywany. Adresy odwiedzanych stron zapisujemy bez parametrów zapytania. Podstawą przetwarzania jest nasz prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO) polegający na mierzeniu, jak korzystasz z Usług. Możesz wyłączyć zliczanie, włączając w przeglądarce sygnał „Do Not Track" albo ustawiając w pamięci lokalnej przeglądarki klucz <code>umami.disabled</code> na wartość <code>1</code>.</p>
 
 <h2 id="sociallogins">6. JAK OBSŁUGUJEMY TWOJE LOGOWANIE SPOŁECZNOŚCIOWE?</h2>
 <p><em>Krótko: Jeśli zdecydujesz się zalogować za pośrednictwem konta Google, możemy mieć dostęp do określonych informacji o Tobie.</em></p>
@@ -190,7 +189,7 @@
 <p>W przypadku pytań dotyczących Twoich praw prywatności skontaktuj się z nami pod adresem <a href="mailto:{{ config('app.contact_email') }}">{{ config('app.contact_email') }}</a>.</p>
 
 <h2 id="DNT">11. USTAWIENIA „DO NOT TRACK"</h2>
-<p>Większość przeglądarek internetowych zawiera funkcję „Do-Not-Track" (DNT). Obecnie nie istnieje jednolity standard techniczny dla sygnałów DNT i na chwilę obecną nie reagujemy na te sygnały. Jeśli w przyszłości zostanie przyjęty standard, którego musimy przestrzegać, poinformujemy Cię o tym w zaktualizowanej wersji niniejszej Polityki Prywatności.</p>
+<p>Większość przeglądarek internetowych zawiera funkcję „Do-Not-Track" (DNT). Respektujemy ten sygnał w statystykach odwiedzin: gdy Twoja przeglądarka go wysyła, Umami nie rejestruje Twoich wizyt.</p>
 
 <h2 id="policyupdates">12. CZY AKTUALIZUJEMY NINIEJSZĄ POLITYKĘ?</h2>
 <p><em>Krótko: Tak, będziemy aktualizować niniejszą Politykę w miarę potrzeb, aby zachować zgodność z obowiązującymi przepisami.</em></p>
