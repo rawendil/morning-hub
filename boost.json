@@ -2,19 +2,18 @@
     "agents": [
         "claude_code"
     ],
+    "cloud": false,
     "guidelines": true,
     "herd_mcp": false,
     "mcp": true,
     "nightwatch_mcp": false,
-    "packages": [
-        "laravel/fortify",
-        "laravel/socialite"
-    ],
     "sail": false,
     "skills": [
-        "pest-testing",
-        "tailwindcss-development",
+        "infer-conventions",
         "developing-with-fortify",
-        "socialite-development"
+        "laravel-best-practices",
+        "testing-best-practices",
+        "socialite-development",
+        "tailwindcss-development"
     ]
 }
