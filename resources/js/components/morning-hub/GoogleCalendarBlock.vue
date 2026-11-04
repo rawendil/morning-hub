@@ -58,12 +58,12 @@ function formatEventTime(dateStr: string): string {
         }"
     >
         <CardHeader
-            class="flex flex-row items-center justify-between space-y-0 py-3"
+            class="flex flex-row flex-wrap items-center justify-between gap-2 space-y-0 py-3"
         >
-            <div class="flex items-center gap-2">
+            <div class="flex min-w-0 items-center gap-2">
                 <component
                     :is="resolveBlockIcon(block)"
-                    class="h-4 w-4 text-muted-foreground"
+                    class="h-4 w-4 shrink-0 text-muted-foreground"
                 />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
                 <RoutineTimerBadge
@@ -81,7 +81,7 @@ function formatEventTime(dateStr: string): string {
                 />
                 <BlockCompletedBadge v-if="isCompleted" />
             </div>
-            <div class="flex items-center gap-1">
+            <div class="ml-auto flex items-center gap-1">
                 <Button
                     v-if="isActiveBlock"
                     variant="ghost"

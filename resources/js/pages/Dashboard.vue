@@ -239,7 +239,7 @@ watch(
                     >
                 </div>
 
-                <div class="grid gap-4">
+                <div class="grid grid-cols-1 gap-4">
                     <template v-for="block in blocks" :key="block.id">
                         <template
                             v-if="

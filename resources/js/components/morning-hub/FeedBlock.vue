@@ -66,12 +66,12 @@ function timeAgo(isoDate: string): string {
         }"
     >
         <CardHeader
-            class="flex flex-row items-center justify-between space-y-0 py-3"
+            class="flex flex-row flex-wrap items-center justify-between gap-2 space-y-0 py-3"
         >
-            <div class="flex items-center gap-2">
+            <div class="flex min-w-0 items-center gap-2">
                 <component
                     :is="resolveBlockIcon(block)"
-                    class="h-4 w-4 text-muted-foreground"
+                    class="h-4 w-4 shrink-0 text-muted-foreground"
                 />
                 <CardTitle class="text-base">{{ block.name }}</CardTitle>
                 <RoutineTimerBadge
@@ -89,7 +89,7 @@ function timeAgo(isoDate: string): string {
                 />
                 <BlockCompletedBadge v-if="isCompleted" />
             </div>
-            <div class="flex items-center gap-2">
+            <div class="ml-auto flex items-center gap-2">
                 <div
                     v-if="items.length"
                     class="flex items-center gap-1.5 text-muted-foreground"
@@ -169,13 +169,17 @@ function timeAgo(isoDate: string): string {
                     class="min-w-0 flex-1"
                     :class="{ 'opacity-50': isRead(item.link) }"
                 >
-                    <div class="flex items-center gap-2">
-                        <Badge variant="secondary" class="shrink-0 text-xs">{{
-                            item.source
-                        }}</Badge>
-                        <span class="text-xs text-muted-foreground">{{
-                            timeAgo(item.published_at)
-                        }}</span>
+                    <div class="flex min-w-0 items-center gap-2">
+                        <Badge
+                            variant="secondary"
+                            class="max-w-full min-w-0 shrink text-xs"
+                        >
+                            <span class="truncate">{{ item.source }}</span>
+                        </Badge>
+                        <span
+                            class="shrink-0 text-xs whitespace-nowrap text-muted-foreground"
+                            >{{ timeAgo(item.published_at) }}</span
+                        >
                     </div>
                     <p class="mt-0.5 truncate text-sm font-medium">
                         {{ item.title }}
