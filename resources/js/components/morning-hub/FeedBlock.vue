@@ -155,7 +155,6 @@ function timeAgo(isoDate: string): string {
                 v-for="item in displayItems"
                 :key="item.link"
                 class="flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/50"
-                :class="{ 'opacity-50': isRead(item.link) }"
             >
                 <Checkbox
                     :model-value="isRead(item.link)"
@@ -168,6 +167,7 @@ function timeAgo(isoDate: string): string {
                     target="_blank"
                     rel="noopener noreferrer"
                     class="min-w-0 flex-1"
+                    :class="{ 'opacity-50': isRead(item.link) }"
                 >
                     <div class="flex items-center gap-2">
                         <Badge variant="secondary" class="shrink-0 text-xs">{{
@@ -186,6 +186,7 @@ function timeAgo(isoDate: string): string {
                     target="_blank"
                     rel="noopener noreferrer"
                     class="mt-1 shrink-0 text-muted-foreground"
+                    :class="{ 'opacity-50': isRead(item.link) }"
                 >
                     <ExternalLink class="h-3.5 w-3.5" />
                 </a>
