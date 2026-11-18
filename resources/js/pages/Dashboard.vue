@@ -219,8 +219,7 @@ watch(
                     {{ t('Brak skonfigurowanych bloków rutyny.') }}
                     <RouterLink to="/morning-hub/routine" class="underline">{{
                         t('Przejdź do Porannej Rutyny')
-                    }}</RouterLink
-                    >,
+                    }}</RouterLink>,
                     {{ t('aby skonfigurować bloki.') }}
                 </p>
             </div>

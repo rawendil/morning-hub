@@ -1,87 +1,87 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        {{-- Inline script to detect system dark mode preference and apply it immediately --}}
-        <script>
-            (function() {
-                const appearance = '{{ $appearance ?? "system" }}';
+    {{-- Inline script to detect system dark mode preference and apply it immediately --}}
+    <script>
+        (function () {
+            const appearance = '{{ $appearance ?? "system" }}';
 
-                if (appearance === 'system') {
-                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (appearance === 'system') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-                    if (prefersDark) {
-                        document.documentElement.classList.add('dark');
-                    }
+                if (prefersDark) {
+                    document.documentElement.classList.add('dark');
                 }
-            })();
-        </script>
-
-        {{-- Inline style to set the HTML background color based on our theme in app.css --}}
-        <style>
-            html {
-                background-color: oklch(1 0 0);
             }
+        })();
+    </script>
 
-            html.dark {
-                background-color: oklch(0.17 0.005 165);
-            }
-        </style>
+    {{-- Inline style to set the HTML background color based on our theme in app.css --}}
+    <style>
+        html {
+            background-color: oklch(1 0 0);
+        }
 
-        @inject('umami', 'App\Services\UmamiProxyService')
-        @if ($umami->isEnabled())
-            {{-- Umami: no cookies, served through our domain (see UmamiProxyService). Page views
-                 of Vue Router come from the tracker's own history.pushState hook — do not send them
-                 manually. data-exclude-search keeps reset-password tokens out of the statistics. --}}
-            <script
-                defer
-                src="{{ url('/api/mh.js') }}"
-                data-website-id="{{ $umami->websiteId() }}"
-                data-host-url="{{ url('/') }}"
-                data-exclude-search="true"
-                data-do-not-track="true"
-            ></script>
-        @endif
+        html.dark {
+            background-color: oklch(0.17 0.005 165);
+        }
+    </style>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    @inject('umami', 'App\Services\UmamiProxyService')
+    @if ($umami->isEnabled())
+        {{-- Umami: no cookies, served through our domain (see UmamiProxyService). Page views
+             of Vue Router come from the tracker's own history.pushState hook — do not send them
+             manually. data-exclude-search keeps reset-password tokens out of the statistics. --}}
+        <script
+            defer
+            src="{{ url('/api/mh.js') }}"
+            data-website-id="{{ $umami->websiteId() }}"
+            data-host-url="{{ url('/') }}"
+            data-exclude-search="true"
+            data-do-not-track="true"
+        ></script>
+    @endif
 
-        @php
-            $ogTitle = 'Morning Hub — Twoja poranna rutyna, uporządkowana';
-            $ogDescription = 'Jeden panel do zadań, nawyków, artykułów i kalendarza — zacznij dzień skupiony, nie przytłoczony.';
-            $ogImage = asset('images/og-image.png');
-        @endphp
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-        {{-- SEO + Open Graph / Twitter Card meta — server-rendered so crawlers (LinkedIn, Facebook, Slack) get a proper unfurl without executing JS --}}
-        <meta name="description" content="{{ $ogDescription }}">
+    @php
+        $ogTitle = 'Morning Hub — Twoja poranna rutyna, uporządkowana';
+        $ogDescription = 'Jeden panel do zadań, nawyków, artykułów i kalendarza — zacznij dzień skupiony, nie przytłoczony.';
+        $ogImage = asset('images/og-image.png');
+    @endphp
 
-        <meta property="og:type" content="website">
-        <meta property="og:site_name" content="{{ config('app.name', 'Morning Hub') }}">
-        <meta property="og:title" content="{{ $ogTitle }}">
-        <meta property="og:description" content="{{ $ogDescription }}">
-        <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:image" content="{{ $ogImage }}">
-        <meta property="og:image:type" content="image/png">
-        <meta property="og:image:width" content="1200">
-        <meta property="og:image:height" content="630">
-        <meta property="og:image:alt" content="Morning Hub — panel porannej rutyny">
+    {{-- SEO + Open Graph / Twitter Card meta — server-rendered so crawlers (LinkedIn, Facebook, Slack) get a proper unfurl without executing JS --}}
+    <meta name="description" content="{{ $ogDescription }}" />
 
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="{{ $ogTitle }}">
-        <meta name="twitter:description" content="{{ $ogDescription }}">
-        <meta name="twitter:image" content="{{ $ogImage }}">
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="{{ config('app.name', 'Morning Hub') }}" />
+    <meta property="og:title" content="{{ $ogTitle }}" />
+    <meta property="og:description" content="{{ $ogDescription }}" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:image" content="{{ $ogImage }}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Morning Hub — panel porannej rutyny" />
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ $ogTitle }}" />
+    <meta name="twitter:description" content="{{ $ogDescription }}" />
+    <meta name="twitter:image" content="{{ $ogImage }}" />
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-        @vite('resources/js/app.ts')
-    </head>
-    <body class="font-sans antialiased">
-        <div id="app"></div>
-    </body>
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+
+    @vite('resources/js/app.ts')
+</head>
+<body class="font-sans antialiased">
+    <div id="app"></div>
+</body>
 </html>

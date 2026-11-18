@@ -92,8 +92,7 @@ async function submit() {
                             <RouterLink
                                 to="/morning-hub/clickup"
                                 class="underline"
-                                >{{ t('Dodaj połączenie') }}</RouterLink
-                            >,
+                                >{{ t('Dodaj połączenie') }}</RouterLink>,
                             {{ t('aby rozpocząć.') }}
                         </p>
                         <div v-else class="space-y-2">

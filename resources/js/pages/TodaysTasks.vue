@@ -191,8 +191,7 @@ function itemKey(item: (typeof timeline.value)[number]): string {
                         <RouterLink
                             to="/morning-hub/google-calendar"
                             class="underline"
-                            >{{ t('połącz Google Calendar') }}</RouterLink
-                        >.
+                            >{{ t('połącz Google Calendar') }}</RouterLink>.
                     </p>
                 </div>
 
