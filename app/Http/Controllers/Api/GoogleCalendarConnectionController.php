@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MorningHub\UpdateGoogleCalendarConnectionRequest;
+use App\Models\User;
 use App\Services\GoogleCalendarServiceFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class GoogleCalendarConnectionController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         return response()->json([
@@ -27,7 +28,7 @@ class GoogleCalendarConnectionController extends Controller
 
     public function update(UpdateGoogleCalendarConnectionRequest $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
         $connection = $user->googleCalendarConnection;
 
@@ -42,7 +43,7 @@ class GoogleCalendarConnectionController extends Controller
 
     public function destroy(Request $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
         $user->googleCalendarConnection?->delete();
 
@@ -51,7 +52,7 @@ class GoogleCalendarConnectionController extends Controller
 
     public function test(Request $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
         $connection = $user->googleCalendarConnection;
 

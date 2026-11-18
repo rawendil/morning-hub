@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
 class GoogleCalendarOAuthController extends Controller
@@ -18,7 +19,7 @@ class GoogleCalendarOAuthController extends Controller
 
     public function connect(Request $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         if (! $user->hasGoogleLinked()) {
@@ -66,7 +67,7 @@ class GoogleCalendarOAuthController extends Controller
         }
 
         try {
-            /** @var \Laravel\Socialite\Two\AbstractProvider $provider */
+            /** @var AbstractProvider $provider */
             $provider = Socialite::driver('google');
             /** @var SocialiteUser $socialiteUser */
             $socialiteUser = $provider

@@ -1,12 +1,14 @@
 <?php
 
+use App\Exceptions\GoogleCalendarAuthException;
 use App\Models\GoogleCalendarConnection;
 use App\Services\GoogleCalendarService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
+use Tests\TestCase;
 
-uses(Tests\TestCase::class, RefreshDatabase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {
     $this->connection = GoogleCalendarConnection::factory()->create([
@@ -179,14 +181,14 @@ test('refreshTokenIfNeeded handles refresh failure gracefully', function () {
     $mockDriver = Mockery::mock();
     $mockDriver->shouldReceive('refreshToken')
         ->once()
-        ->andThrow(new \Exception('Token revoked'));
+        ->andThrow(new Exception('Token revoked'));
     Socialite::shouldReceive('driver')
         ->with('google')
         ->andReturn($mockDriver);
 
     $service = new GoogleCalendarService($this->connection->fresh());
 
-    expect(fn () => $service->testConnection())->toThrow(\App\Exceptions\GoogleCalendarAuthException::class);
+    expect(fn () => $service->testConnection())->toThrow(GoogleCalendarAuthException::class);
 });
 
 test('getEventsForDashboard returns events and null error on success', function () {
@@ -215,7 +217,7 @@ test('getEventsForDashboard returns auth error on GoogleCalendarAuthException', 
     $mockDriver = Mockery::mock();
     $mockDriver->shouldReceive('refreshToken')
         ->once()
-        ->andThrow(new \Exception('Token revoked'));
+        ->andThrow(new Exception('Token revoked'));
     Socialite::shouldReceive('driver')->with('google')->andReturn($mockDriver);
 
     $service = new GoogleCalendarService($this->connection->fresh());

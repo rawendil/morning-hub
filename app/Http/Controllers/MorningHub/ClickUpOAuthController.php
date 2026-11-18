@@ -26,7 +26,7 @@ class ClickUpOAuthController extends Controller
         $name = trim((string) $request->input('name', 'ClickUp')) ?: 'ClickUp';
         $state = Str::random(40);
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         Cache::put(

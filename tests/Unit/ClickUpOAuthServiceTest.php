@@ -2,8 +2,9 @@
 
 use App\Services\ClickUpOAuthService;
 use Illuminate\Support\Facades\Http;
+use Tests\TestCase;
 
-uses(Tests\TestCase::class);
+uses(TestCase::class);
 
 test('buildAuthorizationUrl contains client_id, redirect_uri and state', function () {
     config([
@@ -53,7 +54,7 @@ test('exchangeToken throws RuntimeException on failed response', function () {
     $service = new ClickUpOAuthService;
 
     expect(fn () => $service->exchangeToken('bad_code'))
-        ->toThrow(\RuntimeException::class);
+        ->toThrow(RuntimeException::class);
 });
 
 test('exchangeToken throws RuntimeException when access_token missing from response', function () {
@@ -64,5 +65,5 @@ test('exchangeToken throws RuntimeException when access_token missing from respo
     $service = new ClickUpOAuthService;
 
     expect(fn () => $service->exchangeToken('code_no_token'))
-        ->toThrow(\RuntimeException::class);
+        ->toThrow(RuntimeException::class);
 });

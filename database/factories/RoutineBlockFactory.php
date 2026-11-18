@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Enums\BlockType;
+use App\Models\RoutineBlock;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RoutineBlock>
+ * @extends Factory<RoutineBlock>
  */
 class RoutineBlockFactory extends Factory
 {

@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\TodaysTasksConfigFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TodaysTasksConfig extends Model
 {
-    /** @use HasFactory<\Database\Factories\TodaysTasksConfigFactory> */
+    /** @use HasFactory<TodaysTasksConfigFactory> */
     use HasFactory;
 
     protected $fillable = [

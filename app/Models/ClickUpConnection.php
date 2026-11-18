@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Contracts\ApiCredentialProvider;
 use App\Models\Concerns\HasEncryptedCredentials;
 use App\Observers\ApiCredentialObserver;
+use Database\Factories\ClickUpConnectionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy(ApiCredentialObserver::class)]
 class ClickUpConnection extends Model implements ApiCredentialProvider
 {
-    /** @use HasFactory<\Database\Factories\ClickUpConnectionFactory> */
+    /** @use HasFactory<ClickUpConnectionFactory> */
     use HasEncryptedCredentials, HasFactory;
 
     protected $table = 'clickup_connections';

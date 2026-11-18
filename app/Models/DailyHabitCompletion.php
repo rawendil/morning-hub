@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\DailyHabitCompletionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class DailyHabitCompletion extends Model
 {
-    /** @use HasFactory<\Database\Factories\DailyHabitCompletionFactory> */
+    /** @use HasFactory<DailyHabitCompletionFactory> */
     use HasFactory;
 
     protected $fillable = [

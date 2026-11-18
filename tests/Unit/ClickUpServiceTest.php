@@ -2,8 +2,9 @@
 
 use App\Services\ClickUpService;
 use Illuminate\Support\Facades\Http;
+use Tests\TestCase;
 
-uses(Tests\TestCase::class);
+uses(TestCase::class);
 
 test('testConnection returns true on successful response', function () {
     Http::fake(['https://api.clickup.com/api/v2/team' => Http::response(['teams' => []], 200)]);
@@ -116,7 +117,7 @@ test('getTasks passes default and custom filters as query params', function () {
 test('getTasks throws on 401', function () {
     Http::fake(['https://api.clickup.com/api/v2/list/l1/task*' => Http::response(['err' => 'Unauthorized'], 401)]);
     $service = new ClickUpService('bad-token');
-    expect(fn () => $service->getTasks('l1'))->toThrow(\RuntimeException::class);
+    expect(fn () => $service->getTasks('l1'))->toThrow(RuntimeException::class);
 });
 
 test('getTask returns single task object', function () {

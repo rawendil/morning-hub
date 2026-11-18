@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\GoogleCalendarConnection;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/** @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\GoogleCalendarConnection> */
+/** @extends Factory<GoogleCalendarConnection> */
 class GoogleCalendarConnectionFactory extends Factory
 {
     /** @return array<string, mixed> */

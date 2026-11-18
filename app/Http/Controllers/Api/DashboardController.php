@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\BlockType;
 use App\Http\Controllers\Controller;
 use App\Models\RoutineBlock;
+use App\Models\User;
 use App\Services\ClickUpBlockTaskService;
 use App\Services\DailyProgressService;
 use App\Services\FeedService;
@@ -24,7 +25,7 @@ class DashboardController extends Controller
 
     public function __invoke(Request $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $blocks = $user->routineBlocks()

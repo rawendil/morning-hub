@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\BlockCompletionStatus;
+use Database\Factories\DailyBlockCompletionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class DailyBlockCompletion extends Model
 {
-    /** @use HasFactory<\Database\Factories\DailyBlockCompletionFactory> */
+    /** @use HasFactory<DailyBlockCompletionFactory> */
     use HasFactory;
 
     protected $fillable = [

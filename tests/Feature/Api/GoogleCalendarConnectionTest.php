@@ -100,7 +100,7 @@ test('test endpoint returns failure when service throws', function () {
     GoogleCalendarConnection::factory()->for($user)->create();
 
     $mockService = Mockery::mock(GoogleCalendarService::class);
-    $mockService->shouldReceive('listCalendars')->once()->andThrow(new \RuntimeException('error'));
+    $mockService->shouldReceive('listCalendars')->once()->andThrow(new RuntimeException('error'));
 
     $mockFactory = Mockery::mock(GoogleCalendarServiceFactory::class);
     $mockFactory->shouldReceive('make')->once()->andReturn($mockService);

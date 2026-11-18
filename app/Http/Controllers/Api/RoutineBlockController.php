@@ -7,6 +7,7 @@ use App\Http\Requests\MorningHub\ReorderRoutineBlocksRequest;
 use App\Http\Requests\MorningHub\StoreRoutineBlockRequest;
 use App\Http\Requests\MorningHub\UpdateRoutineBlockRequest;
 use App\Models\RoutineBlock;
+use App\Models\User;
 use App\Services\RoutineBlockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class RoutineBlockController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         return response()->json([
@@ -33,7 +34,7 @@ class RoutineBlockController extends Controller
 
     public function store(StoreRoutineBlockRequest $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         $block = $this->routineBlockService->create($user, $request->validated());
@@ -60,7 +61,7 @@ class RoutineBlockController extends Controller
 
     public function reorder(ReorderRoutineBlocksRequest $request): Response
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
         $userBlockIds = $user->routineBlocks()->pluck('id')->all();
 

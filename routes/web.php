@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\MorningHub\ClickUpOAuthController;
 use App\Http\Controllers\MorningHub\GoogleCalendarOAuthController;
 use Illuminate\Support\Facades\Route;
@@ -15,14 +16,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Google login — server-side redirect (OAuth state requires session)
-Route::get('auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirect'])->name('google.redirect')->middleware('throttle:10,1');
-Route::get('auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'callback'])->name('google.callback');
+Route::get('auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect')->middleware('throttle:10,1');
+Route::get('auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
 
 // Google account linking — server-side redirect (same reason)
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('auth/google/link', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'linkRedirect'])->name('google.link');
-    Route::get('auth/google/link/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'linkCallback'])->name('google.link.callback');
-    Route::delete('auth/google/unlink', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'unlink'])->name('google.unlink');
+    Route::get('auth/google/link', [GoogleAuthController::class, 'linkRedirect'])->name('google.link');
+    Route::get('auth/google/link/callback', [GoogleAuthController::class, 'linkCallback'])->name('google.link.callback');
+    Route::delete('auth/google/unlink', [GoogleAuthController::class, 'unlink'])->name('google.unlink');
 });
 
 // ClickUp OAuth callback — no auth required (user identified via cache state)

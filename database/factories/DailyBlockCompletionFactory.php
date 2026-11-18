@@ -3,12 +3,13 @@
 namespace Database\Factories;
 
 use App\Enums\BlockCompletionStatus;
+use App\Models\DailyBlockCompletion;
 use App\Models\RoutineBlock;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\DailyBlockCompletion>
+ * @extends Factory<DailyBlockCompletion>
  */
 class DailyBlockCompletionFactory extends Factory
 {

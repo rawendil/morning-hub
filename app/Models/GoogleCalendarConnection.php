@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Contracts\ApiCredentialProvider;
 use App\Models\Concerns\HasEncryptedCredentials;
 use App\Observers\ApiCredentialObserver;
+use Carbon\Carbon;
+use Database\Factories\GoogleCalendarConnectionFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,12 +14,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property \Carbon\Carbon|null $token_expires_at
+ * @property Carbon|null $token_expires_at
  */
 #[ObservedBy(ApiCredentialObserver::class)]
 class GoogleCalendarConnection extends Model implements ApiCredentialProvider
 {
-    /** @use HasFactory<\Database\Factories\GoogleCalendarConnectionFactory> */
+    /** @use HasFactory<GoogleCalendarConnectionFactory> */
     use HasEncryptedCredentials, HasFactory;
 
     protected $fillable = [
