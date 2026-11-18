@@ -1,52 +1,57 @@
 <?php
 
+use Illuminate\Support\Str;
+use Tests\TestCase;
+
+/**
+ * The privacy policy text with every run of whitespace collapsed to one space,
+ * so a phrase matches no matter where the formatter wraps the template lines.
+ */
+function privacyPolicyText(TestCase $testCase): string
+{
+    return Str::squish($testCase->get('/privacy-policy')->assertOk()->getContent());
+}
+
 test('privacy policy page is publicly accessible', function () {
     $this->get('/privacy-policy')->assertOk();
 });
 
 test('privacy policy contains contact email from config', function () {
-    $this->get('/privacy-policy')
-        ->assertOk()
-        ->assertSee(config('app.contact_email'));
+    expect(privacyPolicyText($this))->toContain(config('app.contact_email'));
 });
 
 test('privacy policy describes cookieless Umami analytics instead of Google Analytics', function () {
-    $this->get('/privacy-policy')
-        ->assertOk()
-        ->assertSee('Umami')
-        ->assertSee('umami.disabled')
-        ->assertDontSee('Google Analytics')
-        ->assertDontSee('Google Tag Manager')
-        ->assertDontSee('gaoptout', false);
+    expect(privacyPolicyText($this))
+        ->toContain('Umami')
+        ->toContain('umami.disabled')
+        ->not->toContain('Google Analytics')
+        ->not->toContain('Google Tag Manager')
+        ->not->toContain('gaoptout');
 });
 
 test('privacy policy states that Do Not Track is honoured', function () {
-    $this->get('/privacy-policy')
-        ->assertOk()
-        ->assertDontSee('nie reagujemy na te sygnały')
-        ->assertSee('Respektujemy ten sygnał');
+    expect(privacyPolicyText($this))
+        ->not->toContain('nie reagujemy na te sygnały')
+        ->toContain('Respektujemy ten sygnał');
 });
 
 test('privacy policy describes what Umami actually derives from the ip address', function () {
-    $this->get('/privacy-policy')
-        ->assertOk()
-        ->assertDontSee('nie pozwala rozpoznać Cię przy kolejnej wizycie')
-        ->assertDontSee('służy wyłącznie do wyznaczenia kraju')
-        ->assertSee('przybliżonej lokalizacji (kraj, region, miasto)')
-        ->assertSee('zmienia się co miesiąc');
+    expect(privacyPolicyText($this))
+        ->not->toContain('nie pozwala rozpoznać Cię przy kolejnej wizycie')
+        ->not->toContain('służy wyłącznie do wyznaczenia kraju')
+        ->toContain('przybliżonej lokalizacji (kraj, region, miasto)')
+        ->toContain('zmienia się co miesiąc');
 });
 
 test('privacy policy names the preference cookies instead of claiming only necessary ones', function () {
-    $this->get('/privacy-policy')
-        ->assertOk()
-        ->assertDontSee('wyłącznie niezbędnych plików cookie')
-        ->assertSee('appearance')
-        ->assertSee('locale')
-        ->assertSee('sidebar_state');
+    expect(privacyPolicyText($this))
+        ->not->toContain('wyłącznie niezbędnych plików cookie')
+        ->toContain('appearance')
+        ->toContain('locale')
+        ->toContain('sidebar_state');
 });
 
 test('privacy policy lists the recorded acceptance of the legal documents', function () {
-    $this->get('/privacy-policy')
-        ->assertOk()
-        ->assertSee('data i godzina akceptacji Regulaminu i Polityki prywatności wraz z potwierdzeniem pełnoletności');
+    expect(privacyPolicyText($this))
+        ->toContain('data i godzina akceptacji Regulaminu i Polityki prywatności wraz z potwierdzeniem pełnoletności');
 });
