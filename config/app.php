@@ -130,6 +130,10 @@ return [
 
     'company_region' => env('COMPANY_REGION', ''),
 
+    'company_nip' => env('COMPANY_NIP', ''),
+
+    'company_regon' => env('COMPANY_REGON', ''),
+
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),

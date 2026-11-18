@@ -55,3 +55,19 @@ test('privacy policy lists the recorded acceptance of the legal documents', func
     expect(privacyPolicyText($this))
         ->toContain('data i godzina akceptacji Regulaminu i Polityki prywatności wraz z potwierdzeniem pełnoletności');
 });
+
+test('privacy policy shows the company tax and statistical numbers when configured', function () {
+    config(['app.company_nip' => '0000000000', 'app.company_regon' => '000000000']);
+
+    expect(privacyPolicyText($this))
+        ->toContain('NIP: 0000000000')
+        ->toContain('REGON: 000000000');
+});
+
+test('privacy policy omits the tax and statistical number lines when they are not configured', function () {
+    config(['app.company_nip' => '', 'app.company_regon' => '']);
+
+    expect(privacyPolicyText($this))
+        ->not->toContain('NIP:')
+        ->not->toContain('REGON:');
+});

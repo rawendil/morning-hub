@@ -482,6 +482,16 @@
         {{ config('app.company_address') }}<br />
         {{ config('app.company_city') }}, {{ config('app.company_region') }} {{ config('app.company_zip') }}<br />
         Polska<br />
+        @if (filled(config('app.company_nip')))
+            NIP: {{ config('app.company_nip') }}<br
+             />
+        @endif
+
+        @if (filled(config('app.company_regon')))
+            REGON: {{ config('app.company_regon') }}<br
+             />
+        @endif
+
         E-mail: <a href="mailto:{{ config('app.contact_email') }}">{{ config('app.contact_email') }}</a>
     </address>
 
